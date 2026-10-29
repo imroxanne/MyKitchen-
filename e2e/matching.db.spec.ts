@@ -51,6 +51,7 @@ test('подбор учитывает недостающие продукты, �
   await expect(cards(page).first()).toContainText('Не хватает: Масло оливковое')
 
   // Фильтр по типу блюда «Десерт» вместе с поиском — пусто.
+  await page.getByText('Фильтры', { exact: true }).click()
   await page.getByRole('button', { name: 'Десерт' }).click()
   await expect(page.getByText('Под выбранные условия рецептов нет.')).toBeVisible()
 

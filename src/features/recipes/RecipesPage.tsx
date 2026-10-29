@@ -159,6 +159,11 @@ function FilterPanel({
   pantryEmpty: boolean
   onReset(): void
 }) {
+  const activeExtra =
+    Number(filters.maxMinutes !== null) +
+    Number(filters.mealType !== null) +
+    Number(filters.verifiedOnly) +
+    Number(filters.sort !== 'match')
   return (
     <form className="card filters" role="search" onSubmit={(e) => e.preventDefault()}>
       <label className="search-field">
@@ -225,61 +230,66 @@ function FilterPanel({
         </label>
       )}
 
-      <div className="filter-row">
-        <label className="inline-field">
-          Время
-          <select
-            value={filters.maxMinutes ?? ''}
-            onChange={(e) =>
-              onChange({ maxMinutes: e.target.value ? Number(e.target.value) : null })
-            }
-          >
-            <option value="">любое</option>
-            {TIME_OPTIONS.map((t) => (
-              <option key={t} value={t}>
-                до {t} мин
-              </option>
+      <details className="more-filters" open={activeExtra > 0 || undefined}>
+        <summary>Фильтры{activeExtra > 0 ? ` (${activeExtra})` : ''}</summary>
+        <div className="more-filters-body">
+          <div className="filter-row">
+            <label className="inline-field">
+              Время
+              <select
+                value={filters.maxMinutes ?? ''}
+                onChange={(e) =>
+                  onChange({ maxMinutes: e.target.value ? Number(e.target.value) : null })
+                }
+              >
+                <option value="">любое</option>
+                {TIME_OPTIONS.map((t) => (
+                  <option key={t} value={t}>
+                    до {t} мин
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="inline-field">
+              Сортировка
+              <select
+                value={filters.sort}
+                onChange={(e) => onChange({ sort: e.target.value as Filters['sort'] })}
+              >
+                <option value="match">по подходящим</option>
+                <option value="time">сначала быстрые</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="chips" role="group" aria-label="Тип блюда">
+            {MEAL_TYPES.map((meal) => (
+              <button
+                type="button"
+                key={meal}
+                className={filters.mealType === meal ? 'chip chip-active' : 'chip'}
+                aria-pressed={filters.mealType === meal}
+                onClick={() => onChange({ mealType: filters.mealType === meal ? null : meal })}
+              >
+                {MEAL_LABELS[meal]}
+              </button>
             ))}
-          </select>
-        </label>
-        <label className="inline-field">
-          Сортировка
-          <select
-            value={filters.sort}
-            onChange={(e) => onChange({ sort: e.target.value as Filters['sort'] })}
-          >
-            <option value="match">по подходящим</option>
-            <option value="time">сначала быстрые</option>
-          </select>
-        </label>
-      </div>
+          </div>
 
-      <div className="chips" role="group" aria-label="Тип блюда">
-        {MEAL_TYPES.map((meal) => (
-          <button
-            type="button"
-            key={meal}
-            className={filters.mealType === meal ? 'chip chip-active' : 'chip'}
-            aria-pressed={filters.mealType === meal}
-            onClick={() => onChange({ mealType: filters.mealType === meal ? null : meal })}
-          >
-            {MEAL_LABELS[meal]}
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={filters.verifiedOnly}
+              onChange={(e) => onChange({ verifiedOnly: e.target.checked })}
+            />
+            Только с проверенным источником
+          </label>
+
+          <button type="button" className="link" onClick={onReset}>
+            Сбросить фильтры
           </button>
-        ))}
-      </div>
-
-      <label className="checkbox">
-        <input
-          type="checkbox"
-          checked={filters.verifiedOnly}
-          onChange={(e) => onChange({ verifiedOnly: e.target.checked })}
-        />
-        Только с проверенным источником
-      </label>
-
-      <button type="button" className="link" onClick={onReset}>
-        Сбросить фильтры
-      </button>
+        </div>
+      </details>
     </form>
   )
 }
