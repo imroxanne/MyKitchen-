@@ -34,7 +34,11 @@ test('список → рецепт → назад, избранное сохр�
   // Избранное внутри рецепта; после перезагрузки страницы отметка на месте.
   const inside = page.getByRole('button', { name: 'В избранное' })
   await expect(inside).toBeEnabled()
+  const saved = page.waitForResponse(
+    (r) => r.url().includes('/rest/v1/favorite_recipes') && r.request().method() === 'POST',
+  )
   await inside.click()
+  expect((await saved).ok()).toBe(true)
   await expect(page.getByText('Рецепт сохранён в избранном.')).toBeVisible()
   await expect(inside).toHaveAttribute('aria-pressed', 'true')
 
@@ -69,8 +73,13 @@ test('список → рецепт → назад, избранное сохр�
   await expect(page).toHaveURL(/\/favorites$/)
 
   // Убрали из избранного — после повторного открытия раздела рецепта нет.
+  // Сердечко меняется сразу, запрос уходит следом — перед перезагрузкой ждём ответа сервера.
+  const removed = page.waitForResponse(
+    (r) => r.url().includes('/rest/v1/favorite_recipes') && r.request().method() === 'DELETE',
+  )
   await page.getByRole('button', { name: 'В избранное: Шакшука' }).click()
   await expect(page.getByRole('status')).toContainText('Сохранено: 1')
+  expect((await removed).ok()).toBe(true)
   await page.reload()
   await expect(favorites.getByRole('listitem')).toHaveCount(1)
 })

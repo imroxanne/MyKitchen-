@@ -56,8 +56,12 @@ test('MVP: запасы → подбор → рецепт → избранное
   await expect(kbju).toContainText('Число порций не указано в источнике')
   const favorite = page.getByRole('button', { name: 'В избранное' })
   await expect(favorite).toBeEnabled()
+  const saved = page.waitForResponse(
+    (r) => r.url().includes('/rest/v1/favorite_recipes') && r.request().method() === 'POST',
+  )
   await favorite.click()
   await expect(favorite).toHaveAttribute('aria-pressed', 'true')
+  expect((await saved).ok()).toBe(true)
   await expect(
     page.getByRole('region', { name: 'Приготовление' }).getByRole('listitem'),
   ).not.toHaveCount(0)
