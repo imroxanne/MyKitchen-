@@ -1,19 +1,64 @@
-/* Черновой вид (ТЗ §13): не дизайн-эталон, только читаемая мобильная оболочка. */
+/*
+ * Визуальная система MyKitchen: шкала травяного зелёного + малиново-розовый акцент.
+ * Розовый — только для «личного» (избранное). Жёлтый и красный — только про проверку и
+ * безопасность. Макет: claude.ai/artifact/3priRZpaJZXFXYEp37oh7a.
+ */
 :root {
-  --bg: #fafaf7;
+  /* Зелёная шкала. */
+  --g900: #163828;
+  --g800: #1f4a35;
+  --g700: #2e6a4c;
+  --g500: #4e8c68;
+  --g300: #9cc3aa;
+  --g200: #cfe3d6;
+  --g100: #e3efe7;
+  --g50: #f1f7f3;
+
+  --bg: #f6f5f0;
   --surface: #ffffff;
-  --text: #1f2421;
-  --muted: #5d6660;
-  --accent: #2f6f4e;
-  --border: #dfe3dc;
-  --notice-bg: #fff6e0;
-  --notice-border: #e9c46a;
-  --danger: #b3261e;
-  --warning: #8a5a00;
+  --surface-2: #f0efe8;
+  --text: #1e2620;
+  --muted: #5b655e;
+  --border: #e6e5dd;
+  --border-strong: #dad9d0;
+
+  --accent: var(--g700);
+  --accent-strong: var(--g800);
+  --accent-soft: var(--g100);
+  --on-accent-soft: var(--g800);
   --on-accent: #ffffff;
-  --tabbar-height: 3.5rem;
+  /* Тяжёлые зелёные плоскости: активный пункт меню, знак бренда. */
+  --deep: var(--g800);
+  --on-deep: #ffffff;
+
+  --pink: #c2346a;
+  --pink-soft: #fce4ec;
+  --pink-text: #9e2453;
+
+  --notice-bg: var(--g50);
+  --notice-border: var(--g200);
+  --warning-bg: #fbf0dc;
+  --warning: #7a4e0e;
+  --danger-bg: #fbe7e3;
+  --danger: #962f21;
+
+  /* Плитки карточек — разные оттенки зелёного, чтобы список не сливался. */
+  --tile-0-bg: var(--g200);
+  --tile-0-fg: var(--g800);
+  --tile-1-bg: var(--g800);
+  --tile-1-fg: var(--g100);
+  --tile-2-bg: var(--g300);
+  --tile-2-fg: var(--g900);
+  --tile-3-bg: var(--g50);
+  --tile-3-fg: var(--g700);
+
+  --radius: 1.25rem;
+  --radius-sm: 0.875rem;
+  --topbar-height: 4rem;
+  --tabbar-height: 4.25rem;
 
   font-family:
+    'Onest Variable',
     system-ui,
     -apple-system,
     'Segoe UI',
@@ -23,21 +68,46 @@
   color: var(--text);
   background: var(--bg);
   color-scheme: light dark;
+  -webkit-font-smoothing: antialiased;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #161917;
-    --surface: #1f2421;
-    --text: #e8ebe6;
-    --muted: #a3aca5;
-    --accent: #7cc49d;
-    --border: #343b36;
-    --notice-bg: #3a3220;
-    --notice-border: #a2853b;
-    --danger: #ffb4ab;
+    --bg: #121814;
+    --surface: #1a221d;
+    --surface-2: #232d26;
+    --text: #e8ede9;
+    --muted: #a5b0a8;
+    --border: #2c3830;
+    --border-strong: #3a473e;
+
+    --accent: #6fbf92;
+    --accent-strong: #9cd3b4;
+    --accent-soft: #1f3a2b;
+    --on-accent-soft: #cfe3d6;
+    --on-accent: #0e2318;
+    --deep: #2e6a4c;
+    --on-deep: #ffffff;
+
+    --pink: #f07aa5;
+    --pink-soft: #3d1e2a;
+    --pink-text: #f7a9c5;
+
+    --notice-bg: #18291f;
+    --notice-border: #2e4a3a;
+    --warning-bg: #3a3020;
     --warning: #f0c060;
-    --on-accent: #10261a;
+    --danger-bg: #3d1f1b;
+    --danger: #ffb4ab;
+
+    --tile-0-bg: #24412f;
+    --tile-0-fg: #cfe3d6;
+    --tile-1-bg: #2e6a4c;
+    --tile-1-fg: #ffffff;
+    --tile-2-bg: #1f3a2b;
+    --tile-2-fg: #9cc3aa;
+    --tile-3-bg: #1a2a20;
+    --tile-3-fg: #9cd3b4;
   }
 }
 
@@ -52,13 +122,30 @@ body {
 
 a {
   color: var(--accent);
+  text-underline-offset: 0.15em;
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 
+.icon {
+  width: 1.375rem;
+  height: 1.375rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon-filled {
+  fill: currentColor;
+}
+
+/* Оболочка. Телефон: шапка сверху, вкладки снизу. */
 .shell {
   min-height: 100dvh;
   display: flex;
@@ -66,27 +153,50 @@ a {
 }
 
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 15;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  min-height: var(--topbar-height);
+  padding: env(safe-area-inset-top) 4.5rem 0 1rem;
+  background: var(--bg);
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
   font-weight: 700;
   font-size: 1.125rem;
   text-decoration: none;
   color: var(--text);
 }
 
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.75rem;
+  background: var(--deep);
+  color: var(--on-deep);
+}
+
+.brand-mark .icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
 .env-badge {
   font-size: 0.75rem;
+  font-weight: 600;
   padding: 0.125rem 0.5rem;
-  border-radius: 999px;
-  border: 1px solid var(--notice-border);
-  background: var(--notice-bg);
+  border-radius: 0.5rem;
+  background: var(--warning-bg);
+  color: var(--warning);
 }
 
 .content {
@@ -94,19 +204,204 @@ a {
   width: 100%;
   max-width: 48rem;
   margin: 0 auto;
-  padding: 1rem 1rem calc(var(--tabbar-height) + 1.5rem);
+  padding: 0.25rem 1rem calc(var(--tabbar-height) + env(safe-area-inset-bottom) + 1.5rem);
 }
 
 .content h1 {
-  margin-top: 0.5rem;
-  font-size: 1.5rem;
+  margin: 0.25rem 0 1rem;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.tabbar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  min-height: var(--tabbar-height);
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  min-width: 0;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--muted);
+}
+
+.tab .icon {
+  box-sizing: content-box;
+  padding: 0.1875rem 1rem;
+  border-radius: 999px;
+}
+
+.tab-active {
+  color: var(--on-accent-soft);
+  font-weight: 600;
+}
+
+.tab-active .icon {
+  background: var(--accent-soft);
+}
+
+/* Профиль на телефоне — кружок справа в шапке (в навигации он тоже есть для диктора). */
+.tab-profile {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + (var(--topbar-height) - 2.75rem) / 2);
+  right: 1rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--on-accent-soft);
+}
+
+.tab-profile .icon {
+  padding: 0;
+  background: none;
+}
+
+.tab-profile.tab-active {
+  background: var(--deep);
+  color: var(--on-deep);
+}
+
+.tab-profile .tab-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Десктоп: колонка разделов слева. */
+@media (min-width: 60rem) {
+  .shell {
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+
+  .topbar {
+    position: static;
+    grid-column: 1;
+    grid-row: 1;
+    padding: 1.5rem 1.5rem 1.25rem;
+    border-right: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .tabbar {
+    position: static;
+    grid-column: 1;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0 1rem 1.5rem;
+    background: var(--bg);
+    border-top: none;
+    border-right: 1px solid var(--border);
+  }
+
+  .tab {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    min-height: 2.75rem;
+    padding: 0 0.875rem;
+    border-radius: 0.75rem;
+    font-size: 0.9375rem;
+  }
+
+  .tab .icon {
+    padding: 0;
+    background: none;
+  }
+
+  .tab:hover {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+
+  .tab-active,
+  .tab-active:hover,
+  .tab-profile.tab-active {
+    background: var(--deep);
+    color: var(--on-deep);
+  }
+
+  .tab-active .icon {
+    background: none;
+  }
+
+  .tab-profile {
+    position: static;
+    width: auto;
+    height: auto;
+    margin-top: auto;
+    border-radius: 0.75rem;
+    background: none;
+    color: var(--muted);
+  }
+
+  .tab-profile .tab-label {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+  }
+
+  .content {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    max-width: 60rem;
+    margin: 0;
+    padding: 2rem 2.5rem 3rem;
+  }
+
+  .content h1 {
+    font-size: 2rem;
+  }
+}
+
+/* Общие блоки. */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.125rem;
+  margin-bottom: 1rem;
+}
+
+.card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1875rem;
+  font-weight: 600;
 }
 
 .notice {
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+  padding: 0.875rem 1rem;
+  border-radius: 1rem;
   border: 1px solid var(--notice-border);
   background: var(--notice-bg);
+}
+
+.notice p {
+  margin: 0.25rem 0;
 }
 
 ul.notice {
@@ -116,7 +411,7 @@ ul.notice {
 .facts {
   display: grid;
   grid-template-columns: max-content 1fr;
-  gap: 0.25rem 1rem;
+  gap: 0.375rem 1rem;
 }
 
 .facts dt {
@@ -126,77 +421,6 @@ ul.notice {
 .facts dd {
   margin: 0;
   overflow-wrap: anywhere;
-}
-
-/* Нижняя навигация на телефоне, верхняя полоса на десктопе. */
-.tabbar {
-  position: fixed;
-  inset: auto 0 0 0;
-  height: var(--tabbar-height);
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.tab {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  text-decoration: none;
-  color: var(--muted);
-  min-width: 0;
-}
-
-.tab-active {
-  color: var(--accent);
-  font-weight: 600;
-}
-
-@media (min-width: 48rem) {
-  .shell {
-    flex-direction: column;
-  }
-
-  .tabbar {
-    position: static;
-    order: -1;
-    height: auto;
-    display: flex;
-    justify-content: center;
-    gap: 0.25rem;
-    border-top: none;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .tab {
-    font-size: 0.9375rem;
-    padding: 0.625rem 1rem;
-  }
-
-  .topbar {
-    order: -2;
-  }
-
-  .content {
-    padding-bottom: 2rem;
-  }
-}
-
-/* Формы и карточки (черновой вид). */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.card h2 {
-  margin: 0 0 0.75rem;
-  font-size: 1.125rem;
 }
 
 .muted {
@@ -224,6 +448,7 @@ ul.notice {
   white-space: nowrap;
 }
 
+/* Поля и кнопки. */
 input,
 select,
 button {
@@ -234,20 +459,39 @@ button {
 input:not([type='checkbox'], [type='radio']),
 select {
   width: 100%;
-  min-height: 2.75rem;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  background: var(--bg);
+  min-height: 3rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 1rem;
+}
+
+input[type='search'] {
+  padding-left: 2.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235b655e' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 0.875rem center;
+  background-size: 1.25rem;
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  accent-color: var(--accent);
 }
 
 button {
   min-height: 2.75rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  padding: 0.5rem 1.125rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
   background: var(--surface);
+  font-weight: 500;
   cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--g300);
 }
 
 button:disabled {
@@ -256,10 +500,16 @@ button:disabled {
 }
 
 button.primary {
+  min-height: 3rem;
   background: var(--accent);
   border-color: var(--accent);
   color: var(--on-accent);
   font-weight: 600;
+}
+
+button.primary:hover:not(:disabled) {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
 }
 
 button.danger {
@@ -267,11 +517,30 @@ button.danger {
 }
 
 button.link {
+  min-height: 2.75rem;
   border: none;
   background: none;
   color: var(--accent);
   padding: 0.25rem 0;
+  font-weight: 500;
   text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.5rem 1.125rem;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--on-accent-soft);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.button-link:hover {
+  box-shadow: inset 0 0 0 1px var(--g300);
 }
 
 .auth-form,
@@ -297,17 +566,94 @@ button.link {
 
 .chip {
   min-height: 2.25rem;
-  padding: 0.25rem 0.75rem;
+  padding: 0.25rem 0.875rem;
   border-radius: 999px;
   font-size: 0.875rem;
 }
 
-.chip-active {
+.chip-active,
+.chip-active:hover:not(:disabled) {
+  background: var(--accent);
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--on-accent);
   font-weight: 600;
 }
 
+/* Выбор одного варианта — ряд «плиток», радиокнопка спрятана, но доступна с клавиатуры. */
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.segmented legend {
+  padding: 0;
+  margin-bottom: 0.375rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.segmented label {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  font-size: 0.875rem;
+  line-height: 1.25;
+  text-align: center;
+  cursor: pointer;
+}
+
+.segmented label input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.segmented label:has(input:checked) {
+  background: var(--accent-soft);
+  border-color: var(--g500);
+  color: var(--on-accent-soft);
+  font-weight: 600;
+}
+
+.segmented label:has(input:focus-visible) {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.75rem;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.0625rem 0.5rem;
+  border-radius: 0.4375rem;
+  background: var(--surface-2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  vertical-align: middle;
+}
+
+/* Продукты. */
 .search-results {
   list-style: none;
   margin: 0;
@@ -315,7 +661,8 @@ button.link {
   max-height: 20rem;
   overflow-y: auto;
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
 }
 
 .search-results li {
@@ -334,7 +681,8 @@ button.link {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.625rem 0.75rem;
+  min-height: 3rem;
+  padding: 0.625rem 0.875rem;
   cursor: pointer;
 }
 
@@ -354,48 +702,13 @@ button.link {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding: 0.75rem;
-  border: 1px dashed var(--border);
-  border-radius: 0.5rem;
+  padding: 0.875rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
 }
 
 .own-product p {
   margin: 0;
-}
-
-.segmented {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  border: none;
-  padding: 0;
-  margin: 0;
-}
-
-.segmented legend {
-  padding: 0;
-  margin-bottom: 0.25rem;
-  color: var(--muted);
-  font-size: 0.875rem;
-}
-
-.segmented label,
-.checkbox {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 2.75rem;
-}
-
-.badge {
-  display: inline-block;
-  margin-left: 0.5rem;
-  padding: 0 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  font-size: 0.75rem;
-  color: var(--muted);
-  vertical-align: middle;
 }
 
 .products {
@@ -408,6 +721,10 @@ button.link {
   border-top: 1px solid var(--border);
 }
 
+.product:first-child {
+  border-top: none;
+}
+
 .product.excluded .product-name {
   color: var(--muted);
 }
@@ -418,11 +735,16 @@ button.link {
   align-items: flex-start;
   gap: 0.125rem;
   width: 100%;
+  min-height: 3.5rem;
   border: none;
   border-radius: 0;
   background: none;
-  padding: 0.75rem 0;
+  padding: 0.625rem 0;
   text-align: left;
+}
+
+.product-row:hover:not(:disabled) {
+  border-color: transparent;
 }
 
 .product-name {
@@ -432,17 +754,26 @@ button.link {
 .product-meta {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.25rem 0.75rem;
   font-size: 0.875rem;
 }
 
+.expiry {
+  padding: 0 0.5rem;
+  border-radius: 0.4375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 .expiry-soon {
+  background: var(--warning-bg);
   color: var(--warning);
 }
 
 .expiry-expired {
+  background: var(--danger-bg);
   color: var(--danger);
-  font-weight: 600;
 }
 
 .editor {
@@ -468,125 +799,11 @@ button.link {
   align-items: center;
 }
 
-/* Рецепты. */
-.recipe-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.75rem;
-}
-
-.recipe-card {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  padding: 0.875rem 1rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  color: var(--text);
-  text-decoration: none;
-}
-
-.recipe-card:hover {
-  border-color: var(--accent);
-}
-
-.recipe-card-title {
-  font-weight: 600;
-  font-size: 1.0625rem;
-}
-
-.trust-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-}
-
-.trust {
-  display: inline-block;
-  padding: 0.0625rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  border: 1px solid var(--border);
-}
-
-.trust-ok {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.trust-warn {
-  border-color: var(--notice-border);
-  background: var(--notice-bg);
-}
-
-.trust-list {
-  list-style: none;
-  margin: 0 0 1rem;
-  padding: 0;
-  display: grid;
-  gap: 0.375rem;
-}
-
-.trust-list li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.25rem 0.5rem;
-}
-
-.button-link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.75rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--accent);
-  border-radius: 0.5rem;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.recipe-facts {
-  margin-bottom: 1rem;
-}
-
-.ingredients {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.ingredients li {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.5rem 0;
-  border-top: 1px solid var(--border);
-}
-
-.ingredients li:first-child {
-  border-top: none;
-}
-
-.ingredients .amount {
-  text-align: right;
-  white-space: nowrap;
-}
-
-.steps {
-  margin: 0;
-  padding-left: 1.5rem;
-  display: grid;
-  gap: 0.75rem;
-}
-
-/* Подбор рецептов (A5). */
+/* Подбор рецептов. */
 .filters {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.875rem;
 }
 
 .filter-row {
@@ -600,11 +817,16 @@ button.link {
   flex-direction: column;
   gap: 0.25rem;
   font-size: 0.875rem;
+  font-weight: 500;
   color: var(--muted);
 }
 
 .filter-row .inline-field {
   flex: 1 1 10rem;
+}
+
+.inline-field select {
+  color: var(--text);
 }
 
 .more-filters summary {
@@ -626,12 +848,95 @@ button.link {
   gap: 0.75rem;
 }
 
-.inline-field select {
-  color: var(--text);
+/* Карточки рецептов. */
+.recipe-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
 }
 
-.segmented.mode {
-  gap: 0 1rem;
+@media (min-width: 60rem) {
+  .recipe-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.recipe-card-item {
+  position: relative;
+}
+
+.recipe-card {
+  display: flex;
+  gap: 0.875rem;
+  height: 100%;
+  padding: 0.875rem 3.5rem 0.875rem 0.875rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.recipe-card:hover {
+  border-color: var(--g300);
+}
+
+.recipe-card-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  flex: none;
+  border-radius: var(--radius-sm);
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.tone-0 {
+  background: var(--tile-0-bg);
+  color: var(--tile-0-fg);
+}
+
+.tone-1 {
+  background: var(--tile-1-bg);
+  color: var(--tile-1-fg);
+}
+
+.tone-2 {
+  background: var(--tile-2-bg);
+  color: var(--tile-2-fg);
+}
+
+.tone-3 {
+  background: var(--tile-3-bg);
+  color: var(--tile-3-fg);
+  box-shadow: inset 0 0 0 1px var(--g200);
+}
+
+.recipe-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125rem;
+  min-width: 0;
+}
+
+/* Значки доверия — над названием, хотя в разметке идут после него. */
+.recipe-card-body .trust-badges {
+  order: -1;
+}
+
+.recipe-card-title {
+  font-weight: 600;
+  font-size: 1.0625rem;
+  line-height: 1.25;
+}
+
+.recipe-card-kcal {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
 }
 
 .recipe-card-notes {
@@ -639,6 +944,7 @@ button.link {
   flex-direction: column;
   gap: 0.125rem;
   font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .note-ok {
@@ -646,7 +952,50 @@ button.link {
 }
 
 .note-missing {
+  color: var(--text);
+}
+
+.trust-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.trust {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.375rem;
+  padding: 0 0.5rem;
+  border-radius: 0.4375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+.trust-ok {
+  background: var(--accent-soft);
+  color: var(--on-accent-soft);
+}
+
+.trust-warn {
+  background: var(--warning-bg);
   color: var(--warning);
+}
+
+.trust-list {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.trust-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.5rem;
 }
 
 .avail {
@@ -674,53 +1023,98 @@ button.link {
   font-weight: 600;
 }
 
-/* Избранное и экран рецепта (A6). */
-.recipe-card-item {
-  position: relative;
-}
-
-/* Место под сердечко в правом верхнем углу карточки. */
-.recipe-card-item .recipe-card {
-  padding-right: 3.5rem;
-}
-
+/* Избранное: розовый — цвет «личного». */
 .fav {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 0.5rem;
 }
 
 .fav-icon {
   position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
+  top: 0.5rem;
+  right: 0.5rem;
   width: 2.75rem;
   height: 2.75rem;
   padding: 0;
   justify-content: center;
   border: none;
+  border-radius: 0.75rem;
   background: none;
-  font-size: 1.5rem;
-  line-height: 1;
+}
+
+.fav-icon:hover:not(:disabled) {
+  background: var(--pink-soft);
 }
 
 .fav-heart {
+  display: inline-flex;
   color: var(--muted);
 }
 
 .fav-on {
-  color: var(--danger);
+  color: var(--pink);
 }
 
-.fav-text[aria-pressed='true'] {
-  border-color: var(--danger);
+.fav-text[aria-pressed='true'],
+.fav-text[aria-pressed='true']:hover:not(:disabled) {
+  background: var(--pink-soft);
+  border-color: var(--pink-soft);
+  color: var(--pink-text);
 }
 
+/* Экран рецепта. */
 .recipe-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   margin: 1rem 0 0.25rem;
+}
+
+.recipe-facts {
+  margin-bottom: 1rem;
+  padding: 1rem 1.125rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.ingredients {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ingredients li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.625rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.ingredients li:first-child {
+  border-top: none;
+}
+
+.ingredients .amount {
+  text-align: right;
+  white-space: nowrap;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.steps {
+  margin: 0;
+  padding-left: 1.5rem;
+  display: grid;
+  gap: 0.875rem;
+}
+
+.steps li::marker {
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .steps .step label {
@@ -751,7 +1145,7 @@ button.link {
   margin-top: 0.75rem;
 }
 
-/* КБЖУ (A7). */
+/* КБЖУ. */
 .nutrition-table {
   width: 100%;
   border-collapse: collapse;
@@ -761,7 +1155,7 @@ button.link {
 
 .nutrition-table th,
 .nutrition-table td {
-  padding: 0.375rem 0.25rem;
+  padding: 0.5rem 0.25rem;
   border-top: 1px solid var(--border);
   text-align: right;
 }
@@ -775,12 +1169,13 @@ button.link {
   border-top: none;
   color: var(--muted);
   font-size: 0.875rem;
-  font-weight: normal;
+  font-weight: 500;
 }
 
 .nutrition-details summary {
   cursor: pointer;
   color: var(--accent);
+  font-weight: 500;
   min-height: 2.75rem;
   display: flex;
   align-items: center;
@@ -796,12 +1191,8 @@ button.link {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.375rem 0;
+  padding: 0.5rem 0;
   border-top: 1px solid var(--border);
-}
-
-.recipe-card-kcal {
-  color: var(--text);
 }
 
 .nutrition-line-detail {
@@ -810,4 +1201,5 @@ button.link {
 
 .nutrition-lines .amount {
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }

@@ -1,3 +1,4 @@
+import { Icon } from '../../app/icons'
 import type { Favorites } from './useFavorites'
 
 /**
@@ -32,8 +33,8 @@ export function FavoriteButton({
         onToggle?.(!on)
       }}
     >
-      <span aria-hidden="true" className={on ? 'fav-heart fav-on' : 'fav-heart'}>
-        {on ? '♥' : '♡'}
+      <span className={on ? 'fav-heart fav-on' : 'fav-heart'}>
+        <Icon name="heart" filled={on} />
       </span>
       {withText && ' В избранное'}
     </button>

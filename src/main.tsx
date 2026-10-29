@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router'
 import { routes } from './app/routes'
 import { AuthProvider } from './features/auth/AuthProvider'
 import { getSupabase } from './lib/supabase'
+import '@fontsource-variable/onest'
 import './index.css'
 
 const router = createBrowserRouter(routes)
