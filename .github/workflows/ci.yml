@@ -46,10 +46,8 @@ jobs:
       - run: npm ci
       # Поднимает только Postgres и применяет все supabase/migrations по порядку.
       - run: npx supabase db start
-      - name: Проверка app_health() от имени роли anon
-        run: |
-          psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 \
-            -c "set role anon; select public.app_health();"
+      - name: SQL-проверки (модель данных, права доступа)
+        run: scripts/db/run-tests.sh
       - run: npx supabase db lint --local --level warning --fail-on warning
       - if: always()
         run: npx supabase stop --no-backup
