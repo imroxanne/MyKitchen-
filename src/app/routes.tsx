@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { RouteObject } from 'react-router'
 import { Layout } from './Layout'
 import { sections } from './sections'
+import { FavoritesPage } from '../features/favorites/FavoritesPage'
 import { PantryPage } from '../features/pantry/PantryPage'
 import { RecipePage } from '../features/recipes/RecipePage'
 import { RecipesPage } from '../features/recipes/RecipesPage'
@@ -14,6 +15,7 @@ import { NotFound } from '../pages/NotFound'
 const implemented: Record<string, ReactNode> = {
   '/': <RecipesPage />,
   '/pantry': <PantryPage />,
+  '/favorites': <FavoritesPage />,
   '/profile': <ProfilePage />,
 }
 

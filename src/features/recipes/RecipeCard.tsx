@@ -1,0 +1,56 @@
+import { Link } from 'react-router'
+import { FavoriteButton } from '../favorites/FavoriteButton'
+import type { Favorites } from '../favorites/useFavorites'
+import { explain, type RecipeMatch } from '../matching/match'
+import { describeServings, describeTime } from './present'
+import { TrustBadges } from './TrustBadges'
+
+/** Откуда открыт рецепт: кнопка «назад» на его странице возвращает туда же. */
+export interface RecipeBackState {
+  backTo: 'list' | 'favorites'
+}
+
+export function RecipeCard({
+  match,
+  usePantry,
+  favorites,
+  backTo,
+}: {
+  match: RecipeMatch
+  usePantry: boolean
+  favorites: Favorites
+  backTo: RecipeBackState['backTo']
+}) {
+  const r = match.recipe
+  const notes = explain(match, usePantry)
+  return (
+    <li className="recipe-card-item">
+      {/* Вся карточка — ссылка на рецепт (ТЗ §8); сердечко — отдельная кнопка поверх. */}
+      <Link
+        to={`/recipes/${r.id}`}
+        state={{ backTo } satisfies RecipeBackState}
+        className="recipe-card"
+      >
+        <span className="recipe-card-title">{r.title}</span>
+        <span className="recipe-card-meta muted small">
+          {describeTime(r.prepMinutes, r.cookMinutes)} · {describeServings(r.servings)}
+          {usePantry && ` · есть ${match.availableCount} из ${match.requiredCount}`}
+        </span>
+        {notes.length > 0 && (
+          <span className="recipe-card-notes">
+            {notes.map((note) => (
+              <span
+                key={note}
+                className={note.startsWith('Не хватает') ? 'note-missing' : 'note-ok'}
+              >
+                {note}
+              </span>
+            ))}
+          </span>
+        )}
+        <TrustBadges trust={r.trust} />
+      </Link>
+      <FavoriteButton favorites={favorites} recipeId={r.id} title={r.title} />
+    </li>
+  )
+}

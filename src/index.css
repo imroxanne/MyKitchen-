@@ -673,3 +673,80 @@ button.link {
   color: var(--danger);
   font-weight: 600;
 }
+
+/* Избранное и экран рецепта (A6). */
+.recipe-card-item {
+  position: relative;
+}
+
+/* Место под сердечко в правом верхнем углу карточки. */
+.recipe-card-item .recipe-card {
+  padding-right: 3.5rem;
+}
+
+.fav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.fav-icon {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  justify-content: center;
+  border: none;
+  background: none;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.fav-heart {
+  color: var(--muted);
+}
+
+.fav-on {
+  color: var(--danger);
+}
+
+.fav-text[aria-pressed='true'] {
+  border-color: var(--danger);
+}
+
+.recipe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 0.25rem;
+}
+
+.steps .step label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  cursor: pointer;
+}
+
+.steps .step input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+.step-done span {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.steps-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}

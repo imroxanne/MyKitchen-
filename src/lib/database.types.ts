@@ -9,6 +9,20 @@ export type Database = {
   }
   public: {
     Tables: {
+      favorite_recipes: {
+        Row: { created_at: string; recipe_id: number; user_id: string }
+        Insert: { created_at?: string; recipe_id: number; user_id?: string }
+        Update: { created_at?: string; recipe_id?: number; user_id?: string }
+        Relationships: [
+          {
+            foreignKeyName: 'favorite_recipes_recipe_id_fkey'
+            columns: ['recipe_id']
+            isOneToOne: false
+            referencedRelation: 'recipes'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       ingredient_categories: {
         Row: { name: string; slug: string; sort: number }
         Insert: { name: string; slug: string; sort?: number }

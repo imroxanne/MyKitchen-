@@ -1,10 +1,12 @@
 import type { Session } from '@supabase/supabase-js'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { flushSync } from 'react-dom'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
 import { AuthContext } from '../auth/authContext'
+import { FavoritesPage } from '../favorites/FavoritesPage'
+import { createMemoryFavoritesApi } from '../../test/memoryFavoritesApi'
 import { createMemoryPantryApi, testCatalog } from '../../test/memoryPantryApi'
 import {
   createMemoryRecipesApi,
@@ -21,6 +23,7 @@ const session = { user: { id: 'u1', email: 'owner@example.test' } } as unknown a
 function renderAt(
   path: string,
   products: Omit<UserProduct, 'id' | 'kind' | 'expiresOn' | 'isExcluded'>[] = [],
+  favorites = createMemoryFavoritesApi(),
 ) {
   const api = createMemoryRecipesApi([openLicenseRecipe, unverifiedRecipe, milkRecipe])
   const pantry = createMemoryPantryApi(testCatalog)
@@ -35,8 +38,18 @@ function renderAt(
   )
   const router = createMemoryRouter(
     [
-      { path: '/', element: <RecipesPage api={api} pantryApi={pantry.api} /> },
-      { path: '/recipes/:id', element: <RecipePage api={api} pantryApi={pantry.api} /> },
+      {
+        path: '/',
+        element: <RecipesPage api={api} pantryApi={pantry.api} favoritesApi={favorites.api} />,
+      },
+      {
+        path: '/recipes/:id',
+        element: <RecipePage api={api} pantryApi={pantry.api} favoritesApi={favorites.api} />,
+      },
+      {
+        path: '/favorites',
+        element: <FavoritesPage api={api} pantryApi={pantry.api} favoritesApi={favorites.api} />,
+      },
     ],
     { initialEntries: [path] },
   )
@@ -199,5 +212,111 @@ describe('подбор по продуктам и фильтры', () => {
     expect(await within(ingredients).findByText(/Не хватает: Морковь/)).toBeInTheDocument()
     expect(within(ingredients).getByText('есть, количество не сравнивалось')).toBeInTheDocument()
     expect(within(ingredients).getByText('нет')).toBeInTheDocument()
+  })
+})
+
+describe('избранное, возврат к списку, шаги', () => {
+  it('сердечко на карточке сохраняет рецепт, не открывая его', async () => {
+    const user = userEvent.setup()
+    const favorites = createMemoryFavoritesApi()
+    const router = renderAt('/', [], favorites)
+    const heart = await screen.findByRole('button', { name: 'В избранное: Тестовый суп' })
+    await waitFor(() => expect(heart).toBeEnabled())
+    expect(heart).toHaveAttribute('aria-pressed', 'false')
+
+    await user.click(heart)
+    expect(heart).toHaveAttribute('aria-pressed', 'true')
+    expect(router.state.location.pathname).toBe('/')
+    await waitFor(() => expect(favorites.store.ids).toEqual([1]))
+
+    // Карточка по-прежнему открывается нажатием.
+    await user.click(screen.getByRole('link', { name: /Тестовый суп/ }))
+    expect(await screen.findByRole('heading', { level: 1, name: 'Тестовый суп' })).toBeVisible()
+  })
+
+  it('избранное внутри рецепта и на экране «Избранное»; назад — в избранное', async () => {
+    const user = userEvent.setup()
+    const favorites = createMemoryFavoritesApi()
+    const router = renderAt('/favorites', [], favorites)
+    expect(await screen.findByText('В избранном пока ничего нет.')).toBeInTheDocument()
+
+    await router.navigate('/recipes/3')
+    const button = await screen.findByRole('button', { name: 'В избранное' })
+    await waitFor(() => expect(button).toBeEnabled())
+    await user.click(button)
+    expect(button).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByText('Рецепт сохранён в избранном.')).toBeInTheDocument()
+    await waitFor(() => expect(favorites.store.ids).toEqual([3]))
+
+    await router.navigate('/favorites')
+    const list = await screen.findByRole('list', { name: 'Избранные рецепты' })
+    const card = within(list).getByRole('link', { name: /Тестовая молочная каша/ })
+    await user.click(card)
+    await screen.findByRole('heading', { level: 1, name: 'Тестовая молочная каша' })
+    await user.click(screen.getByRole('link', { name: '← Избранное' }))
+    expect(await screen.findByRole('list', { name: 'Избранные рецепты' })).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/favorites')
+
+    // Убранный рецепт остаётся на экране до ухода — нажатие можно отменить.
+    await user.click(screen.getByRole('button', { name: 'В избранное: Тестовая молочная каша' }))
+    await waitFor(() => expect(favorites.store.ids).toEqual([]))
+    expect(screen.getByRole('status')).toHaveTextContent('Сохранено: 0')
+    expect(screen.getByRole('link', { name: /Тестовая молочная каша/ })).toBeInTheDocument()
+  })
+
+  it('ошибка сохранения: сердечко возвращается, причина показана', async () => {
+    const user = userEvent.setup()
+    const favorites = createMemoryFavoritesApi()
+    favorites.store.failNext = true
+    renderAt('/', [], favorites)
+    const heart = await screen.findByRole('button', { name: 'В избранное: Тестовый суп' })
+    await waitFor(() => expect(heart).toBeEnabled())
+    await user.click(heart)
+    expect(await screen.findByRole('alert')).toHaveTextContent('не удалось сохранить избранное')
+    expect(heart).toHaveAttribute('aria-pressed', 'false')
+    expect(favorites.store.ids).toEqual([])
+  })
+
+  it('«назад» из рецепта возвращает к списку с теми же фильтрами', async () => {
+    const user = userEvent.setup()
+    const router = renderAt('/?mode=ignore&meal=breakfast')
+    expect(await listTitles()).toEqual(['Тестовая молочная каша'])
+    await user.click(screen.getByRole('link', { name: /Тестовая молочная каша/ }))
+    await screen.findByRole('heading', { level: 1, name: 'Тестовая молочная каша' })
+    await user.click(screen.getByRole('link', { name: '← Все рецепты' }))
+    expect(await listTitles()).toEqual(['Тестовая молочная каша'])
+    expect(router.state.location.search).toBe('?mode=ignore&meal=breakfast')
+  })
+
+  it('по прямой ссылке «назад» ведёт к списку рецептов', async () => {
+    const user = userEvent.setup()
+    const router = renderAt('/recipes/1')
+    await screen.findByRole('heading', { level: 1, name: 'Тестовый суп' })
+    await user.click(screen.getByRole('link', { name: '← Все рецепты' }))
+    expect(await screen.findByRole('list', { name: 'Рецепты' })).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/')
+  })
+
+  it('шаги приготовления отмечаются, переживают уход со страницы и сбрасываются', async () => {
+    const user = userEvent.setup()
+    const router = renderAt('/recipes/1')
+    const reopen = async () => {
+      await router.navigate('/')
+      await screen.findByRole('list', { name: 'Рецепты' })
+      await router.navigate('/recipes/1')
+      return screen.findByRole('region', { name: 'Приготовление' })
+    }
+    let steps = await screen.findByRole('region', { name: 'Приготовление' })
+    expect(steps).toHaveTextContent('Выполнено шагов: 0 из 2')
+    await user.click(within(steps).getByRole('checkbox', { name: /Нарезать свёклу/ }))
+    expect(steps).toHaveTextContent('Выполнено шагов: 1 из 2')
+
+    steps = await reopen()
+    expect(within(steps).getByRole('checkbox', { name: /Нарезать свёклу/ })).toBeChecked()
+    await user.click(within(steps).getByRole('button', { name: 'Сбросить отметки' }))
+    expect(steps).toHaveTextContent('Выполнено шагов: 0 из 2')
+
+    steps = await reopen()
+    expect(within(steps).getByRole('checkbox', { name: /Нарезать свёклу/ })).not.toBeChecked()
   })
 })

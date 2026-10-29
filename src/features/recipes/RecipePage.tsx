@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { RequireAuth } from '../auth/RequireAuth'
+import { FavoriteButton } from '../favorites/FavoriteButton'
+import type { FavoritesApi } from '../favorites/types'
+import { useFavorites, useFavoritesApi, type Favorites } from '../favorites/useFavorites'
 import {
   indexPantry,
   ingredientAvailability,
@@ -21,23 +24,58 @@ import {
   RIGHTS_LABEL,
   sourceSiteName,
 } from './present'
+import { CookingSteps } from './CookingSteps'
+import type { RecipeBackState } from './RecipeCard'
 import { TrustBadges } from './TrustBadges'
 import type { RecipeDetail, RecipesApi, RecipeSource } from './types'
 import { useRecipesApi } from './useRecipesApi'
 
-export function RecipePage({ api, pantryApi }: { api?: RecipesApi; pantryApi?: PantryApi }) {
+export function RecipePage({
+  api,
+  pantryApi,
+  favoritesApi,
+}: {
+  api?: RecipesApi
+  pantryApi?: PantryApi
+  favoritesApi?: FavoritesApi
+}) {
   const effectiveApi = useRecipesApi(api)
   const pantry = usePantryApi(pantryApi)
+  const favorites = useFavorites(useFavoritesApi(favoritesApi))
   const { id } = useParams()
   return (
     <article>
-      <p>
-        <Link to="/">← Все рецепты</Link>
-      </p>
+      <BackLink />
       <RequireAuth>
-        {effectiveApi && <RecipeView api={effectiveApi} pantryApi={pantry} id={Number(id)} />}
+        {effectiveApi && (
+          <RecipeView api={effectiveApi} pantryApi={pantry} favorites={favorites} id={Number(id)} />
+        )}
       </RequireAuth>
     </article>
+  )
+}
+
+/**
+ * Если рецепт открыт из списка или избранного — «назад» по истории: сохраняются фильтры
+ * и место прокрутки. По прямой ссылке — обычный переход к списку.
+ */
+function BackLink() {
+  const backTo = (useLocation().state as RecipeBackState | null)?.backTo
+  const navigate = useNavigate()
+  const fromFavorites = backTo === 'favorites'
+  return (
+    <p>
+      <Link
+        to={fromFavorites ? '/favorites' : '/'}
+        onClick={(e) => {
+          if (!backTo) return
+          e.preventDefault()
+          navigate(-1)
+        }}
+      >
+        {fromFavorites ? '← Избранное' : '← Все рецепты'}
+      </Link>
+    </p>
   )
 }
 
@@ -58,13 +96,16 @@ const AVAILABILITY: Record<Availability, { label: string; tone: string } | null>
 function RecipeView({
   api,
   pantryApi,
+  favorites,
   id,
 }: {
   api: RecipesApi
   pantryApi: PantryApi | null
+  favorites: Favorites
   id: number
 }) {
   const [state, setState] = useState<State>({ status: 'loading' })
+  const [favoriteNote, setFavoriteNote] = useState('')
   // Запасы нужны только для отметок «есть/нет»; без них рецепт всё равно показывается.
   const [pantry, setPantry] = useState<PantryIndex | null>(null)
 
@@ -123,11 +164,29 @@ function RecipeView({
     <>
       <h1>{r.title}</h1>
       <TrustBadges trust={r.trust} detailed />
-      {r.source?.url && (
-        <p>
+
+      <div className="recipe-actions" role="group" aria-label="Действия с рецептом">
+        <FavoriteButton
+          favorites={favorites}
+          recipeId={r.id}
+          title={r.title}
+          withText
+          onToggle={(on) =>
+            setFavoriteNote(on ? 'Рецепт сохранён в избранном.' : 'Рецепт убран из избранного.')
+          }
+        />
+        {r.source?.url && (
           <a className="button-link" href={r.source.url} target="_blank" rel="noopener noreferrer">
             Открыть оригинал ({sourceSiteName(r.source)}) ↗
           </a>
+        )}
+      </div>
+      <p className="muted small" role="status">
+        {favorites.error ? '' : favoriteNote}
+      </p>
+      {favorites.error && (
+        <p className="error small" role="alert">
+          {favorites.error}
         </p>
       )}
 
@@ -188,19 +247,7 @@ function RecipeView({
         </ul>
       </section>
 
-      <section className="card" aria-labelledby="steps-title">
-        <h2 id="steps-title">Приготовление</h2>
-        <ol className="steps">
-          {r.steps.map((step) => (
-            <li key={step.position}>
-              {step.instruction}
-              {step.durationMinutes !== null && (
-                <span className="muted small"> ({formatMinutes(step.durationMinutes)})</span>
-              )}
-            </li>
-          ))}
-        </ol>
-      </section>
+      <CookingSteps recipeId={r.id} steps={r.steps} />
 
       {r.source && <SourceBlock source={r.source} adaptationNote={r.adaptationNote} />}
     </>

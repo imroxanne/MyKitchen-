@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useLocation } from 'react-router'
+import { NavLink, Outlet, ScrollRestoration, useLocation } from 'react-router'
 import { sections } from './sections'
 import { config } from '../lib/env'
 
@@ -21,6 +21,8 @@ export function Layout() {
       <main className="content" id="main">
         <Outlet />
       </main>
+      {/* Новый экран открывается сверху; «назад» возвращает прежнюю прокрутку. */}
+      <ScrollRestoration />
 
       <nav className="tabbar" aria-label="Разделы">
         {sections.map((section) => (

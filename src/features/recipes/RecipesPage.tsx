@@ -1,14 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { RequireAuth } from '../auth/RequireAuth'
-import {
-  explain,
-  indexPantry,
-  selectRecipes,
-  type Filters,
-  type Pantry,
-  type RecipeMatch,
-} from '../matching/match'
+import { useFavorites, useFavoritesApi, useUserId } from '../favorites/useFavorites'
+import type { FavoritesApi } from '../favorites/types'
+import { indexPantry, selectRecipes, type Filters, type Pantry } from '../matching/match'
 import {
   MEAL_LABELS,
   MEAL_TYPES,
@@ -18,41 +13,74 @@ import {
 } from '../matching/filtersUrl'
 import { loadPantry, usePantryApi } from '../matching/usePantry'
 import type { PantryApi } from '../pantry/types'
-import { describeServings, describeTime } from './present'
-import { TrustBadges } from './TrustBadges'
+import { createLastLoaded } from '../../lib/lastLoaded'
+import { RecipeCard } from './RecipeCard'
 import type { RecipesApi, RecipeSummary } from './types'
 import { useRecipesApi } from './useRecipesApi'
 
-export function RecipesPage({ api, pantryApi }: { api?: RecipesApi; pantryApi?: PantryApi }) {
+export function RecipesPage({
+  api,
+  pantryApi,
+  favoritesApi,
+}: {
+  api?: RecipesApi
+  pantryApi?: PantryApi
+  favoritesApi?: FavoritesApi
+}) {
   const recipes = useRecipesApi(api)
   const pantry = usePantryApi(pantryApi)
+  const favorites = useFavoritesApi(favoritesApi)
   return (
     <section aria-labelledby="recipes-title">
       <h1 id="recipes-title">Что приготовить</h1>
       <RequireAuth>
-        {recipes && pantry && <RecipeFinder recipesApi={recipes} pantryApi={pantry} />}
+        {recipes && pantry && (
+          <RecipeFinder recipesApi={recipes} pantryApi={pantry} favoritesApi={favorites} />
+        )}
       </RequireAuth>
     </section>
   )
 }
 
+type Loaded = { recipes: RecipeSummary[]; pantry: Pantry }
 type State =
-  | { status: 'loading' }
-  | { status: 'error'; message: string }
-  | { status: 'ready'; recipes: RecipeSummary[]; pantry: Pantry }
+  { status: 'loading' } | { status: 'error'; message: string } | ({ status: 'ready' } & Loaded)
 
-function RecipeFinder({ recipesApi, pantryApi }: { recipesApi: RecipesApi; pantryApi: PantryApi }) {
-  const [state, setState] = useState<State>({ status: 'loading' })
+const lastLoaded = createLastLoaded<RecipesApi, Loaded>()
+
+function RecipeFinder({
+  recipesApi,
+  pantryApi,
+  favoritesApi,
+}: {
+  recipesApi: RecipesApi
+  pantryApi: PantryApi
+  favoritesApi: FavoritesApi | null
+}) {
+  const userId = useUserId()
+  const [state, setState] = useState<State>(() => {
+    const cached = lastLoaded.get(recipesApi, userId)
+    return cached ? { status: 'ready', ...cached } : { status: 'loading' }
+  })
   const [params, setParams] = useSearchParams()
+  const favorites = useFavorites(favoritesApi)
 
   const fetchData = useCallback(
     () =>
       Promise.all([recipesApi.listRecipes(), loadPantry(pantryApi)]).then(
-        ([recipes, pantry]) => setState({ status: 'ready', recipes, pantry }),
+        ([recipes, pantry]) => {
+          lastLoaded.set(recipesApi, userId, { recipes, pantry })
+          setState({ status: 'ready', recipes, pantry })
+        },
+        // Если список уже показан (из прошлой загрузки), ошибка обновления его не скрывает.
         (e: unknown) =>
-          setState({ status: 'error', message: e instanceof Error ? e.message : String(e) }),
+          setState((prev) =>
+            prev.status === 'ready'
+              ? prev
+              : { status: 'error', message: e instanceof Error ? e.message : String(e) },
+          ),
       ),
-    [recipesApi, pantryApi],
+    [recipesApi, pantryApi, userId],
   )
 
   useEffect(() => {
@@ -85,7 +113,12 @@ function RecipeFinder({ recipesApi, pantryApi }: { recipesApi: RecipesApi; pantr
   // flushSync: иначе роутер применяет адрес в переходе (transition), и управляемые переключатели
   // и поле поиска на мгновение откатываются — на медленном телефоне теряется нажатие или буква.
   const update = (patch: Partial<Filters>, replace = false) =>
-    setParams(serializeFilters({ ...filters, ...patch }), { replace, flushSync: true })
+    setParams(serializeFilters({ ...filters, ...patch }), {
+      replace,
+      flushSync: true,
+      // Смена фильтра не прокручивает страницу наверх.
+      preventScrollReset: true,
+    })
   const { matches, hiddenUnknownTime } = selectRecipes(state.recipes, index, filters)
   const usePantry = filters.mode !== 'ignore'
 
@@ -95,8 +128,16 @@ function RecipeFinder({ recipesApi, pantryApi }: { recipesApi: RecipesApi; pantr
         filters={filters}
         onChange={update}
         pantryEmpty={index.isEmpty}
-        onReset={() => setParams(new URLSearchParams(), { flushSync: true })}
+        onReset={() =>
+          setParams(new URLSearchParams(), { flushSync: true, preventScrollReset: true })
+        }
       />
+
+      {favorites.error && (
+        <p className="error small" role="alert">
+          {favorites.error}
+        </p>
+      )}
 
       <p className="muted small" role="status">
         Найдено: {matches.length}
@@ -115,38 +156,17 @@ function RecipeFinder({ recipesApi, pantryApi }: { recipesApi: RecipesApi; pantr
       ) : (
         <ul className="recipe-list" aria-label="Рецепты">
           {matches.map((m) => (
-            <li key={m.recipe.id}>
-              <RecipeCard match={m} usePantry={usePantry} />
-            </li>
+            <RecipeCard
+              key={m.recipe.id}
+              match={m}
+              usePantry={usePantry}
+              favorites={favorites}
+              backTo="list"
+            />
           ))}
         </ul>
       )}
     </>
-  )
-}
-
-function RecipeCard({ match, usePantry }: { match: RecipeMatch; usePantry: boolean }) {
-  const r = match.recipe
-  const notes = explain(match, usePantry)
-  return (
-    // Вся карточка — ссылка на рецепт (ТЗ §8).
-    <Link to={`/recipes/${r.id}`} className="recipe-card">
-      <span className="recipe-card-title">{r.title}</span>
-      <span className="recipe-card-meta muted small">
-        {describeTime(r.prepMinutes, r.cookMinutes)} · {describeServings(r.servings)}
-        {usePantry && ` · есть ${match.availableCount} из ${match.requiredCount}`}
-      </span>
-      {notes.length > 0 && (
-        <span className="recipe-card-notes">
-          {notes.map((note) => (
-            <span key={note} className={note.startsWith('Не хватает') ? 'note-missing' : 'note-ok'}>
-              {note}
-            </span>
-          ))}
-        </span>
-      )}
-      <TrustBadges trust={r.trust} />
-    </Link>
   )
 }
 
