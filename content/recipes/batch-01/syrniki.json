@@ -1,0 +1,116 @@
+{
+  "slug": "syrniki",
+  "title": "Сырники",
+  "description": "Творожные лепёшки, обжаренные в панировке.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Сырники",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Сырники",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%A1%D1%8B%D1%80%D0%BD%D0%B8%D0%BA%D0%B8&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "254063",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «Сырники 1» со страницы; шаги пересказаны своими словами, количества — как в источнике.",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 254063."
+  },
+  "cuisine": null,
+  "mealTypes": ["breakfast"],
+  "cookingMethods": ["жарка"],
+  "equipment": ["сковорода"],
+  "tags": [],
+  "prepMinutes": null,
+  "cookMinutes": null,
+  "difficulty": null,
+  "servings": null,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Творог",
+      "quantity": 500,
+      "unit": "g",
+      "text": null,
+      "importance": "key",
+      "note": null
+    },
+    {
+      "ingredient": "Яйцо куриное",
+      "quantity": 1,
+      "unit": "pcs",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Соль",
+      "quantity": 1,
+      "unit": "pinch",
+      "text": null,
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Сахар",
+      "quantity": 2,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Манная крупа",
+      "quantity": 2,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Мука пшеничная",
+      "quantity": 1,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Панировочные сухари",
+      "quantity": null,
+      "unit": null,
+      "text": "для обваливания",
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Масло подсолнечное",
+      "quantity": null,
+      "unit": null,
+      "text": "для обжаривания",
+      "importance": "main",
+      "note": "любое растительное"
+    }
+  ],
+  "steps": [
+    {
+      "text": "Смешать творог, яйцо, соль, сахар, манную крупу и муку, вымесить однородную массу.",
+      "minutes": null
+    },
+    {
+      "text": "Сформовать из массы сырники и обвалять их в панировочных сухарях.",
+      "minutes": null
+    },
+    {
+      "text": "Обжарить с двух сторон на растительном масле на среднем огне.",
+      "minutes": null
+    },
+    {
+      "text": "Подавать со сметаной, вареньем или сиропом.",
+      "minutes": null
+    }
+  ]
+}

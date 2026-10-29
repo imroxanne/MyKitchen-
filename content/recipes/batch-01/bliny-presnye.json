@@ -1,0 +1,104 @@
+{
+  "slug": "bliny-presnye",
+  "title": "Блины на пресном тесте",
+  "description": "Тонкие блины на молоке со взбитыми белками.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Блины",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Блины",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%91%D0%BB%D0%B8%D0%BD%D1%8B&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "270074",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «Пресное тесто для блинов» со страницы; шаги пересказаны своими словами, количества — как в источнике. Жир для сковороды в этом варианте источника не указан. Стакан — бытовая мера, около 250 мл.",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 270074."
+  },
+  "cuisine": null,
+  "mealTypes": ["breakfast"],
+  "cookingMethods": ["жарка"],
+  "equipment": ["сковорода", "миска"],
+  "tags": [],
+  "prepMinutes": null,
+  "cookMinutes": null,
+  "difficulty": null,
+  "servings": null,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Яйцо куриное",
+      "quantity": 5,
+      "unit": "pcs",
+      "text": null,
+      "importance": "key",
+      "note": "желтки и белки отдельно"
+    },
+    {
+      "ingredient": "Молоко",
+      "quantity": 3,
+      "unit": "cup",
+      "text": null,
+      "importance": "key",
+      "note": null
+    },
+    {
+      "ingredient": "Масло сливочное",
+      "quantity": 50,
+      "unit": "g",
+      "text": null,
+      "importance": "main",
+      "note": "растопленное"
+    },
+    {
+      "ingredient": "Сахар",
+      "quantity": null,
+      "unit": null,
+      "text": "1–2 ст. л.",
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Соль",
+      "quantity": null,
+      "unit": null,
+      "text": "неполная ч. л.",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Мука пшеничная",
+      "quantity": 2,
+      "unit": "cup",
+      "text": null,
+      "importance": "key",
+      "note": null
+    }
+  ],
+  "steps": [
+    {
+      "text": "Взбить желтки.",
+      "minutes": null
+    },
+    {
+      "text": "Добавить к желткам молоко, растопленное сливочное масло, сахар и соль.",
+      "minutes": null
+    },
+    {
+      "text": "Непрерывно перемешивая, всыпать муку. Источник советует наоборот — вливать жидкость в муку тонкой струйкой, чтобы не было комков.",
+      "minutes": null
+    },
+    {
+      "text": "Ввести в тесто отдельно взбитые белки и снова перемешать.",
+      "minutes": null
+    },
+    {
+      "text": "Выпекать блины тонким слоем на хорошо разогретой сковороде.",
+      "minutes": null
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "slug": "gorohovyi-sup",
+  "title": "Гороховый суп",
+  "description": "Суп из гороха на мясном бульоне с обжаренными кореньями.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Гороховый суп",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Гороховый_суп",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%93%D0%BE%D1%80%D0%BE%D1%85%D0%BE%D0%B2%D1%8B%D0%B9_%D1%81%D1%83%D0%BF&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "253295",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «Гороховый суп 1» со страницы; шаги пересказаны своими словами, количества — как в источнике. на странице Викиучебника вариант приводится по «Книге о вкусной и здоровой пище» (1952). «Коренья и лук» указаны в источнике общей массой 200 г; количество воды для бульона не указано.",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 253295; количество воды в источнике не указано."
+  },
+  "cuisine": null,
+  "mealTypes": ["lunch"],
+  "cookingMethods": ["варка"],
+  "equipment": ["кастрюля", "сковорода"],
+  "tags": [],
+  "prepMinutes": null,
+  "cookMinutes": 90,
+  "difficulty": null,
+  "servings": null,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Мясо (любое)",
+      "quantity": 500,
+      "unit": "g",
+      "text": null,
+      "importance": "main",
+      "note": "для бульона"
+    },
+    {
+      "ingredient": "Горох колотый",
+      "quantity": 250,
+      "unit": "g",
+      "text": null,
+      "importance": "key",
+      "note": "замоченный заранее"
+    },
+    {
+      "ingredient": "Морковь",
+      "quantity": null,
+      "unit": null,
+      "text": "коренья вместе с луком — 200 г",
+      "importance": "main",
+      "note": "и другие коренья"
+    },
+    {
+      "ingredient": "Лук репчатый",
+      "quantity": null,
+      "unit": null,
+      "text": "входит в 200 г кореньев и лука",
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Масло сливочное",
+      "quantity": 2,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": "в источнике — «масло»"
+    },
+    {
+      "ingredient": "Вода",
+      "quantity": null,
+      "unit": null,
+      "text": "количество в источнике не указано",
+      "importance": "main",
+      "note": "для бульона"
+    },
+    {
+      "ingredient": "Соль",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Ветчина",
+      "quantity": null,
+      "unit": null,
+      "text": "по желанию",
+      "importance": "optional",
+      "note": "или копчёная грудинка"
+    },
+    {
+      "ingredient": "Хлеб пшеничный",
+      "quantity": null,
+      "unit": null,
+      "text": "для гренок",
+      "importance": "optional",
+      "note": null
+    }
+  ],
+  "steps": [
+    {
+      "text": "Сварить мясной бульон.",
+      "minutes": null
+    },
+    {
+      "text": "Положить в бульон замоченный заранее горох и варить около полутора часов.",
+      "minutes": 90
+    },
+    {
+      "text": "Промыть и очистить коренья и лук, нарезать мелкими кубиками и слегка обжарить на масле.",
+      "minutes": null
+    },
+    {
+      "text": "За 15–20 минут до готовности добавить обжаренные овощи в суп и посолить. По желанию можно варить суп с ветчиной или копчёной грудинкой.",
+      "minutes": 15
+    },
+    {
+      "text": "Подавать с гренками из белого хлеба, нарезанного кубиками.",
+      "minutes": null
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "slug": "olive",
+  "title": "Оливье (мясной салат)",
+  "description": "Салат из мяса, картофеля, яиц и огурцов под майонезом. Часто добавляют варёную колбасу вместо мяса, морковь, горошек и лук — в источнике это отмечено как распространённые добавки.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Оливье",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Оливье",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%9E%D0%BB%D0%B8%D0%B2%D1%8C%D0%B5&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "270348",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «Основной рецепт» со страницы; шаги пересказаны своими словами, количества — как в источнике. На странице рецепт приводится по «Краткой энциклопедии домашнего хозяйства» (1959), «примерно на 4 порции».",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 270348."
+  },
+  "cuisine": null,
+  "mealTypes": ["lunch", "dinner"],
+  "cookingMethods": [],
+  "equipment": ["салатник"],
+  "tags": ["салат"],
+  "prepMinutes": null,
+  "cookMinutes": null,
+  "difficulty": null,
+  "servings": 4,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Мясо (любое)",
+      "quantity": 200,
+      "unit": "g",
+      "text": null,
+      "importance": "key",
+      "note": "отварное или жареное"
+    },
+    {
+      "ingredient": "Картофель",
+      "quantity": 200,
+      "unit": "g",
+      "text": null,
+      "importance": "key",
+      "note": "отварной"
+    },
+    {
+      "ingredient": "Яйцо куриное",
+      "quantity": 2,
+      "unit": "pcs",
+      "text": null,
+      "importance": "main",
+      "note": "варёные"
+    },
+    {
+      "ingredient": "Огурец",
+      "quantity": 2,
+      "unit": "pcs",
+      "text": null,
+      "importance": "main",
+      "note": "свежие или солёные"
+    },
+    {
+      "ingredient": "Майонез",
+      "quantity": 150,
+      "unit": "g",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Салат листовой",
+      "quantity": null,
+      "unit": null,
+      "text": "для украшения",
+      "importance": "optional",
+      "note": "латук"
+    },
+    {
+      "ingredient": "Соль",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    }
+  ],
+  "steps": [
+    {
+      "text": "Нарезать мясо, картофель (немного крупнее), огурцы и часть яиц тонкими ломтиками.",
+      "minutes": null
+    },
+    {
+      "text": "Посолить, заправить майонезом и аккуратно перемешать.",
+      "minutes": null
+    },
+    {
+      "text": "Выложить в салатник горкой и украсить листьями латука, дольками яйца, огурца и кусочками мяса.",
+      "minutes": null
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "slug": "tefteli-v-tomate",
+  "title": "Тефтели в томате",
+  "description": "Мясные шарики, обжаренные и потушенные в томатном соусе.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Тефтели",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Тефтели",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%A2%D0%B5%D1%84%D1%82%D0%B5%D0%BB%D0%B8&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "254093",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «Тефтели 1 («Тефтели в томате»)» со страницы; шаги пересказаны своими словами, количества — как в источнике. на странице Викиучебника вариант приводится по «Книге о вкусной и здоровой пище» (1952). Вид мяса не уточнён («мякоть»); белый хлеб входит в норму для фарша. «Масло» — так в источнике.",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 254093."
+  },
+  "cuisine": null,
+  "mealTypes": ["lunch", "dinner"],
+  "cookingMethods": ["жарка", "тушение"],
+  "equipment": ["сковорода", "кастрюля"],
+  "tags": [],
+  "prepMinutes": null,
+  "cookMinutes": 20,
+  "difficulty": null,
+  "servings": null,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Мясо (любое)",
+      "quantity": 500,
+      "unit": "g",
+      "text": null,
+      "importance": "key",
+      "note": "мякоть, для фарша"
+    },
+    {
+      "ingredient": "Хлеб пшеничный",
+      "quantity": 100,
+      "unit": "g",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Лук зелёный",
+      "quantity": 100,
+      "unit": "g",
+      "text": null,
+      "importance": "main",
+      "note": "или 1 головка репчатого лука"
+    },
+    {
+      "ingredient": "Мука пшеничная",
+      "quantity": 2,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Масло сливочное",
+      "quantity": 2,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": "в источнике — «масло»"
+    },
+    {
+      "ingredient": "Томат-пюре",
+      "quantity": 0.5,
+      "unit": "cup",
+      "text": null,
+      "importance": "key",
+      "note": null
+    },
+    {
+      "ingredient": "Бульон",
+      "quantity": 1,
+      "unit": "cup",
+      "text": null,
+      "importance": "main",
+      "note": "мясной"
+    },
+    {
+      "ingredient": "Лавровый лист",
+      "quantity": null,
+      "unit": null,
+      "text": "1–2 листа",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Перец чёрный горошком",
+      "quantity": null,
+      "unit": null,
+      "text": "5–6 горошин",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Чеснок",
+      "quantity": null,
+      "unit": null,
+      "text": "2–3 зубчика",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Соль",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Соус томатный острый",
+      "quantity": 1,
+      "unit": "tsp",
+      "text": null,
+      "importance": "optional",
+      "note": null
+    },
+    {
+      "ingredient": "Петрушка",
+      "quantity": null,
+      "unit": null,
+      "text": "для подачи",
+      "importance": "optional",
+      "note": null
+    }
+  ],
+  "steps": [
+    {
+      "text": "Приготовить мясной фарш, добавить мелко нарезанный зелёный лук (или натёртую головку репчатого) и хорошо перемешать.",
+      "minutes": null
+    },
+    {
+      "text": "Сформовать шарики по 20–30 г, обвалять в муке и обжарить со всех сторон в масле на разогретой сковороде.",
+      "minutes": null
+    },
+    {
+      "text": "Переложить тефтели в неглубокую кастрюлю, добавить томат-пюре, бульон, лавровый лист, перец горошком и растёртый с солью чеснок.",
+      "minutes": null
+    },
+    {
+      "text": "Накрыть крышкой и тушить на слабом огне 10–20 минут.",
+      "minutes": 20
+    },
+    {
+      "text": "Посолить, добавить ложечку острого томатного соуса. Подавать, посыпав рубленой петрушкой, с рисом, гречкой или картофелем.",
+      "minutes": null
+    }
+  ]
+}

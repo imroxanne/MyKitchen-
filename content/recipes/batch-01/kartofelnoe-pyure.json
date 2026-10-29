@@ -1,0 +1,84 @@
+{
+  "slug": "kartofelnoe-pyure",
+  "title": "Картофельное пюре",
+  "description": "Пюре из отварного картофеля с маслом и горячим молоком.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Картофельное пюре",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Картофельное_пюре",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%9A%D0%B0%D1%80%D1%82%D0%BE%D1%84%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5_%D0%BF%D1%8E%D1%80%D0%B5&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "253404",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «Картофельное пюре 1» со страницы; шаги пересказаны своими словами, количества — как в источнике. на странице Викиучебника вариант приводится по «Книге о вкусной и здоровой пище» (1952). В источнике — «масло»; по смыслу рецепта это сливочное. Соль — по вкусу, без количества.",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 253404."
+  },
+  "cuisine": null,
+  "mealTypes": ["lunch", "dinner"],
+  "cookingMethods": ["варка"],
+  "equipment": ["кастрюля", "толкушка или сито"],
+  "tags": [],
+  "prepMinutes": null,
+  "cookMinutes": null,
+  "difficulty": null,
+  "servings": null,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Картофель",
+      "quantity": 1,
+      "unit": "kg",
+      "text": null,
+      "importance": "key",
+      "note": null
+    },
+    {
+      "ingredient": "Молоко",
+      "quantity": 1,
+      "unit": "cup",
+      "text": null,
+      "importance": "main",
+      "note": "горячее"
+    },
+    {
+      "ingredient": "Масло сливочное",
+      "quantity": 2,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Соль",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    }
+  ],
+  "steps": [
+    {
+      "text": "Очищенный промытый картофель отварить и слить воду.",
+      "minutes": null
+    },
+    {
+      "text": "Подержать кастрюлю с картофелем ещё немного на слабом огне или в духовке, чтобы испарилась оставшаяся вода.",
+      "minutes": null
+    },
+    {
+      "text": "Пока картофель горячий, размять его или протереть через сито.",
+      "minutes": null
+    },
+    {
+      "text": "Добавить масло и соль и, помешивая, постепенно влить горячее молоко.",
+      "minutes": null
+    }
+  ]
+}

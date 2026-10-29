@@ -1,0 +1,140 @@
+{
+  "slug": "befstroganov",
+  "title": "Бефстроганов",
+  "description": "Говядина соломкой, обжаренная с луком и доведённая в сметане.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Бефстроганов",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Бефстроганов",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%91%D0%B5%D1%84%D1%81%D1%82%D1%80%D0%BE%D0%B3%D0%B0%D0%BD%D0%BE%D0%B2&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "253184",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «Бефстроганов 2» со страницы; шаги пересказаны своими словами, количества — как в источнике. на странице Викиучебника вариант приводится по «Книге о вкусной и здоровой пище» (1952). Соус «Южный» — фабричный острый соус советского времени. Соль и перец — по вкусу.",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 253184."
+  },
+  "cuisine": null,
+  "mealTypes": ["lunch", "dinner"],
+  "cookingMethods": ["жарка"],
+  "equipment": ["сковорода"],
+  "tags": [],
+  "prepMinutes": null,
+  "cookMinutes": 15,
+  "difficulty": null,
+  "servings": null,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Говядина",
+      "quantity": 500,
+      "unit": "g",
+      "text": null,
+      "importance": "key",
+      "note": "филейная часть, тонкий край или кострец"
+    },
+    {
+      "ingredient": "Лук репчатый",
+      "quantity": 2,
+      "unit": "pcs",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Мука пшеничная",
+      "quantity": 1,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Сметана",
+      "quantity": 0.75,
+      "unit": "cup",
+      "text": null,
+      "importance": "key",
+      "note": null
+    },
+    {
+      "ingredient": "Масло сливочное",
+      "quantity": 3,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": "в источнике — «масло»"
+    },
+    {
+      "ingredient": "Соус «Южный»",
+      "quantity": 1,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Соль",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Перец чёрный молотый",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Картофель",
+      "quantity": 1,
+      "unit": "kg",
+      "text": null,
+      "importance": "optional",
+      "note": "на гарнир, жареный"
+    },
+    {
+      "ingredient": "Укроп",
+      "quantity": null,
+      "unit": null,
+      "text": "для подачи",
+      "importance": "optional",
+      "note": "или петрушка"
+    }
+  ],
+  "steps": [
+    {
+      "text": "Мясо обмыть, зачистить от сухожилий, нарезать ломтиками, отбить и нарезать соломкой.",
+      "minutes": null
+    },
+    {
+      "text": "Нашинковать лук и обжарить на масле.",
+      "minutes": null
+    },
+    {
+      "text": "Добавить к луку мясо, посыпанное солью и перцем, и жарить 5–6 минут, помешивая.",
+      "minutes": 6
+    },
+    {
+      "text": "Посыпать мясо мукой, перемешать и жарить ещё 2–3 минуты.",
+      "minutes": 3
+    },
+    {
+      "text": "Добавить сметану, перемешать и проварить 2–3 минуты; заправить соусом «Южный» и солью по вкусу.",
+      "minutes": 3
+    },
+    {
+      "text": "Подавать с жареным картофелем, посыпав укропом или петрушкой.",
+      "minutes": null
+    }
+  ]
+}

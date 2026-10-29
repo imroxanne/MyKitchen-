@@ -1,0 +1,120 @@
+{
+  "slug": "sharlotka",
+  "title": "Шарлотка с яблоками",
+  "description": "Бисквитное тесто, запечённое со слоем яблок.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Шарлотка",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Шарлотка",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%A8%D0%B0%D1%80%D0%BB%D0%BE%D1%82%D0%BA%D0%B0&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "262456",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «Альтернативный рецепт» со страницы; шаги пересказаны своими словами, количества — как в источнике. Время выпечки в источнике — «не менее часа».",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 262456."
+  },
+  "cuisine": null,
+  "mealTypes": ["dessert"],
+  "cookingMethods": ["выпечка"],
+  "equipment": ["духовка", "форма или сковорода"],
+  "tags": [],
+  "prepMinutes": null,
+  "cookMinutes": 60,
+  "difficulty": null,
+  "servings": null,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Яйцо куриное",
+      "quantity": 3,
+      "unit": "pcs",
+      "text": null,
+      "importance": "key",
+      "note": null
+    },
+    {
+      "ingredient": "Мука пшеничная",
+      "quantity": 250,
+      "unit": "g",
+      "text": null,
+      "importance": "key",
+      "note": "1 стакан"
+    },
+    {
+      "ingredient": "Сахар",
+      "quantity": 250,
+      "unit": "g",
+      "text": null,
+      "importance": "main",
+      "note": "1 стакан"
+    },
+    {
+      "ingredient": "Сода пищевая",
+      "quantity": 0.5,
+      "unit": "tsp",
+      "text": null,
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Сметана",
+      "quantity": 2,
+      "unit": "tsp",
+      "text": null,
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Яблоко",
+      "quantity": 5,
+      "unit": "pcs",
+      "text": null,
+      "importance": "key",
+      "note": "крупные"
+    },
+    {
+      "ingredient": "Масло сливочное",
+      "quantity": null,
+      "unit": null,
+      "text": "немного, для смазки формы",
+      "importance": "minor",
+      "note": "или подсолнечное"
+    }
+  ],
+  "steps": [
+    {
+      "text": "Разогреть духовку до 150–180 °C.",
+      "minutes": null
+    },
+    {
+      "text": "Взбить яйца с сахаром, содой и сметаной.",
+      "minutes": null
+    },
+    {
+      "text": "Всыпать муку и снова взбить до однородности.",
+      "minutes": null
+    },
+    {
+      "text": "Смазать форму (часто используют сковороду) сливочным или подсолнечным маслом.",
+      "minutes": null
+    },
+    {
+      "text": "Удалить у яблок сердцевину, нарезать кубиками около 1 см и ровно распределить по дну формы слоем 1,5–2 см.",
+      "minutes": null
+    },
+    {
+      "text": "Залить яблоки тестом.",
+      "minutes": null
+    },
+    {
+      "text": "Выпекать не менее часа; готовность проверить деревянной палочкой — тесто не должно к ней прилипать.",
+      "minutes": 60
+    }
+  ]
+}

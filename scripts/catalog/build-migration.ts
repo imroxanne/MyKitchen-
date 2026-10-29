@@ -91,15 +91,19 @@ export function parseCatalog(text: string): Row[] {
 
 const sql = (value: string) => `'${value.replaceAll("'", "''")}'`
 
-export function buildMigration(rows: Row[]): string {
+export function buildMigration(
+  rows: Row[],
+  sourceFile = 'ingredients.tsv',
+  title = 'A3. Общий справочник продуктов',
+): string {
   const ingredientValues = rows
     .map((r) => `  (${sql(r.name)}, ${sql(r.category)}, ${sql(r.unit)})`)
     .join(',\n')
   const synonymValues = rows
     .flatMap((r) => r.synonyms.map((s) => `  (${sql(r.name)}, ${sql(s)})`))
     .join(',\n')
-  return `-- A3. Общий справочник продуктов: ${rows.length} позиций.
--- СГЕНЕРИРОВАНО из scripts/catalog/ingredients.tsv (node scripts/catalog/build-migration.ts).
+  return `-- ${title}: ${rows.length} позиций.
+-- СГЕНЕРИРОВАНО из scripts/catalog/${sourceFile} (node scripts/catalog/build-migration.ts).
 -- Не редактировать вручную. Только названия, категории, единицы и синонимы —
 -- пищевая ценность и масса штуки добавляются отдельно с указанием источника (A7/B1).
 
@@ -115,30 +119,66 @@ join public.ingredients i on i.name = s.name and i.owner_id is null;
 `
 }
 
+/** Повторы названий и синонимов между файлами справочника (партиями). */
+export function checkAcrossFiles(files: { name: string; rows: Row[] }[]): void {
+  const seen = new Map<string, string>()
+  const errors: string[] = []
+  for (const { name, rows } of files)
+    for (const row of rows)
+      for (const term of [row.name, ...row.synonyms]) {
+        const key = normalizeName(term)
+        const where = `${name}:${row.line}`
+        const prev = seen.get(key)
+        if (prev && prev.split(':')[0] !== name)
+          errors.push(`«${term}» (${where}) уже есть в ${prev}`)
+        seen.set(key, prev ?? where)
+      }
+  if (errors.length) throw new Error(`Повторы между партиями справочника:\n${errors.join('\n')}`)
+}
+
+/** Номер партии по имени файла: ingredients.tsv → '', ingredients-2.tsv → '_2'. */
+export function batchSuffix(file: string): string {
+  const m = /^ingredients(?:-(\d+))?\.tsv$/.exec(file)
+  if (!m) throw new Error(`Неожиданное имя файла справочника: ${file}`)
+  return m[1] ? `_${m[1]}` : ''
+}
+
 const isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]
 if (isMain) {
   const root = fileURLToPath(new URL('../../', import.meta.url))
-  const sourcePath = `${root}scripts/catalog/ingredients.tsv`
-  // Имя файла начинается с версии, под которой миграция применена к облаку; ищем по суффиксу.
+  const catalogDir = `${root}scripts/catalog/`
+  // Имя файла миграции начинается с версии, под которой она применена к облаку; ищем по суффиксу.
   const migrationsDir = `${root}supabase/migrations/`
-  const migrationFile = readdirSync(migrationsDir).find((f) =>
-    f.endsWith('_ingredient_catalog.sql'),
-  )
-  if (!migrationFile) throw new Error('Не найден файл миграции *_ingredient_catalog.sql')
-  const migrationPath = migrationsDir + migrationFile
+  const files = readdirSync(catalogDir)
+    .filter((f) => f.endsWith('.tsv'))
+    .sort((a, b) => batchSuffix(a).localeCompare(batchSuffix(b), 'en', { numeric: true }))
+  const parsed = files.map((name) => ({
+    name,
+    rows: parseCatalog(readFileSync(catalogDir + name, 'utf8')),
+  }))
+  checkAcrossFiles(parsed)
 
-  const output = buildMigration(parseCatalog(readFileSync(sourcePath, 'utf8')))
-  if (process.argv.includes('--check')) {
-    const current = readFileSync(migrationPath, 'utf8')
-    if (current !== output) {
-      console.error(
-        'Миграция справочника устарела: запустите node scripts/catalog/build-migration.ts',
-      )
-      process.exit(1)
+  for (const { name, rows } of parsed) {
+    const suffix = batchSuffix(name)
+    const title = suffix
+      ? `Справочник продуктов, дополнение ${suffix.slice(1)}`
+      : 'A3. Общий справочник продуктов'
+    const output = buildMigration(rows, name, title)
+    const migrationEnd = `_ingredient_catalog${suffix}.sql`
+    const existing = readdirSync(migrationsDir).find((f) => f.endsWith(migrationEnd))
+    if (process.argv.includes('--check')) {
+      if (!existing || readFileSync(migrationsDir + existing, 'utf8') !== output) {
+        console.error(
+          `Миграция справочника (${name}) устарела: запустите node scripts/catalog/build-migration.ts`,
+        )
+        process.exit(1)
+      }
+      console.log(`Справочник ${name}: ${rows.length} позиций, миграция актуальна`)
+    } else {
+      const stamp = new Date().toISOString().replace(/\D/g, '').slice(0, 14)
+      const path = migrationsDir + (existing ?? stamp + migrationEnd)
+      writeFileSync(path, output)
+      console.log(`Записано: ${path}`)
     }
-    console.log('Справочник продуктов: миграция актуальна')
-  } else {
-    writeFileSync(migrationPath, output)
-    console.log(`Записано: ${migrationPath}`)
   }
 }

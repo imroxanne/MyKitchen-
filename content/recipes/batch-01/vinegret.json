@@ -1,0 +1,133 @@
+{
+  "slug": "vinegret",
+  "title": "Винегрет",
+  "description": "Холодный салат из печёной свёклы и отварных овощей с растительным маслом.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Винегрет",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Винегрет",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%92%D0%B8%D0%BD%D0%B5%D0%B3%D1%80%D0%B5%D1%82&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "253274",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «Винегрет 1» со страницы; шаги пересказаны своими словами, количества — как в источнике. Источник неполный: в шагах упоминается квашеная капуста, которой нет в составе, а горошек и уксус есть в составе, но не упомянуты в шагах. Перенесено без исправлений, поэтому статус проверки источника не выставлен. В источнике указано общее время — 2 часа.",
+  "sourceCheck": null,
+  "cuisine": "русская",
+  "mealTypes": ["lunch", "dinner", "snack"],
+  "cookingMethods": [],
+  "equipment": ["духовка", "кастрюля", "фольга"],
+  "tags": ["салат"],
+  "prepMinutes": 0,
+  "cookMinutes": 120,
+  "difficulty": null,
+  "servings": 6,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Свёкла",
+      "quantity": 4,
+      "unit": "pcs",
+      "text": null,
+      "importance": "key",
+      "note": null
+    },
+    {
+      "ingredient": "Картофель",
+      "quantity": 3,
+      "unit": "pcs",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Огурцы маринованные",
+      "quantity": 4,
+      "unit": "pcs",
+      "text": null,
+      "importance": "main",
+      "note": "солёные"
+    },
+    {
+      "ingredient": "Горошек зелёный",
+      "quantity": 350,
+      "unit": "g",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Морковь",
+      "quantity": 3,
+      "unit": "pcs",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Лук красный",
+      "quantity": 2,
+      "unit": "pcs",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Масло оливковое",
+      "quantity": 150,
+      "unit": "ml",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Уксус винный",
+      "quantity": 50,
+      "unit": "g",
+      "text": null,
+      "importance": "main",
+      "note": "белый"
+    },
+    {
+      "ingredient": "Соль",
+      "quantity": 3,
+      "unit": "g",
+      "text": null,
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Перец чёрный молотый",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    }
+  ],
+  "steps": [
+    {
+      "text": "Обернуть свёклу фольгой и запекать в духовке 1,5 часа при 200 °C. Картофель и морковь отварить.",
+      "minutes": 90
+    },
+    {
+      "text": "Нарезать огурцы кубиками.",
+      "minutes": null
+    },
+    {
+      "text": "Если используется квашеная капуста и она очень солёная, промыть её и мелко нашинковать (капуста упомянута в шагах источника, но её нет в составе).",
+      "minutes": null
+    },
+    {
+      "text": "Смешать картофель, морковь, огурцы, лук, капусту и свёклу, немного посолить.",
+      "minutes": null
+    },
+    {
+      "text": "Заправить растительным маслом.",
+      "minutes": null
+    }
+  ]
+}

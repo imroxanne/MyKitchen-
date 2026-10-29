@@ -1,0 +1,112 @@
+{
+  "slug": "brauni",
+  "title": "Брауни",
+  "description": "Шоколадное пирожное, нарезанное прямоугольными кусочками.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Брауни",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Брауни",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%91%D1%80%D0%B0%D1%83%D0%BD%D0%B8&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "253213",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «основной» со страницы; шаги пересказаны своими словами, количества — как в источнике. Разрыхлитель указан в составе, но в шагах источника не упомянут. Стакан — бытовая мера.",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 253213."
+  },
+  "cuisine": null,
+  "mealTypes": ["dessert"],
+  "cookingMethods": ["выпечка"],
+  "equipment": ["духовка", "прямоугольная форма"],
+  "tags": [],
+  "prepMinutes": null,
+  "cookMinutes": 20,
+  "difficulty": null,
+  "servings": 2,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Масло сливочное",
+      "quantity": 150,
+      "unit": "g",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Шоколад тёмный",
+      "quantity": 250,
+      "unit": "g",
+      "text": null,
+      "importance": "key",
+      "note": null
+    },
+    {
+      "ingredient": "Сахар",
+      "quantity": 0.75,
+      "unit": "cup",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Мука пшеничная",
+      "quantity": 0.5,
+      "unit": "cup",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Разрыхлитель",
+      "quantity": 0.5,
+      "unit": "tsp",
+      "text": null,
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Яйцо куриное",
+      "quantity": 3,
+      "unit": "pcs",
+      "text": null,
+      "importance": "key",
+      "note": null
+    }
+  ],
+  "steps": [
+    {
+      "text": "Растопить сливочное масло вместе с шоколадом.",
+      "minutes": null
+    },
+    {
+      "text": "Взбивать яйца с сахаром около трёх минут, до светлой пышной массы.",
+      "minutes": 3
+    },
+    {
+      "text": "Когда масло с шоколадом остынет, влить их в яичную смесь и перемешать.",
+      "minutes": null
+    },
+    {
+      "text": "Соединить смесь с мукой и аккуратно перемешать силиконовой лопаткой, чтобы не осталось белых разводов.",
+      "minutes": null
+    },
+    {
+      "text": "Разогреть духовку до 180 °C, вылить тесто в прямоугольную форму.",
+      "minutes": null
+    },
+    {
+      "text": "Выпекать 20 минут.",
+      "minutes": 20
+    },
+    {
+      "text": "Перевернуть брауни на разделочную доску и нарезать кусочками.",
+      "minutes": null
+    }
+  ]
+}

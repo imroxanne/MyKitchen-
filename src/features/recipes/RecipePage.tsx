@@ -92,7 +92,8 @@ function RecipeView({ api, id }: { api: RecipesApi; id: number }) {
         <dt>Время</dt>
         <dd>
           {describeTime(r.prepMinutes, r.cookMinutes)}
-          {r.prepMinutes !== null && r.cookMinutes !== null && (
+          {/* Разбивку показываем, только если источник даёт обе части. */}
+          {!!r.prepMinutes && !!r.cookMinutes && (
             <span className="muted">
               {' '}
               (подготовка {formatMinutes(r.prepMinutes)}, готовка {formatMinutes(r.cookMinutes)})

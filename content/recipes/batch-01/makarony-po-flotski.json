@@ -1,0 +1,108 @@
+{
+  "slug": "makarony-po-flotski",
+  "title": "Макароны по-флотски",
+  "description": "Отварные макароны с тушёным мясным фаршем и луком.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Макароны по-флотски",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Макароны_по-флотски",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%9C%D0%B0%D0%BA%D0%B0%D1%80%D0%BE%D0%BD%D1%8B_%D0%BF%D0%BE-%D1%84%D0%BB%D0%BE%D1%82%D1%81%D0%BA%D0%B8&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "263010",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «Макароны по-флотски 1» со страницы; шаги пересказаны своими словами, количества — как в источнике. На странице вариант приводится по книге «Кулинария» (1955). Количества — на одну порцию; мясо — говядина, баранина или свинина. Соль для воды в норме не указана.",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 263010."
+  },
+  "cuisine": null,
+  "mealTypes": ["lunch", "dinner"],
+  "cookingMethods": ["варка", "жарка", "тушение"],
+  "equipment": ["кастрюля", "сковорода", "мясорубка"],
+  "tags": [],
+  "prepMinutes": null,
+  "cookMinutes": null,
+  "difficulty": null,
+  "servings": 1,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Макароны",
+      "quantity": 80,
+      "unit": "g",
+      "text": null,
+      "importance": "key",
+      "note": null
+    },
+    {
+      "ingredient": "Говядина",
+      "quantity": 75,
+      "unit": "g",
+      "text": null,
+      "importance": "key",
+      "note": "или баранина, свинина"
+    },
+    {
+      "ingredient": "Лук репчатый",
+      "quantity": 20,
+      "unit": "g",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Масло топлёное",
+      "quantity": 15,
+      "unit": "g",
+      "text": null,
+      "importance": "main",
+      "note": "для лука"
+    },
+    {
+      "ingredient": "Жир топлёный",
+      "quantity": 10,
+      "unit": "g",
+      "text": null,
+      "importance": "main",
+      "note": "свиной или говяжий, для мяса"
+    },
+    {
+      "ingredient": "Бульон",
+      "quantity": 30,
+      "unit": "g",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Соль",
+      "quantity": null,
+      "unit": null,
+      "text": "для воды, по вкусу",
+      "importance": "minor",
+      "note": null
+    }
+  ],
+  "steps": [
+    {
+      "text": "Пропустить мясо через мясорубку и обжарить на топлёном жире.",
+      "minutes": null
+    },
+    {
+      "text": "Переложить мясо в посуду, добавить мелко нарезанный лук, пассерованный на топлёном масле, влить бульон и тушить до готовности.",
+      "minutes": null
+    },
+    {
+      "text": "Отварить макароны в подсоленной воде и слить воду.",
+      "minutes": null
+    },
+    {
+      "text": "Смешать макароны с тушёным мясом.",
+      "minutes": null
+    }
+  ]
+}

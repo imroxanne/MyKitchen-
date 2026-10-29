@@ -1,0 +1,108 @@
+{
+  "slug": "shvedskie-frikadelki",
+  "title": "Шведские фрикадельки",
+  "description": "Небольшие мясные шарики, обжаренные на сковороде.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Шведские фрикадельки",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Шведские_фрикадельки",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%A8%D0%B2%D0%B5%D0%B4%D1%81%D0%BA%D0%B8%D0%B5_%D1%84%D1%80%D0%B8%D0%BA%D0%B0%D0%B4%D0%B5%D0%BB%D1%8C%D0%BA%D0%B8&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "254233",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «Шведские фрикадельки 1» со страницы; шаги пересказаны своими словами, количества — как в источнике. Количество жидкости в источнике — диапазон 200–300 мл; соль и перец — без количества. Лук указан в составе, но в шагах источника не упомянут.",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 254233."
+  },
+  "cuisine": "шведская",
+  "mealTypes": ["lunch", "dinner"],
+  "cookingMethods": ["жарка"],
+  "equipment": ["миска", "сковорода"],
+  "tags": [],
+  "prepMinutes": null,
+  "cookMinutes": null,
+  "difficulty": null,
+  "servings": 4,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Фарш свино-говяжий",
+      "quantity": 0.5,
+      "unit": "kg",
+      "text": null,
+      "importance": "key",
+      "note": "или другой фарш"
+    },
+    {
+      "ingredient": "Яйцо куриное",
+      "quantity": 1,
+      "unit": "pcs",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Панировочные сухари",
+      "quantity": 50,
+      "unit": "ml",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Лук репчатый",
+      "quantity": 2,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": "мелко нарезанный; можно немного чеснока"
+    },
+    {
+      "ingredient": "Молоко",
+      "quantity": null,
+      "unit": null,
+      "text": "200–300 мл",
+      "importance": "main",
+      "note": "или вода, или сливки"
+    },
+    {
+      "ingredient": "Соль",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Перец чёрный молотый",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    }
+  ],
+  "steps": [
+    {
+      "text": "Смешать в миске жидкость с панировочными сухарями и оставить примерно на 10 минут, чтобы сухари набухли.",
+      "minutes": 10
+    },
+    {
+      "text": "Смешать фарш с набухшими сухарями, яйцом, солью и перцем.",
+      "minutes": null
+    },
+    {
+      "text": "Скатать круглые фрикадельки, смачивая руки холодной водой.",
+      "minutes": null
+    },
+    {
+      "text": "Обжарить фрикадельки на среднем огне. Подавать с картофелем или пюре, коричневым соусом, брусникой или салатом.",
+      "minutes": null
+    }
+  ]
+}

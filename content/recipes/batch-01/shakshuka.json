@@ -1,0 +1,168 @@
+{
+  "slug": "shakshuka",
+  "title": "Шакшука",
+  "description": "Яйца, приготовленные в густом соусе из помидоров и перца (матбухе).",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Шакшука",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Шакшука",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%A8%D0%B0%D0%BA%D1%88%D1%83%D0%BA%D0%B0&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "270132",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «основной» со страницы; шаги пересказаны своими словами, количества — как в источнике. В источнике указано только общее время — 30 мин. Соль, масло и вода упомянуты в шагах источника без количества.",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 270132."
+  },
+  "cuisine": "арабская, израильская",
+  "mealTypes": ["breakfast", "dinner"],
+  "cookingMethods": ["жарка", "тушение"],
+  "equipment": ["сковорода"],
+  "tags": [],
+  "prepMinutes": 0,
+  "cookMinutes": 30,
+  "difficulty": null,
+  "servings": 3,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Лук репчатый",
+      "quantity": 1,
+      "unit": "pcs",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Чеснок",
+      "quantity": 1,
+      "unit": "clove",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Перец болгарский",
+      "quantity": 1,
+      "unit": "pcs",
+      "text": null,
+      "importance": "key",
+      "note": null
+    },
+    {
+      "ingredient": "Перец чили",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": "острый стручковый"
+    },
+    {
+      "ingredient": "Томат",
+      "quantity": 2,
+      "unit": "pcs",
+      "text": null,
+      "importance": "key",
+      "note": null
+    },
+    {
+      "ingredient": "Томатная паста",
+      "quantity": 2,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Яйцо куриное",
+      "quantity": 3,
+      "unit": "pcs",
+      "text": null,
+      "importance": "key",
+      "note": null
+    },
+    {
+      "ingredient": "Зира",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Тмин",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Кинза",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": "зелень кинзы или кориандр"
+    },
+    {
+      "ingredient": "Масло оливковое",
+      "quantity": null,
+      "unit": null,
+      "text": "для жарки",
+      "importance": "minor",
+      "note": "или другое растительное"
+    },
+    {
+      "ingredient": "Вода",
+      "quantity": null,
+      "unit": null,
+      "text": "немного",
+      "importance": "minor",
+      "note": "или бульон"
+    },
+    {
+      "ingredient": "Соль",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    }
+  ],
+  "steps": [
+    {
+      "text": "Разогреть на сковороде (лучше чугунной) оливковое или другое растительное масло.",
+      "minutes": null
+    },
+    {
+      "text": "Лук нарезать полукольцами, чеснок измельчить; обжаривать их вместе несколько минут на среднем огне.",
+      "minutes": null
+    },
+    {
+      "text": "Помидоры бланшировать, снять кожицу и нарезать кубиками. Болгарский перец нарезать соломкой, острый — колечками.",
+      "minutes": null
+    },
+    {
+      "text": "Добавить на сковороду помидоры и оба перца, перемешать и тушить несколько минут на уменьшенном огне.",
+      "minutes": null
+    },
+    {
+      "text": "Добавить томатную пасту и немного воды или бульона, приправить зирой, тмином, кориандром и солью. Тушить, пока соус не загустеет.",
+      "minutes": null
+    },
+    {
+      "text": "Сделать в соусе углубления, разбить в них яйца и готовить на малом огне.",
+      "minutes": null
+    },
+    {
+      "text": "Посыпать рубленой кинзой соус, но не яйца. Подавать горячим прямо в сковороде, с питой.",
+      "minutes": null
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "slug": "salat-nisuaz",
+  "title": "Салат Нисуаз",
+  "description": "Французский салат из помидоров, овощей, яиц, анчоусов и оливок.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Салат Нисуаз",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Салат_Нисуаз",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%A1%D0%B0%D0%BB%D0%B0%D1%82_%D0%9D%D0%B8%D1%81%D1%83%D0%B0%D0%B7&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "266923",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «Салат Нисуаз 2» со страницы; шаги пересказаны своими словами, количества — как в источнике. Вариант на странице — перевод из французской Википедии. Стручковую фасоль и артишоки по сезону можно сочетать, заменять друг другом или не использовать. Соль и перец — по вкусу.",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 266923."
+  },
+  "cuisine": "французская",
+  "mealTypes": ["lunch", "dinner"],
+  "cookingMethods": [],
+  "equipment": ["большая салатница"],
+  "tags": ["салат"],
+  "prepMinutes": null,
+  "cookMinutes": null,
+  "difficulty": null,
+  "servings": 6,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Томат",
+      "quantity": 10,
+      "unit": "pcs",
+      "text": null,
+      "importance": "key",
+      "note": "средние, очень спелые"
+    },
+    {
+      "ingredient": "Огурец",
+      "quantity": 1,
+      "unit": "pcs",
+      "text": null,
+      "importance": "main",
+      "note": "крупный, твёрдый"
+    },
+    {
+      "ingredient": "Фасоль стручковая",
+      "quantity": 200,
+      "unit": "g",
+      "text": null,
+      "importance": "optional",
+      "note": "мелкая"
+    },
+    {
+      "ingredient": "Артишоки",
+      "quantity": 12,
+      "unit": "pcs",
+      "text": null,
+      "importance": "optional",
+      "note": "небольшие фиолетовые"
+    },
+    {
+      "ingredient": "Перец болгарский",
+      "quantity": null,
+      "unit": null,
+      "text": "1–2 шт.",
+      "importance": "main",
+      "note": "зелёный, длинный"
+    },
+    {
+      "ingredient": "Лук зелёный",
+      "quantity": null,
+      "unit": null,
+      "text": "6 маленьких луковиц",
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Базилик",
+      "quantity": null,
+      "unit": null,
+      "text": "6 листьев",
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Чеснок",
+      "quantity": 1,
+      "unit": "clove",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Яйцо куриное",
+      "quantity": 3,
+      "unit": "pcs",
+      "text": null,
+      "importance": "main",
+      "note": "сваренные вкрутую"
+    },
+    {
+      "ingredient": "Анчоусы",
+      "quantity": null,
+      "unit": null,
+      "text": "12 филе",
+      "importance": "key",
+      "note": "или 1 банка тунца на 300 г"
+    },
+    {
+      "ingredient": "Оливки",
+      "quantity": 100,
+      "unit": "g",
+      "text": null,
+      "importance": "main",
+      "note": "чёрные, без косточек"
+    },
+    {
+      "ingredient": "Масло оливковое",
+      "quantity": 6,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Соль",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Перец чёрный молотый",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    }
+  ],
+  "steps": [
+    {
+      "text": "Помидоры очистить, разрезать на четвертинки, слегка посолить и отложить. Огурец очистить, нарезать тонкими ломтиками, посолить и тоже отложить.",
+      "minutes": null
+    },
+    {
+      "text": "Яйца нарезать четвертинками или кружками, филе анчоусов разделить на 3–4 части (тунец — нарезать ломтиками). Зелёный перец и лук нарезать тонкими кольцами, фасоль очистить, артишоки нарезать полосками.",
+      "minutes": null
+    },
+    {
+      "text": "Натереть дно и стенки салатницы разрезанным зубчиком чеснока. Выложить все овощи, кроме помидоров и огурцов, добавить анчоусы или тунец.",
+      "minutes": null
+    },
+    {
+      "text": "Слить с помидоров и огурцов выделившийся сок и добавить их в салатницу.",
+      "minutes": null
+    },
+    {
+      "text": "Смешать 6 столовых ложек оливкового масла с мелко нарезанным базиликом, солью и перцем и заправить салат. Сверху выложить яйца, украсить листьями базилика и охладить перед подачей.",
+      "minutes": null
+    }
+  ]
+}

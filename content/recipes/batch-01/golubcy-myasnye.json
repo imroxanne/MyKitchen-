@@ -1,0 +1,156 @@
+{
+  "slug": "golubcy-myasnye",
+  "title": "Голубцы мясные",
+  "description": "Капустные листья с начинкой из мяса и крупы, потушенные в сметанно-томатном соусе.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Голубцы",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Голубцы",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%93%D0%BE%D0%BB%D1%83%D0%B1%D1%86%D1%8B&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "259418",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «Голубцы 2 («Голубцы мясные»)» со страницы; шаги пересказаны своими словами, количества — как в источнике. на странице Викиучебника вариант приводится по «Книге о вкусной и здоровой пище» (1952). Вид мяса не уточнён; крупа — рис, пшено или перловка. Соль и перец — по вкусу.",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 259418."
+  },
+  "cuisine": null,
+  "mealTypes": ["lunch", "dinner"],
+  "cookingMethods": ["варка", "жарка", "тушение"],
+  "equipment": ["кастрюля", "сковорода", "мясорубка"],
+  "tags": [],
+  "prepMinutes": null,
+  "cookMinutes": 40,
+  "difficulty": null,
+  "servings": null,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Мясо (любое)",
+      "quantity": 300,
+      "unit": "g",
+      "text": null,
+      "importance": "key",
+      "note": "мякоть"
+    },
+    {
+      "ingredient": "Капуста белокочанная",
+      "quantity": 800,
+      "unit": "g",
+      "text": null,
+      "importance": "key",
+      "note": null
+    },
+    {
+      "ingredient": "Рис",
+      "quantity": 0.5,
+      "unit": "cup",
+      "text": null,
+      "importance": "main",
+      "note": "или пшено, перловка"
+    },
+    {
+      "ingredient": "Лук репчатый",
+      "quantity": 1,
+      "unit": "pcs",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Мука пшеничная",
+      "quantity": 1,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Томат-пюре",
+      "quantity": 2,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Сметана",
+      "quantity": 2,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Масло сливочное",
+      "quantity": 2,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": "в источнике — «масло»"
+    },
+    {
+      "ingredient": "Вода",
+      "quantity": 1,
+      "unit": "cup",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Соль",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Перец чёрный молотый",
+      "quantity": null,
+      "unit": "to_taste",
+      "text": "по вкусу",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Укроп",
+      "quantity": null,
+      "unit": null,
+      "text": "для подачи",
+      "importance": "optional",
+      "note": "или петрушка"
+    }
+  ],
+  "steps": [
+    {
+      "text": "Пропустить мясо через мясорубку. Крупу отварить, охладить и смешать с фаршем, добавив мелко нарезанный слегка обжаренный лук, соль и перец.",
+      "minutes": null
+    },
+    {
+      "text": "Целые капустные листья проварить в кипящей воде 5–7 минут, охладить, разложить и отбить утолщения у стеблей до толщины листа.",
+      "minutes": 7
+    },
+    {
+      "text": "Положить на листья начинку, свернуть колбасками и обжарить на сковороде, затем переложить в кастрюлю.",
+      "minutes": null
+    },
+    {
+      "text": "На сковороду влить сметану, томат-пюре, стакан воды, добавить муку, вскипятить и посолить.",
+      "minutes": null
+    },
+    {
+      "text": "Залить голубцы соусом и тушить под крышкой на слабом огне (или в духовке без крышки) 30–40 минут.",
+      "minutes": 40
+    },
+    {
+      "text": "Подавать в соусе, посыпав укропом или петрушкой. Без сметаны берут немного больше томата-пюре.",
+      "minutes": null
+    }
+  ]
+}

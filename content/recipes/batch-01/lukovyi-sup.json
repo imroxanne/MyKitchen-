@@ -1,0 +1,112 @@
+{
+  "slug": "lukovyi-sup",
+  "title": "Луковый суп с гренками",
+  "description": "Суп из пассерованного лука с гренками и тёртым сыром.",
+  "source": {
+    "kind": "website",
+    "title": "Викиучебник — Рецепт:Луковый суп",
+    "url": "https://ru.wikibooks.org/wiki/Рецепт:Луковый_суп",
+    "author": "Участники Викиучебника",
+    "authorsUrl": "https://ru.wikibooks.org/w/index.php?title=%D0%A0%D0%B5%D1%86%D0%B5%D0%BF%D1%82%3A%D0%9B%D1%83%D0%BA%D0%BE%D0%B2%D1%8B%D0%B9_%D1%81%D1%83%D0%BF&action=history",
+    "retrievedOn": "2026-10-29",
+    "revision": "253561",
+    "rights": "open_license",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.ru"
+  },
+  "adaptationNote": "Взят вариант «Луковый суп 2» со страницы; шаги пересказаны своими словами, количества — как в источнике. Количество соли в источнике не указано. Вместо воды можно использовать мясной бульон.",
+  "sourceCheck": {
+    "date": "2026-10-29",
+    "note": "Состав и шаги сверены с версией страницы 253561."
+  },
+  "cuisine": "французская",
+  "mealTypes": ["lunch"],
+  "cookingMethods": ["варка", "жарка"],
+  "equipment": ["кастрюля", "сковорода"],
+  "tags": [],
+  "prepMinutes": null,
+  "cookMinutes": 15,
+  "difficulty": null,
+  "servings": null,
+  "yieldGrams": null,
+  "ingredients": [
+    {
+      "ingredient": "Вода",
+      "quantity": 3,
+      "unit": "l",
+      "text": null,
+      "importance": "main",
+      "note": "или мясной бульон"
+    },
+    {
+      "ingredient": "Лук репчатый",
+      "quantity": 250,
+      "unit": "g",
+      "text": null,
+      "importance": "key",
+      "note": null
+    },
+    {
+      "ingredient": "Масло сливочное",
+      "quantity": 2,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Мука пшеничная",
+      "quantity": 0.5,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": null
+    },
+    {
+      "ingredient": "Соль",
+      "quantity": null,
+      "unit": null,
+      "text": "количество в источнике не указано",
+      "importance": "minor",
+      "note": null
+    },
+    {
+      "ingredient": "Хлеб пшеничный",
+      "quantity": 6,
+      "unit": "pcs",
+      "text": null,
+      "importance": "main",
+      "note": "ломтики, поджаренные в сливочном масле"
+    },
+    {
+      "ingredient": "Сыр твёрдый",
+      "quantity": 1,
+      "unit": "tbsp",
+      "text": null,
+      "importance": "main",
+      "note": "тёртый"
+    }
+  ],
+  "steps": [
+    {
+      "text": "Нарезать лук очень тонкими ломтиками и потушить со столовой ложкой сливочного масла, не давая подрумяниться.",
+      "minutes": null
+    },
+    {
+      "text": "Когда лук размякнет, снять кастрюлю с огня и добавить муку.",
+      "minutes": null
+    },
+    {
+      "text": "Перемешивать, пока лук с мукой не пожелтеют, затем, не переставая мешать, развести водой или бульоном.",
+      "minutes": null
+    },
+    {
+      "text": "Посолить и варить четверть часа на слабом огне.",
+      "minutes": 15
+    },
+    {
+      "text": "Поджарить ломтики белого хлеба на сливочном масле, посыпать тёртым сыром и положить по ломтику в каждую тарелку.",
+      "minutes": null
+    }
+  ]
+}
