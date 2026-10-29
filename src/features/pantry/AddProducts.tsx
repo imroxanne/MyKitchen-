@@ -16,6 +16,7 @@ export function AddProducts({ catalog, presentIds, onAdd, onCreateOwn }: Props) 
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const [kind, setKind] = useState<ProductKind>('current')
   const [ownCategory, setOwnCategory] = useState('other')
+  const [ownOpen, setOwnOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState<{ text: string; error: boolean } | null>(null)
 
@@ -71,7 +72,10 @@ export function AddProducts({ catalog, presentIds, onAdd, onCreateOwn }: Props) 
           type="search"
           placeholder="Найти продукт, например «помидор»"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQuery(e.target.value)
+            setOwnOpen(false)
+          }}
           autoComplete="off"
           aria-label="Найти продукт"
         />
@@ -120,7 +124,13 @@ export function AddProducts({ catalog, presentIds, onAdd, onCreateOwn }: Props) 
         </ul>
       )}
 
-      {canCreateOwn && (
+      {canCreateOwn && hits.length > 0 && !ownOpen && (
+        <button type="button" className="link" onClick={() => setOwnOpen(true)}>
+          Нет нужного? Добавить «{trimmed}» как свой продукт…
+        </button>
+      )}
+
+      {canCreateOwn && (hits.length === 0 || ownOpen) && (
         <div className="own-product">
           <p className="muted">
             Нет в справочнике? Добавьте как свой продукт — его видите только вы.

@@ -143,3 +143,17 @@ describe('Мои продукты', () => {
     expect(await within(group('Сейчас есть')).findByText('Молоко')).toBeInTheDocument()
   })
 })
+
+describe('свой продукт при частичном совпадении', () => {
+  it('предлагается ссылкой, форма раскрывается по нажатию', async () => {
+    const user = userEvent.setup()
+    const { api } = createMemoryPantryApi(testCatalog)
+    renderPantry(api)
+    await screen.findByText('Добавить продукты')
+    await user.type(screen.getByRole('searchbox', { name: 'Найти продукт' }), 'пом')
+    expect(screen.queryByLabelText('Категория')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /Нет нужного\? Добавить «пом»/ }))
+    expect(screen.getByLabelText('Категория')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Добавить «пом» как свой продукт' })).toBeEnabled()
+  })
+})
