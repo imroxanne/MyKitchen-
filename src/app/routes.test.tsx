@@ -26,7 +26,7 @@ describe('маршруты', () => {
   })
 
   it('раздел-заглушка не выдаёт себя за готовую функцию', () => {
-    renderAt('/pantry')
+    renderAt('/diary')
     expect(screen.getByRole('note')).toHaveTextContent('Раздел ещё не реализован')
   })
 

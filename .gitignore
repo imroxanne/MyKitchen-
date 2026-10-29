@@ -31,3 +31,4 @@ dist-ssr
 # Тесты
 playwright-report
 test-results
+supabase.env

@@ -1,4 +1,3 @@
-import { Link } from 'react-router'
 import type { Section } from '../app/sections'
 
 // Заглушка раздела: честно показывает, что функциональность ещё не реализована.
@@ -10,11 +9,6 @@ export function SectionPlaceholder({ section }: { section: Section }) {
       <p className="notice" role="note">
         Раздел ещё не реализован. Появится в пунктах дорожной карты: {section.roadmap.join(', ')}.
       </p>
-      {section.path === '/profile' && (
-        <p>
-          <Link to="/status">Состояние системы</Link>
-        </p>
-      )}
     </section>
   )
 }

@@ -22,6 +22,8 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
+      - name: Миграция справочника продуктов соответствует исходному файлу
+        run: node scripts/catalog/build-migration.ts --check
       - run: npm test
       - run: npm run build
       - run: npx playwright install --with-deps chromium
@@ -29,14 +31,14 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: playwright-report
+          name: playwright-report-app
           path: playwright-report
           retention-days: 7
 
   database:
-    name: База данных (миграции с нуля)
+    name: База данных и сквозные сценарии с ней
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -44,10 +46,30 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      # Поднимает только Postgres и применяет все supabase/migrations по порядку.
-      - run: npx supabase db start
-      - name: SQL-проверки (модель данных, права доступа)
+      # Локальный Supabase: Postgres, API и вход. Все миграции применяются с нуля.
+      - run: >-
+          npx supabase start
+          -x studio,imgproxy,vector,logflare,supavisor,edge-runtime,mailpit,realtime,storage-api,postgres-meta
+      - name: SQL-проверки (модель данных, права доступа, справочник)
         run: scripts/db/run-tests.sh
       - run: npx supabase db lint --local --level warning --fail-on warning
+      - name: Сборка против тестовой БД
+        run: |
+          npx supabase status -o env | grep -E '^(API_URL|ANON_KEY|PUBLISHABLE_KEY)=' > supabase.env
+          set -a; . ./supabase.env; set +a
+          VITE_APP_ENV=test VITE_SUPABASE_URL="$API_URL" \
+            VITE_SUPABASE_PUBLISHABLE_KEY="${PUBLISHABLE_KEY:-$ANON_KEY}" npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Сквозные тесты с БД
+        run: npm run test:e2e
+        env:
+          E2E_DB: '1'
+          E2E_EXPECT_DB: '1'
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-db
+          path: playwright-report
+          retention-days: 7
       - if: always()
         run: npx supabase stop --no-backup
