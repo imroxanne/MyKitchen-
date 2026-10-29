@@ -82,8 +82,10 @@ function RecipeFinder({ recipesApi, pantryApi }: { recipesApi: RecipesApi; pantr
   if (state.status === 'loading' || !index) return <p aria-busy="true">Загрузка рецептов…</p>
 
   const filters = parseFilters(params, index.isEmpty)
+  // flushSync: иначе роутер применяет адрес в переходе (transition), и управляемые переключатели
+  // и поле поиска на мгновение откатываются — на медленном телефоне теряется нажатие или буква.
   const update = (patch: Partial<Filters>, replace = false) =>
-    setParams(serializeFilters({ ...filters, ...patch }), { replace })
+    setParams(serializeFilters({ ...filters, ...patch }), { replace, flushSync: true })
   const { matches, hiddenUnknownTime } = selectRecipes(state.recipes, index, filters)
   const usePantry = filters.mode !== 'ignore'
 
@@ -93,7 +95,7 @@ function RecipeFinder({ recipesApi, pantryApi }: { recipesApi: RecipesApi; pantr
         filters={filters}
         onChange={update}
         pantryEmpty={index.isEmpty}
-        onReset={() => setParams(new URLSearchParams())}
+        onReset={() => setParams(new URLSearchParams(), { flushSync: true })}
       />
 
       <p className="muted small" role="status">

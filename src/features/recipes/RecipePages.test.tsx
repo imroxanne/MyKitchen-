@@ -1,6 +1,7 @@
 import type { Session } from '@supabase/supabase-js'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { flushSync } from 'react-dom'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
 import { AuthContext } from '../auth/authContext'
@@ -41,7 +42,7 @@ function renderAt(
   )
   render(
     <AuthContext.Provider value={{ state: { status: 'signed-in', session }, client: null }}>
-      <RouterProvider router={router} />
+      <RouterProvider router={router} flushSync={(fn) => void flushSync(fn)} />
     </AuthContext.Provider>,
   )
   return router

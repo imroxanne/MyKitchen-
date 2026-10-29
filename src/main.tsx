@@ -1,4 +1,5 @@
 import { StrictMode } from 'react'
+import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { routes } from './app/routes'
@@ -11,7 +12,8 @@ const router = createBrowserRouter(routes)
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider client={getSupabase()}>
-      <RouterProvider router={router} />
+      {/* flushSync: фильтры подбора меняют адрес без перехода (transition) — см. RecipesPage. */}
+      <RouterProvider router={router} flushSync={(fn) => void flushSync(fn)} />
     </AuthProvider>
   </StrictMode>,
 )
