@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures.ts'
 
 // A4: база рецептов на настоящем Supabase (миграции партии batch-01).
 test.skip(!process.env.E2E_DB, 'нужен локальный Supabase (E2E_DB=1)')
