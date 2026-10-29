@@ -1,0 +1,180 @@
+/* Черновой вид (ТЗ §13): не дизайн-эталон, только читаемая мобильная оболочка. */
+:root {
+  --bg: #fafaf7;
+  --surface: #ffffff;
+  --text: #1f2421;
+  --muted: #5d6660;
+  --accent: #2f6f4e;
+  --border: #dfe3dc;
+  --notice-bg: #fff6e0;
+  --notice-border: #e9c46a;
+  --tabbar-height: 3.5rem;
+
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161917;
+    --surface: #1f2421;
+    --text: #e8ebe6;
+    --muted: #a3aca5;
+    --accent: #7cc49d;
+    --border: #343b36;
+    --notice-bg: #3a3220;
+    --notice-border: #a2853b;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+a {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.125rem;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.env-badge {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--notice-border);
+  background: var(--notice-bg);
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 1rem 1rem calc(var(--tabbar-height) + 1.5rem);
+}
+
+.content h1 {
+  margin-top: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.notice {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--notice-border);
+  background: var(--notice-bg);
+}
+
+ul.notice {
+  padding-left: 2rem;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+}
+
+.facts dt {
+  color: var(--muted);
+}
+
+.facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Нижняя навигация на телефоне, верхняя полоса на десктопе. */
+.tabbar {
+  position: fixed;
+  inset: auto 0 0 0;
+  height: var(--tabbar-height);
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  text-decoration: none;
+  color: var(--muted);
+  min-width: 0;
+}
+
+.tab-active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@media (min-width: 48rem) {
+  .shell {
+    flex-direction: column;
+  }
+
+  .tabbar {
+    position: static;
+    order: -1;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    border-top: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab {
+    font-size: 0.9375rem;
+    padding: 0.625rem 1rem;
+  }
+
+  .topbar {
+    order: -2;
+  }
+
+  .content {
+    padding-bottom: 2rem;
+  }
+}
