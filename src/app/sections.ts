@@ -15,7 +15,7 @@ export const sections: Section[] = [
     title: 'Что приготовить',
     shortTitle: 'Готовить',
     summary: 'Подбор рецептов по продуктам, поиск, фильтры и карточки блюд.',
-    roadmap: ['A4', 'A5', 'A6', 'C5'],
+    roadmap: ['A5', 'A6', 'C5'],
   },
   {
     path: '/pantry',

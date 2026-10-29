@@ -24,6 +24,8 @@ jobs:
       - run: npm run typecheck
       - name: Миграция справочника продуктов соответствует исходному файлу
         run: node scripts/catalog/build-migration.ts --check
+      - name: Миграции рецептов соответствуют файлам content/recipes
+        run: node scripts/recipes/build-migration.ts --check-all
       - run: npm test
       - run: npm run build
       - run: npx playwright install --with-deps chromium

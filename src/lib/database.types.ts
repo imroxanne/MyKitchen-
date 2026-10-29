@@ -156,34 +156,46 @@ export type Database = {
       recipe_sources: {
         Row: {
           author: string | null
+          authors_url: string | null
           created_at: string
           id: number
           kind: string
+          license: string | null
+          license_url: string | null
           retrieved_on: string | null
           rights: string
           rights_note: string | null
+          source_revision: string | null
           title: string
           url: string | null
         }
         Insert: {
           author?: string | null
+          authors_url?: string | null
           created_at?: string
           id?: never
           kind: string
+          license?: string | null
+          license_url?: string | null
           retrieved_on?: string | null
           rights?: string
           rights_note?: string | null
+          source_revision?: string | null
           title: string
           url?: string | null
         }
         Update: {
           author?: string | null
+          authors_url?: string | null
           created_at?: string
           id?: never
           kind?: string
+          license?: string | null
+          license_url?: string | null
           retrieved_on?: string | null
           rights?: string
           rights_note?: string | null
+          source_revision?: string | null
           title?: string
           url?: string | null
         }
@@ -223,6 +235,7 @@ export type Database = {
       }
       recipes: {
         Row: {
+          adaptation_note: string | null
           cook_minutes: number | null
           cooked_verified_at: string | null
           cooked_verified_note: string | null
@@ -251,6 +264,7 @@ export type Database = {
           yield_grams: number | null
         }
         Insert: {
+          adaptation_note?: string | null
           cook_minutes?: number | null
           cooked_verified_at?: string | null
           cooked_verified_note?: string | null
@@ -279,6 +293,7 @@ export type Database = {
           yield_grams?: number | null
         }
         Update: {
+          adaptation_note?: string | null
           cook_minutes?: number | null
           cooked_verified_at?: string | null
           cooked_verified_note?: string | null

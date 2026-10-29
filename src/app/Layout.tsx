@@ -1,8 +1,10 @@
-import { NavLink, Outlet } from 'react-router'
+import { NavLink, Outlet, useLocation } from 'react-router'
 import { sections } from './sections'
 import { config } from '../lib/env'
 
 export function Layout() {
+  // Страница рецепта относится к разделу «Что приготовить».
+  const onRecipe = useLocation().pathname.startsWith('/recipes/')
   return (
     <div className="shell">
       <header className="topbar">
@@ -26,7 +28,9 @@ export function Layout() {
             key={section.path}
             to={section.path}
             end={section.path === '/'}
-            className={({ isActive }) => (isActive ? 'tab tab-active' : 'tab')}
+            className={({ isActive }) =>
+              isActive || (onRecipe && section.path === '/') ? 'tab tab-active' : 'tab'
+            }
           >
             {section.shortTitle}
           </NavLink>
