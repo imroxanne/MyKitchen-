@@ -1,5 +1,6 @@
 import { NavLink, Outlet, ScrollRestoration, useLocation } from 'react-router'
 import { sections } from './sections'
+import { Icon } from './icons'
 import { config } from '../lib/env'
 
 export function Layout() {
@@ -9,6 +10,9 @@ export function Layout() {
     <div className="shell">
       <header className="topbar">
         <NavLink to="/" className="brand">
+          <span className="brand-mark" aria-hidden="true">
+            <Icon name="cook" />
+          </span>
           MyKitchen
         </NavLink>
         {config.environment !== 'production' && (
@@ -18,12 +22,7 @@ export function Layout() {
         )}
       </header>
 
-      <main className="content" id="main">
-        <Outlet />
-      </main>
-      {/* Новый экран открывается сверху; «назад» возвращает прежнюю прокрутку. */}
-      <ScrollRestoration />
-
+      {/* Телефон: пять вкладок внизу, профиль — кружок в шапке. Десктоп: колонка слева. */}
       <nav className="tabbar" aria-label="Разделы">
         {sections.map((section) => (
           <NavLink
@@ -31,13 +30,26 @@ export function Layout() {
             to={section.path}
             end={section.path === '/'}
             className={({ isActive }) =>
-              isActive || (onRecipe && section.path === '/') ? 'tab tab-active' : 'tab'
+              [
+                'tab',
+                section.path === '/profile' && 'tab-profile',
+                (isActive || (onRecipe && section.path === '/')) && 'tab-active',
+              ]
+                .filter(Boolean)
+                .join(' ')
             }
           >
-            {section.shortTitle}
+            <Icon name={section.icon} />
+            <span className="tab-label">{section.shortTitle}</span>
           </NavLink>
         ))}
       </nav>
+
+      <main className="content" id="main">
+        <Outlet />
+      </main>
+      {/* Новый экран открывается сверху; «назад» возвращает прежнюю прокрутку. */}
+      <ScrollRestoration />
     </div>
   )
 }

@@ -34,25 +34,32 @@ export function RecipeCard({
         state={{ backTo } satisfies RecipeBackState}
         className="recipe-card"
       >
-        <span className="recipe-card-title">{r.title}</span>
-        <span className="recipe-card-meta muted small">
-          {describeTime(r.prepMinutes, r.cookMinutes)} · {describeServings(r.servings)}
-          {usePantry && ` · есть ${match.availableCount} из ${match.requiredCount}`}
+        {/* Плитка с первой буквой — пока у рецептов нет фото с разрешёнными правами. */}
+        <span className={`recipe-card-tile tone-${r.id % 4}`} aria-hidden="true">
+          {r.title.charAt(0)}
         </span>
-        {kcal && <span className="recipe-card-kcal small">{kcal}</span>}
-        {notes.length > 0 && (
-          <span className="recipe-card-notes">
-            {notes.map((note) => (
-              <span
-                key={note}
-                className={note.startsWith('Не хватает') ? 'note-missing' : 'note-ok'}
-              >
-                {note}
-              </span>
-            ))}
+        <span className="recipe-card-body">
+          <span className="recipe-card-title">{r.title}</span>
+          <span className="recipe-card-meta muted small">
+            {describeTime(r.prepMinutes, r.cookMinutes)} · {describeServings(r.servings)}
+            {usePantry && ` · есть ${match.availableCount} из ${match.requiredCount}`}
           </span>
-        )}
-        <TrustBadges trust={r.trust} />
+          {kcal && <span className="recipe-card-kcal small">{kcal}</span>}
+          {notes.length > 0 && (
+            <span className="recipe-card-notes">
+              {notes.map((note) => (
+                <span
+                  key={note}
+                  className={note.startsWith('Не хватает') ? 'note-missing' : 'note-ok'}
+                >
+                  {note}
+                </span>
+              ))}
+            </span>
+          )}
+          {/* Значки показаны над названием (CSS order), но в имени ссылки идут после него. */}
+          <TrustBadges trust={r.trust} />
+        </span>
       </Link>
       <FavoriteButton favorites={favorites} recipeId={r.id} title={r.title} />
     </li>
