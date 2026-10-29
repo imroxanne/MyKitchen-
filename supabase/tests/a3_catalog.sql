@@ -16,11 +16,8 @@ begin
   if exists (select 1 from public.ingredients where owner_id is null and default_unit is null) then
     raise exception 'у продукта справочника нет единицы по умолчанию';
   end if;
-  -- Справочник не выдумывает пищевые данные: масса штуки и плотность не заполнены.
-  if exists (select 1 from public.ingredients
-             where owner_id is null and (piece_weight_g is not null or density_g_per_ml is not null)) then
-    raise exception 'в справочнике есть непроверенные числовые данные';
-  end if;
+  -- Справочник не выдумывает пищевые данные: у каждого числа КБЖУ и массы единицы есть источник
+  -- (проверяется в a7_nutrition.sql).
 
   -- Поиск по синониму после нормализации.
   select s.ingredient_id into v_id from public.ingredient_synonyms s

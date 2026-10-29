@@ -2,6 +2,8 @@ import { Link } from 'react-router'
 import { FavoriteButton } from '../favorites/FavoriteButton'
 import type { Favorites } from '../favorites/useFavorites'
 import { explain, type RecipeMatch } from '../matching/match'
+import { calculateNutrition } from '../nutrition/calc'
+import { kcalSummary } from '../nutrition/present'
 import { describeServings, describeTime } from './present'
 import { TrustBadges } from './TrustBadges'
 
@@ -23,6 +25,7 @@ export function RecipeCard({
 }) {
   const r = match.recipe
   const notes = explain(match, usePantry)
+  const kcal = kcalSummary(calculateNutrition(r.ingredients, r.servings))
   return (
     <li className="recipe-card-item">
       {/* Вся карточка — ссылка на рецепт (ТЗ §8); сердечко — отдельная кнопка поверх. */}
@@ -36,6 +39,7 @@ export function RecipeCard({
           {describeTime(r.prepMinutes, r.cookMinutes)} · {describeServings(r.servings)}
           {usePantry && ` · есть ${match.availableCount} из ${match.requiredCount}`}
         </span>
+        {kcal && <span className="recipe-card-kcal small">{kcal}</span>}
         {notes.length > 0 && (
           <span className="recipe-card-notes">
             {notes.map((note) => (

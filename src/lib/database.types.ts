@@ -29,6 +29,60 @@ export type Database = {
         Update: { name?: string; slug?: string; sort?: number }
         Relationships: []
       }
+      ingredient_nutrition: {
+        Row: {
+          carbs_g: number
+          fat_g: number
+          ingredient_id: number
+          is_approximate: boolean
+          kcal: number
+          note: string | null
+          protein_g: number
+          source_code: string
+          source_food_id: string
+          source_food_name: string
+        }
+        Insert: {
+          carbs_g: number
+          fat_g: number
+          ingredient_id: number
+          is_approximate?: boolean
+          kcal: number
+          note?: string | null
+          protein_g: number
+          source_code: string
+          source_food_id: string
+          source_food_name: string
+        }
+        Update: {
+          carbs_g?: number
+          fat_g?: number
+          ingredient_id?: number
+          is_approximate?: boolean
+          kcal?: number
+          note?: string | null
+          protein_g?: number
+          source_code?: string
+          source_food_id?: string
+          source_food_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ingredient_nutrition_ingredient_id_fkey'
+            columns: ['ingredient_id']
+            isOneToOne: true
+            referencedRelation: 'ingredients'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ingredient_nutrition_source_code_fkey'
+            columns: ['source_code']
+            isOneToOne: false
+            referencedRelation: 'nutrition_sources'
+            referencedColumns: ['code']
+          },
+        ]
+      }
       ingredient_synonyms: {
         Row: {
           id: number
@@ -58,39 +112,85 @@ export type Database = {
           },
         ]
       }
+      ingredient_unit_weights: {
+        Row: {
+          grams: number
+          ingredient_id: number
+          note: string | null
+          source_code: string
+          source_food_id: string
+          source_portion: string
+          unit_code: string
+        }
+        Insert: {
+          grams: number
+          ingredient_id: number
+          note?: string | null
+          source_code: string
+          source_food_id: string
+          source_portion: string
+          unit_code: string
+        }
+        Update: {
+          grams?: number
+          ingredient_id?: number
+          note?: string | null
+          source_code?: string
+          source_food_id?: string
+          source_portion?: string
+          unit_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ingredient_unit_weights_ingredient_id_fkey'
+            columns: ['ingredient_id']
+            isOneToOne: false
+            referencedRelation: 'ingredients'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ingredient_unit_weights_source_code_fkey'
+            columns: ['source_code']
+            isOneToOne: false
+            referencedRelation: 'nutrition_sources'
+            referencedColumns: ['code']
+          },
+          {
+            foreignKeyName: 'ingredient_unit_weights_unit_code_fkey'
+            columns: ['unit_code']
+            isOneToOne: false
+            referencedRelation: 'units'
+            referencedColumns: ['code']
+          },
+        ]
+      }
       ingredients: {
         Row: {
           category_slug: string
           created_at: string
           default_unit: string | null
-          density_g_per_ml: number | null
           id: number
           name: string
           name_normalized: string | null
           owner_id: string | null
-          piece_weight_g: number | null
         }
         Insert: {
           category_slug?: string
           created_at?: string
           default_unit?: string | null
-          density_g_per_ml?: number | null
           id?: never
           name: string
           name_normalized?: string | null
           owner_id?: string | null
-          piece_weight_g?: number | null
         }
         Update: {
           category_slug?: string
           created_at?: string
           default_unit?: string | null
-          density_g_per_ml?: number | null
           id?: never
           name?: string
           name_normalized?: string | null
           owner_id?: string | null
-          piece_weight_g?: number | null
         }
         Relationships: [
           {
@@ -108,6 +208,42 @@ export type Database = {
             referencedColumns: ['code']
           },
         ]
+      }
+      nutrition_sources: {
+        Row: {
+          citation: string
+          code: string
+          dataset_version: string | null
+          license: string
+          license_url: string | null
+          publisher: string
+          retrieved_on: string
+          title: string
+          url: string
+        }
+        Insert: {
+          citation: string
+          code: string
+          dataset_version?: string | null
+          license: string
+          license_url?: string | null
+          publisher: string
+          retrieved_on: string
+          title: string
+          url: string
+        }
+        Update: {
+          citation?: string
+          code?: string
+          dataset_version?: string | null
+          license?: string
+          license_url?: string | null
+          publisher?: string
+          retrieved_on?: string
+          title?: string
+          url?: string
+        }
+        Relationships: []
       }
       recipe_ingredients: {
         Row: {

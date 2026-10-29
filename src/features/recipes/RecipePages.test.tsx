@@ -320,3 +320,52 @@ describe('избранное, возврат к списку, шаги', () => {
     expect(within(steps).getByRole('checkbox', { name: /Нарезать свёклу/ })).not.toBeChecked()
   })
 })
+
+describe('КБЖУ', () => {
+  it('на странице рецепта: на порцию и на всё блюдо, источник, неучтённое «по желанию»', async () => {
+    const user = userEvent.setup()
+    renderAt('/recipes/1')
+    const block = await screen.findByRole('region', { name: /КБЖУ/ })
+    // ТЕСТОВЫЕ данные: свёкла 300 г × 40 ккал/100 г = 120 ккал; 4 порции → 30.
+    const cell = (row: string, column: number) =>
+      within(within(block).getByRole('row', { name: new RegExp(row) })).getAllByRole('cell')[column]
+    expect(
+      within(block)
+        .getAllByRole('columnheader')
+        .map((h) => h.textContent),
+    ).toEqual(['Показатель', 'На порцию', 'На всё блюдо'])
+    expect(cell('Калории', 0)).toHaveTextContent('30')
+    expect(cell('Калории', 1)).toHaveTextContent('120')
+    expect(cell('Белки', 0)).toHaveTextContent('1,5')
+    expect(cell('Углеводы', 1)).toHaveTextContent('30')
+    expect(block).toHaveTextContent('ориентировочно')
+    expect(block).toHaveTextContent('Не учтено «по желанию»: Сметана')
+    expect(block).not.toHaveTextContent('Расчёт неполный')
+    expect(block).toHaveTextContent('масса готового блюда неизвестна')
+
+    await user.click(within(block).getByText('Как посчитано'))
+    expect(within(block).getByText(/Свёкла/)).toHaveTextContent('300 г')
+    expect(within(block).getByRole('link', { name: 'ТЕСТОВЫЙ справочник' })).toHaveAttribute(
+      'href',
+      'https://example.test/nutrition',
+    )
+  })
+
+  it('без числа порций — только на всё блюдо, с пояснением', async () => {
+    renderAt('/recipes/2')
+    const block = await screen.findByRole('region', { name: /КБЖУ/ })
+    expect(within(block).queryByRole('columnheader', { name: 'На порцию' })).toBeNull()
+    expect(block).toHaveTextContent('Число порций не указано в источнике')
+  })
+
+  it('на карточке — калории на порцию', async () => {
+    renderAt('/?mode=ignore')
+    // Каша: молоко 200 мл ≈ 200 г × 60 = 120 + морковь 2 × 50 г × 40 = 40; 2 порции → 80.
+    expect(await screen.findByRole('link', { name: /Тестовая молочная каша/ })).toHaveTextContent(
+      '≈ 80 ккал на порцию',
+    )
+    expect(screen.getByRole('link', { name: /Тестовый салат без проверки/ })).toHaveTextContent(
+      '≈ 120 ккал на всё блюдо',
+    )
+  })
+})

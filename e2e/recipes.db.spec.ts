@@ -14,7 +14,10 @@ test('список рецептов → полный рецепт с источ�
   const list = page.getByRole('list', { name: 'Рецепты' })
   await expect(list.getByRole('listitem')).toHaveCount(22)
 
-  // Вся карточка — ссылка.
+  // Вся карточка — ссылка. На карточке — калории на порцию (масло без количества не учтено).
+  await expect(list.getByRole('link', { name: /^Шакшука/ })).toContainText(
+    'от 122 ккал на порцию — расчёт неполный',
+  )
   await list.getByRole('link', { name: /^Шакшука/ }).click()
   await expect(page.getByRole('heading', { level: 1, name: 'Шакшука' })).toBeVisible()
 
@@ -32,6 +35,15 @@ test('список рецептов → полный рецепт с источ�
   await expect(
     page.getByRole('region', { name: 'Приготовление' }).getByRole('listitem'),
   ).toHaveCount(7)
+
+  // A7: КБЖУ по данным USDA — сходится с ручным расчётом (src/features/nutrition/calc.test.ts).
+  const kbju = page.getByRole('region', { name: /КБЖУ/ })
+  const kcal = kbju.getByRole('row', { name: /Калории/ })
+  await expect(kcal).toContainText('122')
+  await expect(kcal).toContainText('365')
+  await expect(kbju).toContainText('Не учтено: Масло оливковое (количество не указано)')
+  await kbju.getByText('Как посчитано').click()
+  await expect(kbju.getByRole('link', { name: 'USDA 171287' })).toBeVisible()
 
   const source = page.getByRole('region', { name: 'Источник' })
   await expect(source.getByRole('link', { name: 'CC BY-SA 4.0' })).toBeVisible()

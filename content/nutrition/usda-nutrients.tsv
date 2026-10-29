@@ -1,0 +1,74 @@
+# СГЕНЕРИРОВАНО scripts/nutrition/extract-fdc.ts из USDA FoodData Central, SR Legacy (2018-04).
+# Не редактировать вручную. КБЖУ на 100 г съедобной части.
+# продукт	fdc_id	описание USDA	ккал	белки г	жиры г	углеводы г	приближённо	пояснение
+Анчоусы	174183	Fish, anchovy, european, canned in oil, drained solids	210	28.89	9.71	0	0	консервированные в масле, без жидкости
+Артишоки	169205	Artichokes, (globe or french), raw	47	3.27	0.15	10.51	0	
+Базилик	172232	Basil, fresh	23	3.15	0.64	2.65	0	
+Банан	173944	Bananas, raw	89	1.09	0.33	22.84	0	
+Баранина	172496	Lamb, shoulder, whole (arm and blade), separable lean and fat, trimmed to 1/4" fat, choice, raw	264	16.58	21.45	0	1	лопатка с жиром; жирность баранины сильно различается
+Бульон	172883	Soup, stock, beef, home-prepared	13	1.97	0.09	1.2	1	говяжий домашний; состав бульона зависит от рецепта
+Ваниль	173471	Vanilla extract	288	0.06	0.06	12.65	1	ванильный экстракт; ванильный сахар — другой продукт
+Ветчина	173864	Ham, sliced, regular (approximately 11% fat)	164	16.6	8.8	3.63	1	нарезка, около 11 % жира
+Вода	174158	Water, bottled, generic	0	0	0	0	0	
+Говядина	169542	Beef, tenderloin, steak, separable lean and fat, trimmed to 1/8" fat, all grades, raw	247	19.61	18.16	0	1	вырезка с жиром; жирность говядины зависит от части туши
+Горох колотый	172428	Peas, green, split, mature seeds, raw	364	23.12	3.89	61.63	0	сухой
+Горошек зелёный	170013	Peas, green (includes baby and lesuer types), canned, drained solids, unprepared	68	4.47	0.8	11.36	1	консервированный, без жидкости; свежий или замороженный — другие значения
+Горчица	172234	Mustard, prepared, yellow	60	3.74	3.34	5.83	1	американская жёлтая; русская горчица отличается
+Грецкие орехи	170187	Nuts, walnuts, english	654	15.23	65.21	13.71	0	
+Гречка	170685	Buckwheat groats, roasted, dry	346	11.73	2.71	74.95	0	ядрица, сухая
+Дрожжи прессованные	175042	Leavening agents, yeast, baker's, compressed	105	8.4	1.9	18.1	0	
+Жир топлёный	171401	Lard	902	0	100	0	1	свиной; говяжий близок по калорийности
+Зира	170923	Spices, cumin seed	375	17.81	22.27	44.24	0	семена
+Изюм	168165	Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)	299	3.3	0.25	79.32	0	
+Капуста белокочанная	169975	Cabbage, raw	25	1.28	0.1	5.8	0	
+Картофель	170026	Potatoes, flesh and skin, raw	77	2.05	0.09	17.49	0	с кожурой, сырой
+Кинза	169997	Coriander (cilantro) leaves, raw	23	2.13	0.52	3.67	0	листья
+Лавровый лист	170917	Spices, bay leaf	313	7.61	8.36	74.97	0	
+Лимон	167746	Lemons, raw, without peel	29	1.1	0.3	9.32	0	без кожуры
+Лук зелёный	170005	Onions, spring or scallions (includes tops and bulb), raw	32	1.83	0.19	7.34	0	
+Лук красный	170000	Onions, raw	40	1.1	0.1	9.34	1	данные репчатого лука; у красного в USDA нет отдельной записи
+Лук репчатый	170000	Onions, raw	40	1.1	0.1	9.34	0	
+Майонез	171009	Salad dressing, mayonnaise, regular	680	0.96	74.85	0.57	1	классический американский, около 75 % жира; российский бывает 30–80 %
+Макароны	169736	Pasta, dry, enriched	371	13.04	1.51	74.67	0	сухие
+Манная крупа	169715	Semolina, enriched	360	12.68	1.05	72.83	0	
+Масло оливковое	171413	Oil, olive, salad or cooking	884	0	100	0	0	
+Масло подсолнечное	171017	Oil, sunflower, linoleic (less than 60%)	884	0	100	0	0	
+Масло сливочное	173430	Butter, without salt	717	0.85	81.11	0.06	1	несолёное, 81 % жира; российское — 72,5–82,5 %
+Масло топлёное	173412	Butter oil, anhydrous	876	0.28	99.48	0	0	
+Молоко	171265	Milk, whole, 3.25% milkfat, with added vitamin D	61	3.15	3.25	4.8	1	3,25 %; российское чаще 2,5–3,2 %
+Морковь	170393	Carrots, raw	41	0.93	0.24	9.58	0	
+Мука пшеничная	168894	Wheat flour, white, all-purpose, enriched, bleached	364	10.33	0.98	76.31	0	высший сорт
+Огурец	168409	Cucumber, with peel, raw	15	0.65	0.11	3.63	0	с кожурой
+Огурцы маринованные	169379	Pickles, cucumber, sour	11	0.33	0.2	2.26	1	солёные (квашеные); маринованные близки
+Оливки	169094	Olives, ripe, canned (small-extra large)	116	0.84	10.9	6.04	0	чёрные консервированные
+Панировочные сухари	174928	Bread, crumbs, dry, grated, plain	395	13.35	5.3	71.98	0	
+Перец болгарский	170108	Peppers, sweet, red, raw	26	0.99	0.3	6.03	1	красный; зелёный немного менее калорийный
+Перец красный молотый	170932	Spices, pepper, red or cayenne	318	12.01	17.27	56.63	0	кайенский
+Перец чили	170106	Peppers, hot chili, red, raw	40	1.87	0.44	8.81	0	красный, свежий
+Перец чёрный горошком	170931	Spices, pepper, black	251	10.39	3.26	63.95	0	
+Перец чёрный молотый	170931	Spices, pepper, black	251	10.39	3.26	63.95	0	
+Петрушка	170416	Parsley, fresh	36	2.97	0.79	6.33	0	
+Разрыхлитель	172803	Leavening agents, baking powder, double-acting, sodium aluminum sulfate	53	0	0	27.7	0	
+Рис	168877	Rice, white, long-grain, regular, raw, enriched	365	7.13	0.66	79.95	0	белый длиннозёрный, сухой
+Салат листовой	169249	Lettuce, green leaf, raw	15	1.36	0.15	2.87	0	
+Сахар	169655	Sugars, granulated	387	0	0	99.98	0	
+Свёкла	169145	Beets, raw	43	1.61	0.17	9.56	0	
+Сельдерей стеблевой	169988	Celery, raw	14	0.69	0.17	2.97	0	
+Сметана	171257	Cream, sour, cultured	198	2.44	19.35	4.63	1	около 19 % жира; российская — 10–30 %
+Сода пищевая	175040	Leavening agents, baking soda	0	0	0	0	0	
+Соль	173468	Salt, table	0	0	0	0	0	
+Сыр твёрдый	171241	Cheese, gouda	356	24.94	27.44	2.22	1	данные гауды; российские твёрдые сыры близки
+Творог	172179	Cheese, cottage, creamed, large or small curd	98	11.12	4.3	3.38	1	зернёный 4 %; российский творог — 0–18 %
+Тмин	170918	Spices, caraway seed	333	19.77	14.59	49.9	0	семена
+Томат	170457	Tomatoes, red, ripe, raw, year round average	18	0.88	0.2	3.89	0	
+Томат-пюре	170460	Tomato products, canned, puree, without salt added	38	1.65	0.21	8.98	0	консервированное, без соли
+Томатная паста	170459	Tomato products, canned, paste, without salt added (Includes foods for USDA's Food Distribution Program)	82	4.32	0.47	18.91	0	без соли
+Укроп	172233	Dill weed, fresh	43	3.46	1.12	7.02	0	
+Уксус винный	172240	Vinegar, red wine	19	0.04	0	0.27	1	данные красного винного уксуса; белый близок
+Фарш свино-говяжий	174036+167902	Beef, ground, 80% lean meat / 20% fat, raw + Pork, fresh, ground, raw	258.5	17.02	20.59	0	1	среднее говяжьего (80/20) и свиного фарша поровну
+Фасоль стручковая	169961	Beans, snap, green, raw	31	1.83	0.22	6.97	0	
+Хлеб пшеничный	174924	Bread, white, commercially prepared (includes soft bread crumbs)	266	8.85	3.33	49.42	0	белый
+Чеснок	169230	Garlic, raw	149	6.36	0.5	33.06	0	
+Шоколад тёмный	170273	Chocolate, dark, 70-85% cacao solids	598	7.79	42.63	45.9	1	70–85 % какао
+Яблоко	171688	Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)	52	0.26	0.17	13.81	0	с кожурой
+Яйцо куриное	171287	Egg, whole, raw, fresh	143	12.56	9.51	0.72	0	без скорлупы

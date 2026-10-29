@@ -750,3 +750,64 @@ button.link {
   gap: 0.5rem;
   margin-top: 0.75rem;
 }
+
+/* КБЖУ (A7). */
+.nutrition-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.nutrition-table th,
+.nutrition-table td {
+  padding: 0.375rem 0.25rem;
+  border-top: 1px solid var(--border);
+  text-align: right;
+}
+
+.nutrition-table th[scope='row'] {
+  text-align: left;
+  font-weight: normal;
+}
+
+.nutrition-table thead th {
+  border-top: none;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: normal;
+}
+
+.nutrition-details summary {
+  cursor: pointer;
+  color: var(--accent);
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.nutrition-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nutrition-lines li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.375rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.recipe-card-kcal {
+  color: var(--text);
+}
+
+.nutrition-line-detail {
+  display: block;
+}
+
+.nutrition-lines .amount {
+  white-space: nowrap;
+}

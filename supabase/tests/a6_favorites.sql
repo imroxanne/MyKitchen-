@@ -8,7 +8,9 @@ insert into public.recipes (title, origin, is_published) values ('A6 опубл�
 insert into public.recipes (title, origin, owner_id, is_published)
 values ('A6 черновик чужой', 'user', '00000000-0000-4000-8000-0000000000b6', false);
 -- id черновика запоминаем заранее: пользователю A6 он не виден.
-select set_config('a6.draft_id', id::text, true) from public.recipes where title = 'A6 черновик чужой';
+do $$ begin
+  perform set_config('a6.draft_id', id::text, true) from public.recipes where title = 'A6 черновик чужой';
+end; $$;
 
 set local role authenticated;
 do $$ begin

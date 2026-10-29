@@ -23,8 +23,8 @@ insert into auth.users (id, email) values
   ('00000000-0000-4000-8000-000000000001', 'a2-user1@example.test'),
   ('00000000-0000-4000-8000-000000000002', 'a2-user2@example.test');
 
-insert into public.ingredients (name, category_slug, default_unit, piece_weight_g)
-values ('Тестовый Томат', 'vegetables', 'pcs', 120);
+insert into public.ingredients (name, category_slug, default_unit)
+values ('Тестовый Томат', 'vegetables', 'pcs');
 insert into public.ingredient_synonyms (ingredient_id, synonym)
 select id, 'Тестовый помидор' from public.ingredients where name = 'Тестовый Томат';
 

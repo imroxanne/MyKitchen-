@@ -75,6 +75,11 @@ const ref = (
     quantity,
     unitCode,
     importance,
+    // Для подбора не нужны.
+    unitKind: null,
+    unitBaseFactor: null,
+    nutrition: null,
+    unitWeights: [],
   }
 }
 

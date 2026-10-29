@@ -26,6 +26,8 @@ jobs:
         run: node scripts/catalog/build-migration.ts --check
       - name: Миграции рецептов соответствуют файлам content/recipes
         run: node scripts/recipes/build-migration.ts --check-all
+      - name: Миграция КБЖУ соответствует данным content/nutrition
+        run: node scripts/nutrition/build-migration.ts --check
       - run: npm test
       - run: npm run build
       - run: npx playwright install --with-deps chromium

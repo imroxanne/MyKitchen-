@@ -1,4 +1,25 @@
+import type { IngredientNutrition } from '../features/nutrition/types'
 import type { RecipeDetail, RecipesApi } from '../features/recipes/types'
+
+// ТЕСТОВЫЕ пищевые данные (не настоящие значения продуктов).
+const testFood = (
+  kcal: number,
+  protein: number,
+  fat: number,
+  carbs: number,
+): IngredientNutrition => ({
+  kcal,
+  protein,
+  fat,
+  carbs,
+  approximate: false,
+  note: null,
+  sourceCode: 'test',
+  sourceFoodId: '1',
+  sourceFoodName: 'TEST food',
+})
+const mass = { unitKind: 'mass' as const, unitBaseFactor: 1 }
+const noUnit = { unitKind: null, unitBaseFactor: null }
 
 // ТЕСТОВЫЕ ДАННЫЕ для проверки интерфейса — не настоящие рецепты.
 export const openLicenseRecipe: RecipeDetail = {
@@ -44,6 +65,9 @@ export const openLicenseRecipe: RecipeDetail = {
       name: 'Свёкла',
       quantity: 300,
       unitCode: 'g',
+      ...mass,
+      nutrition: testFood(40, 2, 0, 10),
+      unitWeights: [],
       unitName: 'г',
       quantityText: null,
       importance: 'key',
@@ -56,6 +80,10 @@ export const openLicenseRecipe: RecipeDetail = {
       name: 'Соль',
       quantity: null,
       unitCode: 'to_taste',
+      unitKind: 'other',
+      unitBaseFactor: null,
+      nutrition: testFood(0, 0, 0, 0),
+      unitWeights: [],
       unitName: 'по вкусу',
       quantityText: 'по вкусу',
       importance: 'minor',
@@ -68,6 +96,9 @@ export const openLicenseRecipe: RecipeDetail = {
       name: 'Сметана',
       quantity: null,
       unitCode: null,
+      ...noUnit,
+      nutrition: testFood(200, 3, 20, 4),
+      unitWeights: [],
       unitName: null,
       quantityText: 'для подачи',
       importance: 'optional',
@@ -77,6 +108,17 @@ export const openLicenseRecipe: RecipeDetail = {
   steps: [
     { position: 1, instruction: 'Нарезать свёклу.', durationMinutes: 10 },
     { position: 2, instruction: 'Варить до готовности.', durationMinutes: null },
+  ],
+  nutritionSources: [
+    {
+      code: 'test',
+      title: 'ТЕСТОВЫЙ справочник',
+      url: 'https://example.test/nutrition',
+      datasetVersion: null,
+      license: 'тестовые данные',
+      licenseUrl: null,
+      citation: 'ТЕСТ',
+    },
   ],
 }
 
@@ -103,14 +145,9 @@ export function createMemoryRecipesApi(recipes: RecipeDetail[]): RecipesApi {
         mealTypes: r.mealTypes,
         tags: r.tags,
         trust: r.trust,
-        ingredients: r.ingredients.map((i) => ({
-          ingredientId: i.ingredientId,
-          name: i.name,
-          categorySlug: i.categorySlug,
-          quantity: i.quantity,
-          unitCode: i.unitCode,
-          importance: i.importance,
-        })),
+        ingredients: r.ingredients.map(
+          ({ position: _p, unitName: _u, quantityText: _q, note: _n, ...ref }) => ref,
+        ),
       }))
     },
     async getRecipe(id) {
@@ -136,6 +173,10 @@ export const milkRecipe: RecipeDetail = {
       name: 'Молоко',
       quantity: 200,
       unitCode: 'ml',
+      unitKind: 'volume',
+      unitBaseFactor: 1,
+      nutrition: testFood(60, 3, 3, 5),
+      unitWeights: [{ unitCode: 'ml', grams: 1, portion: 'TEST 1 ml = 1g' }],
       unitName: 'мл',
       quantityText: null,
       importance: 'key',
@@ -148,6 +189,10 @@ export const milkRecipe: RecipeDetail = {
       name: 'Морковь',
       quantity: 2,
       unitCode: 'pcs',
+      unitKind: 'count',
+      unitBaseFactor: null,
+      nutrition: testFood(40, 1, 0, 10),
+      unitWeights: [{ unitCode: 'pcs', grams: 50, portion: 'TEST 1 = 50g' }],
       unitName: 'шт.',
       quantityText: null,
       importance: 'main',

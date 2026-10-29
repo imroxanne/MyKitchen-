@@ -24,6 +24,7 @@ import {
   RIGHTS_LABEL,
   sourceSiteName,
 } from './present'
+import { NutritionBlock } from '../nutrition/NutritionBlock'
 import { CookingSteps } from './CookingSteps'
 import type { RecipeBackState } from './RecipeCard'
 import { TrustBadges } from './TrustBadges'
@@ -246,6 +247,13 @@ function RecipeView({
           })}
         </ul>
       </section>
+
+      <NutritionBlock
+        lines={r.ingredients}
+        servings={r.servings}
+        yieldGrams={r.yieldGrams}
+        sources={r.nutritionSources}
+      />
 
       <CookingSteps recipeId={r.id} steps={r.steps} />
 

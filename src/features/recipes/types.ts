@@ -1,3 +1,5 @@
+import type { NutritionLine, NutritionSource } from '../nutrition/types'
+
 export interface RecipeTrust {
   origin: 'curated' | 'external' | 'user'
   isSample: boolean
@@ -7,14 +9,9 @@ export interface RecipeTrust {
   cookedVerifiedNote: string | null
 }
 
-/** Ингредиент рецепта в объёме, нужном для подбора по продуктам. */
-export interface RecipeIngredientRef {
+/** Ингредиент рецепта в объёме, нужном для подбора по продуктам и расчёта КБЖУ. */
+export interface RecipeIngredientRef extends NutritionLine {
   ingredientId: number
-  name: string
-  categorySlug: string
-  quantity: number | null
-  unitCode: string | null
-  importance: 'key' | 'main' | 'minor' | 'optional'
 }
 
 export interface RecipeSummary {
@@ -43,16 +40,10 @@ export interface RecipeSource {
   licenseUrl: string | null
 }
 
-export interface RecipeIngredientLine {
+export interface RecipeIngredientLine extends RecipeIngredientRef {
   position: number
-  ingredientId: number
-  categorySlug: string
-  name: string
-  quantity: number | null
-  unitCode: string | null
   unitName: string | null
   quantityText: string | null
-  importance: 'key' | 'main' | 'minor' | 'optional'
   note: string | null
 }
 
@@ -73,6 +64,8 @@ export interface RecipeDetail extends Omit<RecipeSummary, 'ingredients'> {
   yieldGrams: number | null
   ingredients: RecipeIngredientLine[]
   steps: RecipeStep[]
+  /** Источники пищевых данных, на которые ссылаются ингредиенты. */
+  nutritionSources: NutritionSource[]
 }
 
 export interface RecipesApi {
