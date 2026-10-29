@@ -37,7 +37,10 @@ export function createSupabasePantryApi(supabase: Client): PantryApi {
         supabase.from('ingredients').select('id, name, category_slug, default_unit, owner_id'),
         supabase.from('ingredient_synonyms').select('ingredient_id, synonym'),
         supabase.from('ingredient_categories').select('slug, name').order('sort'),
-        supabase.from('units').select('code, name, kind, is_approximate').order('sort'),
+        supabase
+          .from('units')
+          .select('code, name, kind, is_approximate, base_factor')
+          .order('sort'),
       ])
       for (const result of [ingredients, synonyms, categories, units]) {
         if (result.error) fail(result.error, 'загрузить справочник')
@@ -61,6 +64,7 @@ export function createSupabasePantryApi(supabase: Client): PantryApi {
           name: u.name,
           kind: u.kind as 'mass' | 'volume' | 'count' | 'other',
           isApproximate: u.is_approximate,
+          baseFactor: u.base_factor,
         })),
       }
     },

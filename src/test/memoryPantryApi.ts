@@ -89,11 +89,13 @@ export const testCatalog: Catalog = {
     { slug: 'other', name: 'Другое' },
   ],
   units: [
-    { code: 'g', name: 'г', kind: 'mass', isApproximate: false },
-    { code: 'kg', name: 'кг', kind: 'mass', isApproximate: false },
-    { code: 'ml', name: 'мл', kind: 'volume', isApproximate: false },
-    { code: 'pcs', name: 'шт.', kind: 'count', isApproximate: false },
-    { code: 'to_taste', name: 'по вкусу', kind: 'other', isApproximate: true },
+    { code: 'g', name: 'г', kind: 'mass', isApproximate: false, baseFactor: 1 },
+    { code: 'kg', name: 'кг', kind: 'mass', isApproximate: false, baseFactor: 1000 },
+    { code: 'ml', name: 'мл', kind: 'volume', isApproximate: false, baseFactor: 1 },
+    { code: 'tbsp', name: 'ст. л.', kind: 'volume', isApproximate: true, baseFactor: 15 },
+    { code: 'cup', name: 'стакан', kind: 'volume', isApproximate: true, baseFactor: 250 },
+    { code: 'pcs', name: 'шт.', kind: 'count', isApproximate: false, baseFactor: null },
+    { code: 'to_taste', name: 'по вкусу', kind: 'other', isApproximate: true, baseFactor: null },
   ],
   items: [
     {

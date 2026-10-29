@@ -2,6 +2,16 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { RequireAuth } from '../auth/RequireAuth'
 import {
+  indexPantry,
+  ingredientAvailability,
+  isRequired,
+  matchRecipe,
+  type Availability,
+  type PantryIndex,
+} from '../matching/match'
+import { loadPantry, usePantryApi } from '../matching/usePantry'
+import type { PantryApi } from '../pantry/types'
+import {
   describeAmount,
   describeServings,
   describeTime,
@@ -15,15 +25,18 @@ import { TrustBadges } from './TrustBadges'
 import type { RecipeDetail, RecipesApi, RecipeSource } from './types'
 import { useRecipesApi } from './useRecipesApi'
 
-export function RecipePage({ api }: { api?: RecipesApi }) {
+export function RecipePage({ api, pantryApi }: { api?: RecipesApi; pantryApi?: PantryApi }) {
   const effectiveApi = useRecipesApi(api)
+  const pantry = usePantryApi(pantryApi)
   const { id } = useParams()
   return (
     <article>
       <p>
         <Link to="/">← Все рецепты</Link>
       </p>
-      <RequireAuth>{effectiveApi && <RecipeView api={effectiveApi} id={Number(id)} />}</RequireAuth>
+      <RequireAuth>
+        {effectiveApi && <RecipeView api={effectiveApi} pantryApi={pantry} id={Number(id)} />}
+      </RequireAuth>
     </article>
   )
 }
@@ -34,8 +47,38 @@ type State =
   | { status: 'missing' }
   | { status: 'ready'; recipe: RecipeDetail }
 
-function RecipeView({ api, id }: { api: RecipesApi; id: number }) {
+const AVAILABILITY: Record<Availability, { label: string; tone: string } | null> = {
+  enough: { label: 'есть', tone: 'ok' },
+  present: { label: 'есть, количество не сравнивалось', tone: 'neutral' },
+  low: { label: 'мало', tone: 'warn' },
+  missing: { label: 'нет', tone: 'missing' },
+  assumed: null,
+}
+
+function RecipeView({
+  api,
+  pantryApi,
+  id,
+}: {
+  api: RecipesApi
+  pantryApi: PantryApi | null
+  id: number
+}) {
   const [state, setState] = useState<State>({ status: 'loading' })
+  // Запасы нужны только для отметок «есть/нет»; без них рецепт всё равно показывается.
+  const [pantry, setPantry] = useState<PantryIndex | null>(null)
+
+  useEffect(() => {
+    if (!pantryApi) return
+    let cancelled = false
+    loadPantry(pantryApi).then(
+      (p) => !cancelled && setPantry(indexPantry(p)),
+      () => undefined,
+    )
+    return () => {
+      cancelled = true
+    }
+  }, [pantryApi])
 
   const fetchData = useCallback(
     () =>
@@ -120,15 +163,23 @@ function RecipeView({ api, id }: { api: RecipesApi; id: number }) {
 
       <section className="card" aria-labelledby="ingredients-title">
         <h2 id="ingredients-title">Ингредиенты</h2>
+        {pantry && !pantry.isEmpty && <PantrySummary recipe={r} pantry={pantry} />}
         <ul className="ingredients">
           {r.ingredients.map((line) => {
             const mark = IMPORTANCE_LABEL[line.importance]
+            const status = pantry && !pantry.isEmpty ? ingredientAvailability(line, pantry) : null
+            // «По вкусу» и «по желанию» на подбор не влияют — «нет» у них не показываем.
+            const availability =
+              status && !(status === 'missing' && !isRequired(line)) ? AVAILABILITY[status] : null
             return (
               <li key={line.position}>
                 <span>
                   {line.name}
                   {mark && <span className="badge">{mark}</span>}
                   {line.note && <span className="muted small"> — {line.note}</span>}
+                  {availability && (
+                    <span className={`avail avail-${availability.tone}`}>{availability.label}</span>
+                  )}
                 </span>
                 <span className="amount">{describeAmount(line)}</span>
               </li>
@@ -234,5 +285,17 @@ function SourceBlock({
         </p>
       )}
     </section>
+  )
+}
+
+function PantrySummary({ recipe, pantry }: { recipe: RecipeDetail; pantry: PantryIndex }) {
+  const match = matchRecipe({ ...recipe, ingredients: recipe.ingredients }, pantry)
+  if (match.toBuy.length === 0)
+    return <p className="note-ok">По вашим запасам все нужные продукты есть.</p>
+  return (
+    <p className="note-missing">
+      Не хватает: {match.toBuy.map((m) => m.line.name).join(', ')}.{' '}
+      <span className="muted small">«По вкусу» и «по желанию» не учитываются.</span>
+    </p>
   )
 }

@@ -7,6 +7,16 @@ export interface RecipeTrust {
   cookedVerifiedNote: string | null
 }
 
+/** Ингредиент рецепта в объёме, нужном для подбора по продуктам. */
+export interface RecipeIngredientRef {
+  ingredientId: number
+  name: string
+  categorySlug: string
+  quantity: number | null
+  unitCode: string | null
+  importance: 'key' | 'main' | 'minor' | 'optional'
+}
+
 export interface RecipeSummary {
   id: number
   title: string
@@ -15,7 +25,9 @@ export interface RecipeSummary {
   cookMinutes: number | null
   servings: number | null
   mealTypes: string[]
+  tags: string[]
   trust: RecipeTrust
+  ingredients: RecipeIngredientRef[]
 }
 
 export interface RecipeSource {
@@ -33,6 +45,8 @@ export interface RecipeSource {
 
 export interface RecipeIngredientLine {
   position: number
+  ingredientId: number
+  categorySlug: string
   name: string
   quantity: number | null
   unitCode: string | null
@@ -48,7 +62,7 @@ export interface RecipeStep {
   durationMinutes: number | null
 }
 
-export interface RecipeDetail extends RecipeSummary {
+export interface RecipeDetail extends Omit<RecipeSummary, 'ingredients'> {
   source: RecipeSource | null
   adaptationNote: string | null
   cuisine: string | null

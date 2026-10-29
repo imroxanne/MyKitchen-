@@ -39,6 +39,8 @@ export const openLicenseRecipe: RecipeDetail = {
   ingredients: [
     {
       position: 1,
+      ingredientId: 6,
+      categorySlug: 'vegetables',
       name: 'Свёкла',
       quantity: 300,
       unitCode: 'g',
@@ -49,6 +51,8 @@ export const openLicenseRecipe: RecipeDetail = {
     },
     {
       position: 2,
+      ingredientId: 5,
+      categorySlug: 'sauces',
       name: 'Соль',
       quantity: null,
       unitCode: 'to_taste',
@@ -59,6 +63,8 @@ export const openLicenseRecipe: RecipeDetail = {
     },
     {
       position: 3,
+      ingredientId: 7,
+      categorySlug: 'dairy',
       name: 'Сметана',
       quantity: null,
       unitCode: null,
@@ -87,21 +93,65 @@ export const unverifiedRecipe: RecipeDetail = {
 export function createMemoryRecipesApi(recipes: RecipeDetail[]): RecipesApi {
   return {
     async listRecipes() {
-      return recipes.map(
-        ({ id, title, description, prepMinutes, cookMinutes, servings, mealTypes, trust }) => ({
-          id,
-          title,
-          description,
-          prepMinutes,
-          cookMinutes,
-          servings,
-          mealTypes,
-          trust,
-        }),
-      )
+      return recipes.map((r) => ({
+        id: r.id,
+        title: r.title,
+        description: r.description,
+        prepMinutes: r.prepMinutes,
+        cookMinutes: r.cookMinutes,
+        servings: r.servings,
+        mealTypes: r.mealTypes,
+        tags: r.tags,
+        trust: r.trust,
+        ingredients: r.ingredients.map((i) => ({
+          ingredientId: i.ingredientId,
+          name: i.name,
+          categorySlug: i.categorySlug,
+          quantity: i.quantity,
+          unitCode: i.unitCode,
+          importance: i.importance,
+        })),
+      }))
     },
     async getRecipe(id) {
       return recipes.find((r) => r.id === id) ?? null
     },
   }
+}
+
+// ТЕСТОВЫЙ рецепт, которому при тестовых запасах не хватает моркови.
+export const milkRecipe: RecipeDetail = {
+  ...openLicenseRecipe,
+  id: 3,
+  title: 'Тестовая молочная каша',
+  prepMinutes: 5,
+  cookMinutes: 10,
+  servings: 2,
+  mealTypes: ['breakfast'],
+  ingredients: [
+    {
+      position: 1,
+      ingredientId: 4,
+      categorySlug: 'dairy',
+      name: 'Молоко',
+      quantity: 200,
+      unitCode: 'ml',
+      unitName: 'мл',
+      quantityText: null,
+      importance: 'key',
+      note: null,
+    },
+    {
+      position: 2,
+      ingredientId: 3,
+      categorySlug: 'vegetables',
+      name: 'Морковь',
+      quantity: 2,
+      unitCode: 'pcs',
+      unitName: 'шт.',
+      quantityText: null,
+      importance: 'main',
+      note: null,
+    },
+  ],
 }

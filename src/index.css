@@ -581,3 +581,73 @@ button.link {
   display: grid;
   gap: 0.75rem;
 }
+
+/* Подбор рецептов (A5). */
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.inline-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+  flex: 1 1 10rem;
+}
+
+.inline-field select {
+  color: var(--text);
+}
+
+.segmented.mode {
+  gap: 0 1rem;
+}
+
+.recipe-card-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  font-size: 0.875rem;
+}
+
+.note-ok {
+  color: var(--accent);
+}
+
+.note-missing {
+  color: var(--warning);
+}
+
+.avail {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  vertical-align: middle;
+}
+
+.avail-ok {
+  color: var(--accent);
+}
+
+.avail-neutral {
+  color: var(--muted);
+}
+
+.avail-warn {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.avail-missing {
+  color: var(--danger);
+  font-weight: 600;
+}

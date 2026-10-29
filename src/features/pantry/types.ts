@@ -10,6 +10,8 @@ export interface Unit {
   name: string
   kind: 'mass' | 'volume' | 'count' | 'other'
   isApproximate: boolean
+  /** Сколько граммов (масса) или миллилитров (объём) в одной единице; null — не пересчитывается. */
+  baseFactor: number | null
 }
 
 export interface Category {
