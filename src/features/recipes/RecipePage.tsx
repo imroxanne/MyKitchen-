@@ -25,6 +25,8 @@ import {
   sourceSiteName,
 } from './present'
 import { NutritionBlock } from '../nutrition/NutritionBlock'
+import type { UserNutrition, YieldMeasurement } from '../nutrition/types'
+import { applyUserNutrition } from '../nutrition/userNutrition'
 import { CookingSteps } from './CookingSteps'
 import type { RecipeBackState } from './RecipeCard'
 import { TrustBadges } from './TrustBadges'
@@ -107,20 +109,39 @@ function RecipeView({
 }) {
   const [state, setState] = useState<State>({ status: 'loading' })
   const [favoriteNote, setFavoriteNote] = useState('')
-  // Запасы нужны только для отметок «есть/нет»; без них рецепт всё равно показывается.
+  // Запасы нужны для отметок «есть/нет» и своих данных с упаковки; без них рецепт всё равно
+  // показывается. То же с массой готового блюда.
   const [pantry, setPantry] = useState<PantryIndex | null>(null)
+  const [userNutrition, setUserNutrition] = useState<UserNutrition[]>([])
+  const [measuredYield, setMeasuredYield] = useState<YieldMeasurement | null>(null)
 
   useEffect(() => {
     if (!pantryApi) return
     let cancelled = false
     loadPantry(pantryApi).then(
-      (p) => !cancelled && setPantry(indexPantry(p)),
+      (p) => {
+        if (cancelled) return
+        setPantry(indexPantry(p))
+        setUserNutrition(p.userNutrition)
+      },
       () => undefined,
     )
     return () => {
       cancelled = true
     }
   }, [pantryApi])
+
+  useEffect(() => {
+    if (!Number.isInteger(id)) return
+    let cancelled = false
+    api.getYield(id).then(
+      (y) => !cancelled && setMeasuredYield(y),
+      () => undefined,
+    )
+    return () => {
+      cancelled = true
+    }
+  }, [api, id])
 
   const fetchData = useCallback(
     () =>
@@ -160,7 +181,10 @@ function RecipeView({
       </div>
     )
 
-  const r = state.recipe
+  const r = {
+    ...state.recipe,
+    ingredients: applyUserNutrition(state.recipe.ingredients, userNutrition),
+  }
   return (
     <>
       <h1>{r.title}</h1>
@@ -253,6 +277,12 @@ function RecipeView({
         servings={r.servings}
         yieldGrams={r.yieldGrams}
         sources={r.nutritionSources}
+        measuredYield={measuredYield}
+        onSaveYield={async (grams) =>
+          setMeasuredYield(
+            grams === null ? (await api.deleteYield(r.id), null) : await api.saveYield(r.id, grams),
+          )
+        }
       />
 
       <CookingSteps recipeId={r.id} steps={r.steps} />

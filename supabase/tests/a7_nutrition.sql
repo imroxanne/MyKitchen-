@@ -16,7 +16,8 @@ begin
   end if;
   -- Контрольные значения из USDA (на 100 г): яйцо 171287 и сахар 169655.
   if (select (kcal, protein_g, fat_g, carbs_g)::text from public.ingredient_nutrition n
-      join public.ingredients i on i.id = n.ingredient_id where i.name = 'Яйцо куриное')
+      join public.ingredients i on i.id = n.ingredient_id
+      where i.name = 'Яйцо куриное' and n.state = 'as_purchased')
      <> '(143.00,12.56,9.51,0.72)' then
     raise exception 'КБЖУ яйца не совпадает с USDA 171287';
   end if;
@@ -27,7 +28,7 @@ begin
   -- Масса единицы: 1 крупное яйцо = 50 г, зубчик чеснока = 3 г.
   if (select grams from public.ingredient_unit_weights w
       join public.ingredients i on i.id = w.ingredient_id
-      where i.name = 'Яйцо куриное' and w.unit_code = 'pcs') <> 50 then
+      where i.name = 'Яйцо куриное' and w.unit_code = 'pcs' and w.state = 'as_purchased') <> 50 then
     raise exception 'масса яйца не совпадает с USDA';
   end if;
   -- «Мясо (любое)» неоднозначно — данных нет и не должно быть.

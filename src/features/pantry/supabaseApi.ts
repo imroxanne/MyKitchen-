@@ -1,6 +1,14 @@
 import type { PostgrestError, SupabaseClient } from '@supabase/supabase-js'
 import type { Database, Tables } from '../../lib/database.types'
-import type { CatalogItem, PantryApi, ProductKind, ProductPatch, UserProduct } from './types'
+import type { UserNutrition } from '../nutrition/types'
+import type {
+  CatalogItem,
+  PantryApi,
+  ProductKind,
+  ProductPatch,
+  ReferenceNutrition,
+  UserProduct,
+} from './types'
 
 type Client = SupabaseClient<Database>
 
@@ -29,6 +37,26 @@ function toProduct(row: Tables<'user_products'>): UserProduct {
 }
 
 const PRODUCT_COLUMNS = 'id, ingredient_id, kind, quantity, unit_code, expires_on, is_excluded'
+
+const USER_NUTRITION_COLUMNS =
+  'ingredient_id, brand, basis, kcal, protein_g, fat_g, carbs_g, package_grams, piece_grams, note'
+
+function toUserNutrition(
+  row: Omit<Tables<'user_ingredient_nutrition'>, 'user_id' | 'updated_at'>,
+): UserNutrition {
+  return {
+    ingredientId: row.ingredient_id,
+    brand: row.brand,
+    basis: row.basis as UserNutrition['basis'],
+    kcal: row.kcal,
+    protein: row.protein_g,
+    fat: row.fat_g,
+    carbs: row.carbs_g,
+    packageGrams: row.package_grams,
+    pieceGrams: row.piece_grams,
+    note: row.note,
+  }
+}
 
 export function createSupabasePantryApi(supabase: Client): PantryApi {
   return {
@@ -127,6 +155,82 @@ export function createSupabasePantryApi(supabase: Client): PantryApi {
         isOwn: true,
         synonyms: [],
       }
+    },
+
+    async listUserNutrition() {
+      const { data, error } = await supabase
+        .from('user_ingredient_nutrition')
+        .select(USER_NUTRITION_COLUMNS)
+      if (error) fail(error, 'загрузить ваши данные с упаковки')
+      return data.map(toUserNutrition)
+    },
+
+    async saveUserNutrition(n) {
+      const { data, error } = await supabase
+        .from('user_ingredient_nutrition')
+        .upsert(
+          {
+            ingredient_id: n.ingredientId,
+            brand: n.brand?.trim() || null,
+            basis: n.basis,
+            kcal: n.kcal,
+            protein_g: n.protein,
+            fat_g: n.fat,
+            carbs_g: n.carbs,
+            package_grams: n.packageGrams,
+            piece_grams: n.pieceGrams,
+            note: n.note?.trim() || null,
+          },
+          { onConflict: 'user_id,ingredient_id' },
+        )
+        .select(USER_NUTRITION_COLUMNS)
+        .single()
+      if (error) fail(error, 'сохранить данные с упаковки')
+      return toUserNutrition(data)
+    },
+
+    async deleteUserNutrition(ingredientId) {
+      const { error } = await supabase
+        .from('user_ingredient_nutrition')
+        .delete()
+        .eq('ingredient_id', ingredientId)
+      if (error) fail(error, 'удалить данные с упаковки')
+    },
+
+    async loadReferenceNutrition(ingredientId) {
+      const [nutrition, weights] = await Promise.all([
+        supabase
+          .from('ingredient_nutrition')
+          .select(
+            'state, kcal, protein_g, fat_g, carbs_g, is_approximate, note, source_code, source_food_id, source_food_name',
+          )
+          .eq('ingredient_id', ingredientId),
+        supabase
+          .from('ingredient_unit_weights')
+          .select('state, unit_code, grams, source_portion')
+          .eq('ingredient_id', ingredientId),
+      ])
+      if (nutrition.error) fail(nutrition.error, 'загрузить справочные КБЖУ')
+      if (weights.error) fail(weights.error, 'загрузить справочные КБЖУ')
+      return nutrition.data
+        .map((n): ReferenceNutrition => ({
+          state: n.state as ReferenceNutrition['state'],
+          nutrition: {
+            kcal: n.kcal,
+            protein: n.protein_g,
+            fat: n.fat_g,
+            carbs: n.carbs_g,
+            approximate: n.is_approximate,
+            note: n.note,
+            sourceCode: n.source_code,
+            sourceFoodId: n.source_food_id,
+            sourceFoodName: n.source_food_name,
+          },
+          weights: weights.data
+            .filter((w) => w.state === n.state)
+            .map((w) => ({ unitCode: w.unit_code, grams: w.grams, portion: w.source_portion })),
+        }))
+        .sort((a, b) => (a.state === 'as_purchased' ? -1 : b.state === 'as_purchased' ? 1 : 0))
     },
   }
 }

@@ -31,6 +31,7 @@ export type Database = {
       }
       ingredient_nutrition: {
         Row: {
+          state: string
           carbs_g: number
           fat_g: number
           ingredient_id: number
@@ -43,6 +44,7 @@ export type Database = {
           source_food_name: string
         }
         Insert: {
+          state?: string
           carbs_g: number
           fat_g: number
           ingredient_id: number
@@ -55,6 +57,7 @@ export type Database = {
           source_food_name: string
         }
         Update: {
+          state?: string
           carbs_g?: number
           fat_g?: number
           ingredient_id?: number
@@ -114,6 +117,7 @@ export type Database = {
       }
       ingredient_unit_weights: {
         Row: {
+          state: string
           grams: number
           ingredient_id: number
           note: string | null
@@ -123,6 +127,7 @@ export type Database = {
           unit_code: string
         }
         Insert: {
+          state?: string
           grams: number
           ingredient_id: number
           note?: string | null
@@ -132,6 +137,7 @@ export type Database = {
           unit_code: string
         }
         Update: {
+          state?: string
           grams?: number
           ingredient_id?: number
           note?: string | null
@@ -300,6 +306,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'units'
             referencedColumns: ['code']
+          },
+        ]
+      }
+      recipe_yield_measurements: {
+        Row: { measured_at: string; recipe_id: number; user_id: string; yield_grams: number }
+        Insert: { measured_at?: string; recipe_id: number; user_id?: string; yield_grams: number }
+        Update: { measured_at?: string; recipe_id?: number; user_id?: string; yield_grams?: number }
+        Relationships: [
+          {
+            foreignKeyName: 'recipe_yield_measurements_recipe_id_fkey'
+            columns: ['recipe_id']
+            isOneToOne: false
+            referencedRelation: 'recipes'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -507,6 +527,59 @@ export type Database = {
           sort?: number
         }
         Relationships: []
+      }
+      user_ingredient_nutrition: {
+        Row: {
+          basis: string
+          brand: string | null
+          carbs_g: number
+          fat_g: number
+          ingredient_id: number
+          kcal: number
+          note: string | null
+          package_grams: number | null
+          piece_grams: number | null
+          protein_g: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          basis: string
+          brand?: string | null
+          carbs_g: number
+          fat_g: number
+          ingredient_id: number
+          kcal: number
+          note?: string | null
+          package_grams?: number | null
+          piece_grams?: number | null
+          protein_g: number
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          basis?: string
+          brand?: string | null
+          carbs_g?: number
+          fat_g?: number
+          ingredient_id?: number
+          kcal?: number
+          note?: string | null
+          package_grams?: number | null
+          piece_grams?: number | null
+          protein_g?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'user_ingredient_nutrition_ingredient_id_fkey'
+            columns: ['ingredient_id']
+            isOneToOne: false
+            referencedRelation: 'ingredients'
+            referencedColumns: ['id']
+          },
+        ]
       }
       user_products: {
         Row: {

@@ -23,3 +23,22 @@ export function parseTsv(text: string, columns: number): string[][] {
   })
   return rows
 }
+
+/**
+ * Партии данных: продукт в исходном виде (до приготовления) и после варки.
+ * Из каждой партии — свои файлы content/nutrition/* и своя миграция.
+ */
+export const BATCHES = [
+  { suffix: '', state: 'as_purchased' },
+  { suffix: '-cooked', state: 'cooked' },
+] as const
+
+export type Batch = (typeof BATCHES)[number]
+
+export const batchFiles = (b: Batch) => ({
+  mapping: `mapping${b.suffix}.tsv`,
+  portions: `portions${b.suffix}.tsv`,
+  nutrients: `usda-nutrients${b.suffix}.tsv`,
+  weights: `usda-unit-weights${b.suffix}.tsv`,
+  migrationEnd: `_nutrition_usda${b.suffix.replace('-', '_')}.sql`,
+})

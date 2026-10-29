@@ -7,7 +7,7 @@
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { parseCatalog } from '../catalog/build-migration.ts'
-import { parseTsv } from './data.ts'
+import { BATCHES, batchFiles, parseTsv, type Batch } from './data.ts'
 
 export const SOURCE_CODE = 'usda_fdc_sr_legacy'
 
@@ -110,7 +110,12 @@ export function validate(nutrients: NutrientRow[], weights: WeightRow[], catalog
 const sql = (value: string) => `'${value.replaceAll("'", "''")}'`
 const nullable = (value: string) => (value ? sql(value) : 'null')
 
-export function buildMigration(nutrients: NutrientRow[], weights: WeightRow[]): string {
+export function buildMigration(
+  nutrients: NutrientRow[],
+  weights: WeightRow[],
+  state: Batch['state'] = 'as_purchased',
+): string {
+  if (state !== 'as_purchased') return buildStateMigration(nutrients, weights, state)
   const nutrientValues = nutrients
     .map(
       (n) =>
@@ -160,6 +165,62 @@ $$;
 `
 }
 
+/** Партия продуктов в другом состоянии (после варки): те же таблицы, своё значение state. */
+function buildStateMigration(
+  nutrients: NutrientRow[],
+  weights: WeightRow[],
+  state: string,
+): string {
+  const nutrientValues = nutrients
+    .map(
+      (n) =>
+        `  (${sql(n.name)}, ${sql(n.fdc)}, ${sql(n.description)}, ${n.kcal}, ${n.protein}, ` +
+        `${n.fat}, ${n.carbs}, ${n.approximate}, ${nullable(n.note)})`,
+    )
+    .join(',\n')
+  const weightValues = weights
+    .map(
+      (w) =>
+        `  (${sql(w.name)}, ${sql(w.unit)}, ${w.grams}, ${sql(w.fdc)}, ${sql(w.portion)}, ` +
+        `${nullable(w.note)})`,
+    )
+    .join(',\n')
+  return `-- B1. КБЖУ продуктов в состоянии «${state}» (${nutrients.length}) и масса единиц (${weights.length}).
+-- Источник: USDA FoodData Central, SR Legacy (2018-04), общественное достояние (CC0 1.0).
+-- СГЕНЕРИРОВАНО из content/nutrition/usda-*-${state}.tsv (node scripts/nutrition/build-migration.ts).
+-- Не редактировать вручную.
+
+insert into public.ingredient_nutrition
+  (ingredient_id, state, source_code, source_food_id, source_food_name, kcal, protein_g, fat_g,
+   carbs_g, is_approximate, note)
+select i.id, '${state}', '${SOURCE_CODE}', v.fdc, v.description, v.kcal, v.protein, v.fat, v.carbs,
+  v.approx, v.note
+from (values
+${nutrientValues}
+) as v (name, fdc, description, kcal, protein, fat, carbs, approx, note)
+join public.ingredients i on i.name = v.name and i.owner_id is null;
+
+insert into public.ingredient_unit_weights
+  (ingredient_id, state, unit_code, grams, source_code, source_food_id, source_portion, note)
+select i.id, '${state}', v.unit, v.grams, '${SOURCE_CODE}', v.fdc, v.portion, v.note
+from (values
+${weightValues}
+) as v (name, unit, grams, fdc, portion, note)
+join public.ingredients i on i.name = v.name and i.owner_id is null;
+
+-- Все строки нашли свой продукт в справочнике.
+do $$
+begin
+  if (select count(*) from public.ingredient_nutrition where state = '${state}') <> ${nutrients.length}
+    or (select count(*) from public.ingredient_unit_weights where state = '${state}') <> ${weights.length}
+  then
+    raise exception 'КБЖУ (${state}): не все продукты найдены в справочнике';
+  end if;
+end;
+$$;
+`
+}
+
 const isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]
 if (isMain) {
   const root = fileURLToPath(new URL('../../', import.meta.url))
@@ -170,27 +231,33 @@ if (isMain) {
       .flatMap((f) => parseCatalog(readFileSync(catalogDir + f, 'utf8')).map((r) => r.name)),
   )
   const content = `${root}content/nutrition/`
-  const nutrients = parseNutrients(readFileSync(`${content}usda-nutrients.tsv`, 'utf8'))
-  const weights = parseWeights(readFileSync(`${content}usda-unit-weights.tsv`, 'utf8'))
-  validate(nutrients, weights, catalog)
-
-  const output = buildMigration(nutrients, weights)
   const migrationsDir = `${root}supabase/migrations/`
-  const migrationEnd = '_nutrition_usda.sql'
-  const existing = readdirSync(migrationsDir).find((f) => f.endsWith(migrationEnd))
-  if (process.argv.includes('--check')) {
-    if (!existing || readFileSync(migrationsDir + existing, 'utf8') !== output) {
-      console.error('Миграция КБЖУ устарела: запустите node scripts/nutrition/build-migration.ts')
-      process.exit(1)
+  let stale = false
+  for (const batch of BATCHES) {
+    const files = batchFiles(batch)
+    const nutrients = parseNutrients(readFileSync(content + files.nutrients, 'utf8'))
+    const weights = parseWeights(readFileSync(content + files.weights, 'utf8'))
+    validate(nutrients, weights, catalog)
+
+    const output = buildMigration(nutrients, weights, batch.state)
+    const existing = readdirSync(migrationsDir).find((f) => f.endsWith(files.migrationEnd))
+    if (process.argv.includes('--check')) {
+      if (!existing || readFileSync(migrationsDir + existing, 'utf8') !== output) {
+        console.error(
+          `Миграция КБЖУ (${files.nutrients}) устарела: запустите node scripts/nutrition/build-migration.ts`,
+        )
+        stale = true
+      } else
+        console.log(
+          `КБЖУ ${files.nutrients}: ${nutrients.length} продуктов, ${weights.length} масс единиц, миграция актуальна`,
+        )
+    } else {
+      // Модель (таблицы) должна идти раньше данных: метка времени — после неё.
+      const stamp = new Date().toISOString().replace(/\D/g, '').slice(0, 14)
+      const path = migrationsDir + (existing ?? stamp + files.migrationEnd)
+      writeFileSync(path, output)
+      console.log(`Записано: ${path}`)
     }
-    console.log(
-      `КБЖУ: ${nutrients.length} продуктов, ${weights.length} масс единиц, миграция актуальна`,
-    )
-  } else {
-    // Модель (таблицы) должна идти раньше данных: метка времени — после неё.
-    const stamp = new Date().toISOString().replace(/\D/g, '').slice(0, 14)
-    const path = migrationsDir + (existing ?? stamp + migrationEnd)
-    writeFileSync(path, output)
-    console.log(`Записано: ${path}`)
   }
+  if (stale) process.exit(1)
 }

@@ -17,8 +17,8 @@ const SUMMARY_COLUMNS =
 
 // Пищевая ценность продукта и масса его единиц — для расчёта КБЖУ (A7).
 const NUTRITION_COLUMNS =
-  'ingredient_nutrition (kcal, protein_g, fat_g, carbs_g, is_approximate, note, source_code, ' +
-  'source_food_id, source_food_name), ingredient_unit_weights (unit_code, grams, source_portion)'
+  'ingredient_nutrition (state, kcal, protein_g, fat_g, carbs_g, is_approximate, note, source_code, ' +
+  'source_food_id, source_food_name), ingredient_unit_weights (state, unit_code, grams, source_portion)'
 
 const INGREDIENT_REF_COLUMNS =
   'recipe_ingredients (position, ingredient_id, quantity, unit_code, importance, ' +
@@ -26,6 +26,7 @@ const INGREDIENT_REF_COLUMNS =
 
 type NutritionRow = Pick<
   Tables<'ingredient_nutrition'>,
+  | 'state'
   | 'kcal'
   | 'protein_g'
   | 'fat_g'
@@ -45,17 +46,17 @@ type IngredientRefRow = Pick<
   ingredients: {
     name: string
     category_slug: string
-    // Связь один к одному: PostgREST отдаёт объект; на всякий случай принимаем и массив.
-    ingredient_nutrition: NutritionRow | NutritionRow[] | null
+    // По строке на состояние продукта (B1); в рецепте — продукт в исходном виде.
+    ingredient_nutrition: NutritionRow[] | null
     ingredient_unit_weights: Pick<
       Tables<'ingredient_unit_weights'>,
-      'unit_code' | 'grams' | 'source_portion'
+      'state' | 'unit_code' | 'grams' | 'source_portion'
     >[]
   } | null
 }
 
-function toNutrition(value: NutritionRow | NutritionRow[] | null): IngredientNutrition | null {
-  const n = Array.isArray(value) ? (value[0] ?? null) : value
+function toNutrition(rows: NutritionRow[] | null): IngredientNutrition | null {
+  const n = rows?.find((r) => r.state === 'as_purchased') ?? null
   return (
     n && {
       kcal: n.kcal,
@@ -82,11 +83,13 @@ function toRef(row: IngredientRefRow): RecipeIngredientRef {
     unitBaseFactor: row.units?.base_factor ?? null,
     importance: row.importance as RecipeIngredientRef['importance'],
     nutrition: toNutrition(row.ingredients?.ingredient_nutrition ?? null),
-    unitWeights: (row.ingredients?.ingredient_unit_weights ?? []).map((w) => ({
-      unitCode: w.unit_code,
-      grams: w.grams,
-      portion: w.source_portion,
-    })),
+    unitWeights: (row.ingredients?.ingredient_unit_weights ?? [])
+      .filter((w) => w.state === 'as_purchased')
+      .map((w) => ({
+        unitCode: w.unit_code,
+        grams: w.grams,
+        portion: w.source_portion,
+      })),
   }
 }
 
@@ -228,6 +231,37 @@ export function createSupabaseRecipesApi(supabase: Client): RecipesApi {
         })),
       }
       return detail
+    },
+
+    async getYield(recipeId) {
+      const { data, error } = await supabase
+        .from('recipe_yield_measurements')
+        .select('yield_grams, measured_at')
+        .eq('recipe_id', recipeId)
+        .maybeSingle()
+      if (error) fail(error.message, 'загрузить массу готового блюда')
+      return data && { grams: data.yield_grams, measuredAt: data.measured_at }
+    },
+
+    async saveYield(recipeId, grams) {
+      const { data, error } = await supabase
+        .from('recipe_yield_measurements')
+        .upsert(
+          { recipe_id: recipeId, yield_grams: grams, measured_at: new Date().toISOString() },
+          { onConflict: 'user_id,recipe_id' },
+        )
+        .select('yield_grams, measured_at')
+        .single()
+      if (error) fail(error.message, 'сохранить массу готового блюда')
+      return { grams: data.yield_grams, measuredAt: data.measured_at }
+    },
+
+    async deleteYield(recipeId) {
+      const { error } = await supabase
+        .from('recipe_yield_measurements')
+        .delete()
+        .eq('recipe_id', recipeId)
+      if (error) fail(error.message, 'удалить массу готового блюда')
     },
   }
 }

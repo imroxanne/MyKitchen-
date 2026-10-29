@@ -5,9 +5,12 @@
 //   «по желанию» и «по вкусу» на подбор не влияют, но показываются;
 // * продукт с пометкой «не учитывать» считается отсутствующим;
 // * неизвестное количество не считается достаточным: «есть, количество не сравнивалось»;
-// * количества сравниваются, только если единицы сопоставимы (масса с массой, объём с объёмом,
-//   одинаковые штучные единицы); иначе — тоже «не сравнивалось».
+// * количества сравниваются точно, если единицы сопоставимы (масса с массой, объём с объёмом,
+//   одинаковые штучные единицы); иначе — через массу штуки или плотность продукта (B1) и только
+//   с запасом 15 %; если пересчитать нельзя — «не сравнивалось».
 import { normalizeName } from '../../lib/normalize'
+import { compareQuantities, effectiveWeights, type UnitInfo } from '../nutrition/convert'
+import type { UserNutrition } from '../nutrition/types'
 import type { CatalogItem, Unit, UserProduct } from '../pantry/types'
 import type { RecipeIngredientRef, RecipeSummary } from '../recipes/types'
 
@@ -38,6 +41,8 @@ export interface Pantry {
   products: UserProduct[]
   catalog: CatalogItem[]
   units: Unit[]
+  /** Свои КБЖУ с упаковки, масса штуки и упаковки (B1). */
+  userNutrition: UserNutrition[]
 }
 
 export interface PantryIndex {
@@ -65,30 +70,26 @@ export function indexPantry(pantry: Pantry): PantryIndex {
   }
 }
 
-/** Количество в базовых единицах (г, мл) или в исходной штучной единице; null — не сравнить. */
-function comparable(
-  quantity: number | null,
-  unitCode: string | null,
-  units: Map<string, Unit>,
-): { kind: string; value: number } | null {
-  if (quantity === null || unitCode === null) return null
-  const unit = units.get(unitCode)
-  if (!unit) return null
-  if ((unit.kind === 'mass' || unit.kind === 'volume') && unit.baseFactor)
-    return { kind: unit.kind, value: quantity * unit.baseFactor }
-  if (unit.kind === 'count') return { kind: `count:${unit.code}`, value: quantity }
-  return null
+const unitInfo = (code: string | null, units: Map<string, Unit>): UnitInfo => {
+  const unit = code ? units.get(code) : undefined
+  return { code, kind: unit?.kind ?? null, baseFactor: unit?.baseFactor ?? null }
 }
 
+/**
+ * Хватает ли имеющегося. Точно — в одной системе единиц; через массу штуки или плотность
+ * (B1) — только с запасом, иначе «количество не сравнивалось».
+ */
 function compareAmount(
   line: RecipeIngredientRef,
   product: UserProduct,
   units: Map<string, Unit>,
 ): Availability {
-  const need = comparable(line.quantity, line.unitCode, units)
-  const have = comparable(product.quantity, product.unitCode, units)
-  if (!need || !have || need.kind !== have.kind) return 'present'
-  return have.value >= need.value ? 'enough' : 'low'
+  const result = compareQuantities(
+    { quantity: product.quantity, unit: unitInfo(product.unitCode, units) },
+    { quantity: line.quantity, unit: unitInfo(line.unitCode, units) },
+    effectiveWeights(line.unitWeights, line.userNutrition),
+  )
+  return result === 'unknown' ? 'present' : result
 }
 
 export function ingredientAvailability(

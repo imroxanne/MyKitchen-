@@ -12,6 +12,7 @@ import {
   TIME_OPTIONS,
 } from '../matching/filtersUrl'
 import { loadPantry, usePantryApi } from '../matching/usePantry'
+import { applyUserNutrition } from '../nutrition/userNutrition'
 import type { PantryApi } from '../pantry/types'
 import { createLastLoaded } from '../../lib/lastLoaded'
 import { RecipeCard } from './RecipeCard'
@@ -91,6 +92,17 @@ function RecipeFinder({
     () => (state.status === 'ready' ? indexPantry(state.pantry) : null),
     [state],
   )
+  // Свои данные с упаковки (B1) участвуют и в подборе, и в КБЖУ карточек.
+  const recipes = useMemo(
+    () =>
+      state.status === 'ready'
+        ? state.recipes.map((r) => ({
+            ...r,
+            ingredients: applyUserNutrition(r.ingredients, state.pantry.userNutrition),
+          }))
+        : [],
+    [state],
+  )
 
   if (state.status === 'error')
     return (
@@ -119,7 +131,7 @@ function RecipeFinder({
       // Смена фильтра не прокручивает страницу наверх.
       preventScrollReset: true,
     })
-  const { matches, hiddenUnknownTime } = selectRecipes(state.recipes, index, filters)
+  const { matches, hiddenUnknownTime } = selectRecipes(recipes, index, filters)
   const usePantry = filters.mode !== 'ignore'
 
   return (

@@ -1,4 +1,4 @@
-import type { IngredientNutrition } from '../features/nutrition/types'
+import type { IngredientNutrition, YieldMeasurement } from '../features/nutrition/types'
 import type { RecipeDetail, RecipesApi } from '../features/recipes/types'
 
 // ТЕСТОВЫЕ пищевые данные (не настоящие значения продуктов).
@@ -133,6 +133,7 @@ export const unverifiedRecipe: RecipeDetail = {
 }
 
 export function createMemoryRecipesApi(recipes: RecipeDetail[]): RecipesApi {
+  const yields = new Map<number, YieldMeasurement>()
   return {
     async listRecipes() {
       return recipes.map((r) => ({
@@ -152,6 +153,17 @@ export function createMemoryRecipesApi(recipes: RecipeDetail[]): RecipesApi {
     },
     async getRecipe(id) {
       return recipes.find((r) => r.id === id) ?? null
+    },
+    async getYield(recipeId) {
+      return yields.get(recipeId) ?? null
+    },
+    async saveYield(recipeId, grams) {
+      const y = { grams, measuredAt: '2026-11-01T10:00:00Z' }
+      yields.set(recipeId, y)
+      return y
+    },
+    async deleteYield(recipeId) {
+      yields.delete(recipeId)
     },
   }
 }

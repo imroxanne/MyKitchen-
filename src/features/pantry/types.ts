@@ -1,3 +1,5 @@
+import type { IngredientNutrition, UnitWeight, UserNutrition } from '../nutrition/types'
+
 export type ProductKind = 'staple' | 'current'
 
 export const KIND_TITLES: Record<ProductKind, string> = {
@@ -60,6 +62,13 @@ export interface ProductPatch {
   isExcluded?: boolean
 }
 
+/** Справочные КБЖУ продукта: в исходном виде и после варки (B1). */
+export interface ReferenceNutrition {
+  state: 'as_purchased' | 'cooked'
+  nutrition: IngredientNutrition
+  weights: UnitWeight[]
+}
+
 /** Доступ к данным раздела. Реальная реализация — Supabase, в тестах — память. */
 export interface PantryApi {
   loadCatalog(): Promise<Catalog>
@@ -68,4 +77,10 @@ export interface PantryApi {
   updateProduct(id: number, patch: ProductPatch): Promise<UserProduct>
   deleteProduct(id: number): Promise<void>
   createOwnIngredient(name: string, categorySlug: string): Promise<CatalogItem>
+  /** Свои КБЖУ с упаковки (B1) — для всех продуктов пользователя. */
+  listUserNutrition(): Promise<UserNutrition[]>
+  saveUserNutrition(data: UserNutrition): Promise<UserNutrition>
+  deleteUserNutrition(ingredientId: number): Promise<void>
+  /** Справочные КБЖУ продукта; пустой список — справочных данных нет. */
+  loadReferenceNutrition(ingredientId: number): Promise<ReferenceNutrition[]>
 }

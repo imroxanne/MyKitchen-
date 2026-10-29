@@ -15,6 +15,10 @@ export function usePantryApi(api?: PantryApi): PantryApi | null {
 
 /** Запасы пользователя в виде, нужном для подбора. */
 export async function loadPantry(api: PantryApi): Promise<Pantry> {
-  const [catalog, products] = await Promise.all([api.loadCatalog(), api.listProducts()])
-  return { products, catalog: catalog.items, units: catalog.units }
+  const [catalog, products, userNutrition] = await Promise.all([
+    api.loadCatalog(),
+    api.listProducts(),
+    api.listUserNutrition(),
+  ])
+  return { products, catalog: catalog.items, units: catalog.units, userNutrition }
 }

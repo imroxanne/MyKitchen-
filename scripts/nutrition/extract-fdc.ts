@@ -4,7 +4,7 @@
 // Архив: https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip
 import { readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { parseTsv, US_VOLUME_ML } from './data.ts'
+import { BATCHES, batchFiles, parseTsv, US_VOLUME_ML } from './data.ts'
 
 /** Разбор CSV FoodData Central: поля в кавычках, кавычка внутри удваивается. */
 export function parseCsv(text: string): Record<string, string>[] {
@@ -65,9 +65,20 @@ if (isMain) {
   const content = `${root}content/nutrition/`
   const csv = (name: string) => parseCsv(readFileSync(`${dir}/${name}`, 'utf8'))
 
-  const mapping = parseTsv(readFileSync(`${content}mapping.tsv`, 'utf8'), 4)
-  const portions = parseTsv(readFileSync(`${content}portions.tsv`, 'utf8'), 6)
-  const ids = new Set([...mapping.flatMap((r) => r[1].split('+')), ...portions.map((r) => r[2])])
+  const batches = BATCHES.map((batch) => {
+    const files = batchFiles(batch)
+    return {
+      files,
+      mapping: parseTsv(readFileSync(content + files.mapping, 'utf8'), 4),
+      portions: parseTsv(readFileSync(content + files.portions, 'utf8'), 6),
+    }
+  })
+  const ids = new Set(
+    batches.flatMap((b) => [
+      ...b.mapping.flatMap((r) => r[1].split('+')),
+      ...b.portions.map((r) => r[2]),
+    ]),
+  )
 
   const foods = new Map(csv('food.csv').map((f) => [f.fdc_id, f.description]))
   const values = new Map<string, Partial<Record<Nutrient, number>>>()
@@ -85,54 +96,56 @@ if (isMain) {
   }
 
   const errors: string[] = []
-  const nutrientLines = mapping.map(([name, fdc, approx, note]) => {
-    const parts = fdc.split('+')
-    const sums = { kcal: 0, protein: 0, fat: 0, carbs: 0 }
-    for (const id of parts) {
-      const v = values.get(id)
-      if (!foods.has(id) || !v) errors.push(`${name}: нет записи ${id}`)
-      for (const k of Object.keys(sums) as Nutrient[]) {
-        if (v?.[k] === undefined) errors.push(`${name}: у ${id} нет «${k}»`)
-        sums[k] += (v?.[k] ?? 0) / parts.length
+  for (const { files, mapping, portions } of batches) {
+    const nutrientLines = mapping.map(([name, fdc, approx, note]) => {
+      const parts = fdc.split('+')
+      const sums = { kcal: 0, protein: 0, fat: 0, carbs: 0 }
+      for (const id of parts) {
+        const v = values.get(id)
+        if (!foods.has(id) || !v) errors.push(`${name}: нет записи ${id}`)
+        for (const k of Object.keys(sums) as Nutrient[]) {
+          if (v?.[k] === undefined) errors.push(`${name}: у ${id} нет «${k}»`)
+          sums[k] += (v?.[k] ?? 0) / parts.length
+        }
       }
-    }
-    const description = parts.map((id) => foods.get(id)).join(' + ')
-    return [name, fdc, description, ...Object.values(sums).map((v) => round(v, 2)), approx, note]
-  })
-  const weightLines = portions.map(([name, unit, fdc, portion, divisor, note]) => {
-    if (!portionsById.get(fdc)?.includes(portion))
-      errors.push(`${name}: у ${fdc} нет меры «${portion}»: ${portionsById.get(fdc)?.join('; ')}`)
-    const grams = Number(/= ([\d.]+)g$/.exec(portion)?.[1]) / Number(divisor)
-    let value = round(grams, 2)
-    if (unit === 'ml') {
-      const ml = portionVolumeMl(portion)
-      if (!ml) errors.push(`${name}: мера «${portion}» — не объём`)
-      value = round(grams / (ml ?? 1), 4)
-    }
-    return [name, unit, value, fdc, portion, note]
-  })
-  if (errors.length) throw new Error(errors.join('\n'))
+      const description = parts.map((id) => foods.get(id)).join(' + ')
+      return [name, fdc, description, ...Object.values(sums).map((v) => round(v, 2)), approx, note]
+    })
+    const weightLines = portions.map(([name, unit, fdc, portion, divisor, note]) => {
+      if (!portionsById.get(fdc)?.includes(portion))
+        errors.push(`${name}: у ${fdc} нет меры «${portion}»: ${portionsById.get(fdc)?.join('; ')}`)
+      const grams = Number(/= ([\d.]+)g$/.exec(portion)?.[1]) / Number(divisor)
+      let value = round(grams, 2)
+      if (unit === 'ml') {
+        const ml = portionVolumeMl(portion)
+        if (!ml) errors.push(`${name}: мера «${portion}» — не объём`)
+        value = round(grams / (ml ?? 1), 4)
+      }
+      return [name, unit, value, fdc, portion, note]
+    })
+    if (errors.length) throw new Error(errors.join('\n'))
 
-  const header = (what: string, columns: string) =>
-    `# СГЕНЕРИРОВАНО scripts/nutrition/extract-fdc.ts из USDA FoodData Central, SR Legacy (2018-04).\n` +
-    `# Не редактировать вручную. ${what}\n# ${columns}\n`
-  writeFileSync(
-    `${content}usda-nutrients.tsv`,
-    header(
-      'КБЖУ на 100 г съедобной части.',
-      'продукт\tfdc_id\tописание USDA\tккал\tбелки г\tжиры г\tуглеводы г\tприближённо\tпояснение',
-    ) +
-      nutrientLines.map((l) => l.join('\t')).join('\n') +
-      '\n',
-  )
-  writeFileSync(
-    `${content}usda-unit-weights.tsv`,
-    header(
-      'Граммы в одной единице (для ml — в 1 мл).',
-      'продукт\tединица\tграммы\tfdc_id\tмера USDA\tпояснение',
-    ) +
-      weightLines.map((l) => l.join('\t')).join('\n') +
-      '\n',
-  )
-  console.log(`КБЖУ: ${nutrientLines.length}, масс единиц: ${weightLines.length}`)
+    const header = (what: string, columns: string) =>
+      `# СГЕНЕРИРОВАНО scripts/nutrition/extract-fdc.ts из USDA FoodData Central, SR Legacy (2018-04).\n` +
+      `# Не редактировать вручную. ${what}\n# ${columns}\n`
+    writeFileSync(
+      content + files.nutrients,
+      header(
+        'КБЖУ на 100 г съедобной части.',
+        'продукт\tfdc_id\tописание USDA\tккал\tбелки г\tжиры г\tуглеводы г\tприближённо\tпояснение',
+      ) +
+        nutrientLines.map((l) => l.join('\t')).join('\n') +
+        '\n',
+    )
+    writeFileSync(
+      content + files.weights,
+      header(
+        'Граммы в одной единице (для ml — в 1 мл).',
+        'продукт\tединица\tграммы\tfdc_id\tмера USDA\tпояснение',
+      ) +
+        weightLines.map((l) => l.join('\t')).join('\n') +
+        '\n',
+    )
+    console.log(`${files.mapping}: КБЖУ ${nutrientLines.length}, масс единиц ${weightLines.length}`)
+  }
 }

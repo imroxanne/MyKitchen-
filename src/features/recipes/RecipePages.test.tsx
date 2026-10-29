@@ -369,3 +369,76 @@ describe('КБЖУ', () => {
     )
   })
 })
+
+describe('уточнённый справочник (B1)', () => {
+  // ТЕСТОВЫЕ данные: своя упаковка свёклы — 50 ккал на 100 г (в справочнике 40).
+  const ownBeet = {
+    ingredientId: 6,
+    brand: 'ТЕСТ',
+    basis: '100g' as const,
+    kcal: 50,
+    protein: 2,
+    fat: 0,
+    carbs: 10,
+    packageGrams: null,
+    pieceGrams: null,
+    note: null,
+  }
+
+  it('свои данные с упаковки заменяют справочные в рецепте и на карточке', async () => {
+    const user = userEvent.setup()
+    const pantry = createMemoryPantryApi(testCatalog)
+    pantry.store.userNutrition.push(ownBeet)
+    const recipes = createMemoryRecipesApi([openLicenseRecipe])
+    const router = createMemoryRouter(
+      [
+        { path: '/', element: <RecipesPage api={recipes} pantryApi={pantry.api} /> },
+        { path: '/recipes/:id', element: <RecipePage api={recipes} pantryApi={pantry.api} /> },
+      ],
+      { initialEntries: ['/?mode=ignore'] },
+    )
+    render(
+      <AuthContext.Provider value={{ state: { status: 'signed-in', session }, client: null }}>
+        <RouterProvider router={router} flushSync={(fn) => void flushSync(fn)} />
+      </AuthContext.Provider>,
+    )
+    // 300 г × 50 / 100 = 150 ккал; 4 порции → 37,5 ≈ 38.
+    expect(await screen.findByRole('link', { name: /Тестовый суп/ })).toHaveTextContent(
+      '≈ 38 ккал на порцию',
+    )
+    await user.click(screen.getByRole('link', { name: /Тестовый суп/ }))
+    const block = await screen.findByRole('region', { name: /КБЖУ/ })
+    expect(
+      await within(block).findByText(/По вашим данным с упаковки: Свёкла \(ТЕСТ\)/),
+    ).toBeInTheDocument()
+    expect(within(block).getByRole('row', { name: /Калории/ })).toHaveTextContent('150')
+    await user.click(within(block).getByText('Как посчитано'))
+    expect(within(block).getByText(/ваша упаковка «ТЕСТ», на 100 г/)).toBeInTheDocument()
+  })
+
+  it('масса готового блюда: на 100 г появляется, сохраняется и удаляется', async () => {
+    const user = userEvent.setup()
+    renderAt('/recipes/1')
+    const block = await screen.findByRole('region', { name: /КБЖУ/ })
+    expect(block).toHaveTextContent('На 100 г не считаем')
+    const input = within(block).getByLabelText('Масса готового блюда, г')
+
+    await user.type(input, '0')
+    expect(within(block).getByRole('button', { name: 'Сохранить массу' })).toBeDisabled()
+    expect(block).toHaveTextContent('число больше нуля')
+
+    await user.clear(input)
+    await user.type(input, '600')
+    await user.click(within(block).getByRole('button', { name: 'Сохранить массу' }))
+    // 120 ккал на блюдо / 600 г × 100 = 20 ккал на 100 г.
+    expect(
+      await within(block).findByRole('columnheader', { name: 'На 100 г готового' }),
+    ).toBeInTheDocument()
+    expect(within(block).getByRole('row', { name: /Калории/ })).toHaveTextContent(/30\s*120\s*20/)
+    expect(block).toHaveTextContent('по вашему взвешиванию готового блюда: 600 г')
+
+    await user.click(within(block).getByRole('button', { name: 'Удалить взвешивание' }))
+    expect(await within(block).findByText(/На 100 г не считаем/)).toBeInTheDocument()
+    expect(within(block).queryByRole('columnheader', { name: 'На 100 г готового' })).toBeNull()
+  })
+})

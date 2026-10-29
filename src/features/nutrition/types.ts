@@ -20,7 +20,19 @@ export interface IngredientNutrition extends Macros {
 export interface UnitWeight {
   unitCode: string
   grams: number
+  /** Откуда мера: «1 cup = 125g» (USDA) или «ваша упаковка». */
   portion: string
+}
+
+/** КБЖУ с упаковки, введённое пользователем; заменяет справочное в его расчётах (B1). */
+export interface UserNutrition extends Macros {
+  ingredientId: number
+  brand: string | null
+  /** На что указаны значения на упаковке. */
+  basis: '100g' | '100ml'
+  packageGrams: number | null
+  pieceGrams: number | null
+  note: string | null
 }
 
 export interface NutritionSource {
@@ -46,4 +58,12 @@ export interface NutritionLine {
   unitBaseFactor: number | null
   nutrition: IngredientNutrition | null
   unitWeights: UnitWeight[]
+  /** Свои данные пользователя с упаковки — приоритетнее справочных. */
+  userNutrition?: UserNutrition | null
+}
+
+/** Масса готового блюда по взвешиванию пользователя (B1). */
+export interface YieldMeasurement {
+  grams: number
+  measuredAt: string
 }

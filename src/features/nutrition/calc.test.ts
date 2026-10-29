@@ -69,8 +69,8 @@ describe('расчёт КБЖУ: контрольные примеры', () => {
       ],
       null,
     )
-    expect(r.lines[0].grams).toBe(150)
-    expect(r.lines[1].grams).toBeCloseTo(27.642, 6)
+    expect(r.lines[0].amount).toBe(150)
+    expect(r.lines[1].amount).toBeCloseTo(27.642, 6)
     expect(r.total.kcal).toBeCloseTo(214.5 + 244.35528, 6)
     expect(r.total.fat).toBeCloseTo(14.265 + 27.642, 6)
     // Порции неизвестны — на порцию не считаем, а не делим на выдуманное число.

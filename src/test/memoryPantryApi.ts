@@ -1,9 +1,11 @@
+import type { UserNutrition } from '../features/nutrition/types'
 import type {
   Catalog,
   CatalogItem,
   NewProduct,
   PantryApi,
   ProductPatch,
+  ReferenceNutrition,
   UserProduct,
 } from '../features/pantry/types'
 
@@ -12,6 +14,8 @@ export function createMemoryPantryApi(catalog: Catalog) {
   const store = {
     items: [...catalog.items],
     products: [] as UserProduct[],
+    userNutrition: [] as UserNutrition[],
+    reference: new Map<number, ReferenceNutrition[]>(),
     nextId: 1000,
     failNext: null as string | null,
   }
@@ -76,6 +80,28 @@ export function createMemoryPantryApi(catalog: Catalog) {
       }
       store.items.push(item)
       return item
+    },
+    async listUserNutrition() {
+      await maybeFail()
+      return store.userNutrition.map((n) => ({ ...n }))
+    },
+    async saveUserNutrition(n) {
+      await maybeFail()
+      if (n.basis === '100g' && n.protein + n.fat + n.carbs > 100.5)
+        throw new Error('Белков, жиров и углеводов вместе больше 100 г на 100 г')
+      store.userNutrition = [
+        ...store.userNutrition.filter((x) => x.ingredientId !== n.ingredientId),
+        { ...n },
+      ]
+      return { ...n }
+    },
+    async deleteUserNutrition(ingredientId) {
+      await maybeFail()
+      store.userNutrition = store.userNutrition.filter((x) => x.ingredientId !== ingredientId)
+    },
+    async loadReferenceNutrition(ingredientId) {
+      await maybeFail()
+      return store.reference.get(ingredientId) ?? []
     },
   }
   return { api, store }

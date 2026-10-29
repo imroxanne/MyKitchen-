@@ -1,4 +1,4 @@
-import type { NutritionLine, NutritionSource } from '../nutrition/types'
+import type { NutritionLine, NutritionSource, YieldMeasurement } from '../nutrition/types'
 
 export interface RecipeTrust {
   origin: 'curated' | 'external' | 'user'
@@ -72,4 +72,8 @@ export interface RecipesApi {
   listRecipes(): Promise<RecipeSummary[]>
   /** null — рецепт не найден или недоступен. */
   getRecipe(id: number): Promise<RecipeDetail | null>
+  /** Масса готового блюда по своему взвешиванию (B1); null — не взвешивали. */
+  getYield(recipeId: number): Promise<YieldMeasurement | null>
+  saveYield(recipeId: number, grams: number): Promise<YieldMeasurement>
+  deleteYield(recipeId: number): Promise<void>
 }

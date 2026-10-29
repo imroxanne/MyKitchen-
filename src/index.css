@@ -811,3 +811,42 @@ button.link {
 .nutrition-lines .amount {
   white-space: nowrap;
 }
+
+/* Уточнённый пищевой справочник (B1). */
+.package-nutrition {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: 0.5rem;
+}
+
+.package-nutrition summary {
+  cursor: pointer;
+  color: var(--accent);
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.package-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reference-nutrition ul {
+  margin: 0.25rem 0 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.yield-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem 1rem;
+  margin: 0.5rem 0;
+}
+
+.yield-form .inline-field {
+  flex: 1 1 12rem;
+}

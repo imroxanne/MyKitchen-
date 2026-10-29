@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { RequireAuth } from '../auth/RequireAuth'
 import { indexPantry, matchRecipe, type Pantry } from '../matching/match'
 import { loadPantry, usePantryApi } from '../matching/usePantry'
+import { applyUserNutrition } from '../nutrition/userNutrition'
 import type { PantryApi } from '../pantry/types'
 import { RecipeCard } from '../recipes/RecipeCard'
 import type { RecipesApi, RecipeSummary } from '../recipes/types'
@@ -98,7 +99,12 @@ function FavoritesList({
   if (state.status === 'loading' || !index || shown === null)
     return <p aria-busy="true">Загрузка избранного…</p>
 
-  const byId = new Map(state.recipes.map((r) => [r.id, r]))
+  const byId = new Map(
+    state.recipes.map((r) => [
+      r.id,
+      { ...r, ingredients: applyUserNutrition(r.ingredients, state.pantry.userNutrition) },
+    ]),
+  )
   // Рецепт мог стать недоступным (снят с публикации) — такие просто не показываем.
   const recipes = shown.flatMap((id) => byId.get(id) ?? [])
   const usePantry = !index.isEmpty

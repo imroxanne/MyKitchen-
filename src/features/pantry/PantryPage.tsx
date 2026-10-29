@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../auth/authContext'
 import { RequireAuth } from '../auth/RequireAuth'
+import { PackageNutrition } from '../nutrition/PackageNutrition'
+import type { UserNutrition } from '../nutrition/types'
 import { AddProducts } from './AddProducts'
 import { describeExpiry, formatQuantity } from './format'
 import { ProductEditor } from './ProductEditor'
@@ -28,7 +30,12 @@ export function PantryPage({ api }: { api?: PantryApi }) {
   )
 }
 
-type Ready = { status: 'ready'; catalog: Catalog; products: UserProduct[] }
+type Ready = {
+  status: 'ready'
+  catalog: Catalog
+  products: UserProduct[]
+  userNutrition: UserNutrition[]
+}
 type LoadState = { status: 'loading' } | { status: 'error'; message: string } | Ready
 
 function Pantry({ api }: { api: PantryApi }) {
@@ -37,8 +44,9 @@ function Pantry({ api }: { api: PantryApi }) {
 
   const fetchData = useCallback(
     () =>
-      Promise.all([api.loadCatalog(), api.listProducts()]).then(
-        ([catalog, products]) => setState({ status: 'ready', catalog, products }),
+      Promise.all([api.loadCatalog(), api.listProducts(), api.listUserNutrition()]).then(
+        ([catalog, products, userNutrition]) =>
+          setState({ status: 'ready', catalog, products, userNutrition }),
         (e: unknown) =>
           setState({ status: 'error', message: e instanceof Error ? e.message : String(e) }),
       ),
@@ -66,9 +74,9 @@ function Pantry({ api }: { api: PantryApi }) {
       </div>
     )
 
-  const { catalog, products } = state
+  const { catalog, products, userNutrition } = state
   const byId = new Map(catalog.items.map((item) => [item.id, item]))
-  const update = (fn: (current: { catalog: Catalog; products: UserProduct[] }) => Partial<Ready>) =>
+  const update = (fn: (current: Ready) => Partial<Ready>) =>
     setState((s) => (s.status === 'ready' ? { ...s, ...fn(s) } : s))
 
   async function add(ingredientIds: number[], kind: ProductKind) {
@@ -112,6 +120,15 @@ function Pantry({ api }: { api: PantryApi }) {
             update((s) => ({ products: s.products.filter((p) => p.id !== id) }))
             setEditingId(null)
           }}
+          userNutrition={userNutrition}
+          onNutritionChange={(ingredientId, next) =>
+            update((s) => ({
+              userNutrition: [
+                ...s.userNutrition.filter((n) => n.ingredientId !== ingredientId),
+                ...(next ? [next] : []),
+              ],
+            }))
+          }
           api={api}
         />
       ))}
@@ -128,6 +145,8 @@ interface GroupProps {
   onEdit(id: number | null): void
   onSaved(product: UserProduct): void
   onDeleted(id: number): void
+  userNutrition: UserNutrition[]
+  onNutritionChange(ingredientId: number, next: UserNutrition | null): void
   api: PantryApi
 }
 
@@ -140,6 +159,8 @@ function ProductGroup({
   onEdit,
   onSaved,
   onDeleted,
+  userNutrition,
+  onNutritionChange,
   api,
 }: GroupProps) {
   const categoryOrder = new Map(catalog.categories.map((c, i) => [c.slug, i]))
@@ -207,6 +228,18 @@ function ProductGroup({
                       await api.deleteProduct(product.id)
                       onDeleted(product.id)
                     }}
+                  />
+                )}
+                {editing && (
+                  <PackageNutrition
+                    api={api}
+                    ingredientId={product.ingredientId}
+                    productName={name}
+                    isOwn={item?.isOwn ?? false}
+                    saved={
+                      userNutrition.find((n) => n.ingredientId === product.ingredientId) ?? null
+                    }
+                    onChange={(next) => onNutritionChange(product.ingredientId, next)}
                   />
                 )}
               </li>

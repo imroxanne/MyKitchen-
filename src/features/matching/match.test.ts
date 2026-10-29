@@ -125,7 +125,8 @@ const product = (
   ...extra,
 })
 
-const index = (...products: UserProduct[]) => indexPantry({ products, catalog, units })
+const index = (...products: UserProduct[]) =>
+  indexPantry({ products, catalog, units, userNutrition: [] })
 
 describe('доступность ингредиента', () => {
   it('сравнивает количества в сопоставимых единицах и не выдумывает неизвестное', () => {
@@ -268,5 +269,38 @@ describe('подбор и ранжирование', () => {
       'Не хватает: Яйцо куриное (мало) — основа блюда',
     )
     expect(explain(matchRecipe(omelette, pantry), false)).toEqual(['Готовится за 15 мин'])
+  })
+})
+
+describe('подбор: пересчёт между единицами (B1)', () => {
+  const flourId = catalog.find((c) => c.name === 'Мука пшеничная')?.id
+  it('мука в килограммах против стаканов в рецепте — хватает с запасом', () => {
+    const line = {
+      ...ref(flourId!, 'key', 2, 'cup'),
+      unitKind: 'volume' as const,
+      unitBaseFactor: 250,
+      unitWeights: [{ unitCode: 'ml', grams: 0.5284, portion: 'TEST 1 cup = 125g' }],
+    }
+    const pantry = (quantity: number, unitCode: string) =>
+      indexPantry({
+        products: [
+          {
+            id: 1,
+            ingredientId: flourId!,
+            kind: 'current' as const,
+            quantity,
+            unitCode,
+            expiresOn: null,
+            isExcluded: false,
+          },
+        ],
+        catalog,
+        units,
+        userNutrition: [],
+      })
+    expect(ingredientAvailability(line, pantry(1, 'kg'))).toBe('enough')
+    expect(ingredientAvailability(line, pantry(100, 'g'))).toBe('low')
+    // 270 г против ≈264 г — слишком близко для приближённой меры.
+    expect(ingredientAvailability(line, pantry(270, 'g'))).toBe('present')
   })
 })
