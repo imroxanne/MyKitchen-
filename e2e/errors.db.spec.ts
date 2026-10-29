@@ -16,7 +16,9 @@ test('нет связи: список рецептов, запасы и избр
   // Список рецептов не загрузился → сообщение и «Повторить».
   await page.route('**/rest/v1/recipes*', (route) => route.abort())
   await page.reload()
-  await expect(page.getByRole('alert')).toContainText('Нет связи с сервером')
+  // Запросы на чтение клиент Supabase сам повторяет 3 раза (через 1, 2 и 4 с) — кратковременный
+  // сбой связи пользователь не заметит; сообщение появляется примерно через 7 с.
+  await expect(page.getByRole('alert')).toContainText('Нет связи с сервером', { timeout: 15_000 })
   await page.unroute('**/rest/v1/recipes*')
   await page.getByRole('button', { name: 'Повторить' }).click()
   await expect(page.getByRole('list', { name: 'Рецепты' }).getByRole('listitem')).toHaveCount(22)
