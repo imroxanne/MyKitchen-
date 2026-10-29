@@ -29,11 +29,11 @@ Postgres **до** применения к облаку, и миграции де
 
 ## Облачные ресурсы
 
-| Ресурс          | Идентификатор                                         |
-| --------------- | ----------------------------------------------------- |
-| Supabase проект | `mykitchen`, ref `doxryfmjiyhlfyhnuwdu`, eu-central-1 |
-| Vercel проект   | `mykitchen` в команде «Roxanne's projects»            |
-| GitHub          | `imroxanne/MyKitchen-`                                |
+| Ресурс          | Идентификатор                                                                                                                |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Supabase проект | `mykitchen`, ref `doxryfmjiyhlfyhnuwdu`, eu-central-1                                                                        |
+| Vercel проект   | `mykitchen` в команде «Roxanne's projects», https://mykitchen-roxanne-s-projects2.vercel.app (защищён Vercel Authentication) |
+| GitHub          | `imroxanne/MyKitchen-`                                                                                                       |
 
 ## Миграции БД
 
