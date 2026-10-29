@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+import { expect, test } from './fixtures.ts'
 
 // Сквозной сценарий A3 на настоящем Supabase (локальный стек в CI).
 // Запускается только при E2E_DB=1, когда сборка указывает на тестовую БД.

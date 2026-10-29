@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+import { expect, test } from './fixtures.ts'
 
 // A5: подбор по продуктам на настоящем Supabase и реальных рецептах партии batch-01.
 test.skip(!process.env.E2E_DB, 'нужен локальный Supabase (E2E_DB=1)')
