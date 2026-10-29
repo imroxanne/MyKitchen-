@@ -616,10 +616,15 @@ button.link {
   cursor: pointer;
 }
 
+/* Невидимая радиокнопка накрывает всю плитку: нажатие попадает прямо в неё. */
 .segmented label input {
   position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
   opacity: 0;
-  pointer-events: none;
+  cursor: pointer;
 }
 
 .segmented label:has(input:checked) {
