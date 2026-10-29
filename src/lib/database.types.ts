@@ -73,7 +73,7 @@ export type Database = {
           {
             foreignKeyName: 'ingredient_nutrition_ingredient_id_fkey'
             columns: ['ingredient_id']
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: 'ingredients'
             referencedColumns: ['id']
           },
