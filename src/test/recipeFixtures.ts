@@ -30,6 +30,11 @@ export const openLicenseRecipe: RecipeDetail = {
   prepMinutes: 15,
   cookMinutes: 45,
   servings: 4,
+  image: {
+    url: 'https://example.test/soup.jpg',
+    credit: 'Фото: тестовая подпись, CC BY-SA 4.0',
+    sourceUrl: 'https://example.test/soup-photo-page',
+  },
   mealTypes: ['lunch'],
   trust: {
     origin: 'external',
@@ -130,10 +135,14 @@ export const unverifiedRecipe: RecipeDetail = {
   prepMinutes: null,
   cookMinutes: null,
   servings: null,
+  image: null,
   trust: { ...openLicenseRecipe.trust, sourceCheckedAt: null, sourceCheckedNote: null },
 }
 
-export function createMemoryRecipesApi(recipes: RecipeDetail[]): RecipesApi {
+export function createMemoryRecipesApi(
+  recipes: RecipeDetail[],
+  options: { admin?: boolean } = {},
+): RecipesApi {
   const yields = new Map<number, YieldMeasurement>()
   const versions: RecipeVersion[] = []
   let nextVersionId = 100
@@ -149,6 +158,7 @@ export function createMemoryRecipesApi(recipes: RecipeDetail[]): RecipesApi {
         servings: r.servings,
         mealTypes: r.mealTypes,
         tags: r.tags,
+        image: r.image,
         trust: r.trust,
         ingredients: r.ingredients.map(
           ({ position: _p, unitName: _u, quantityText: _q, note: _n, ...ref }) => ref,
@@ -197,6 +207,24 @@ export function createMemoryRecipesApi(recipes: RecipeDetail[]): RecipesApi {
       const at = versions.findIndex((v) => v.id === id)
       if (at >= 0) versions.splice(at, 1)
     },
+    async isAdmin() {
+      return options.admin === true
+    },
+    async setImage(recipeId, _file, credit) {
+      if (!options.admin) throw new Error('Менять фото рецепта может только владелица')
+      const image = {
+        url: `https://example.test/uploaded/${recipeId}.jpg`,
+        credit,
+        sourceUrl: null,
+      }
+      const at = recipes.findIndex((r) => r.id === recipeId)
+      recipes[at] = { ...recipes[at]!, image }
+      return image
+    },
+    async removeImage(recipeId) {
+      const at = recipes.findIndex((r) => r.id === recipeId)
+      recipes[at] = { ...recipes[at]!, image: null }
+    },
   }
 }
 
@@ -208,6 +236,7 @@ export const milkRecipe: RecipeDetail = {
   prepMinutes: 5,
   cookMinutes: 10,
   servings: 2,
+  image: null,
   mealTypes: ['breakfast'],
   ingredients: [
     {

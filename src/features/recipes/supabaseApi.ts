@@ -14,7 +14,8 @@ type Client = SupabaseClient<Database>
 
 const SUMMARY_COLUMNS =
   'id, title, description, prep_minutes, cook_minutes, servings, meal_types, tags, origin, is_sample, ' +
-  'source_checked_at, source_checked_note, cooked_verified_at, cooked_verified_note'
+  'source_checked_at, source_checked_note, cooked_verified_at, cooked_verified_note, image_url, image_credit, ' +
+  'image_source_url'
 
 // Пищевая ценность продукта и масса его единиц — для расчёта КБЖУ (A7).
 const NUTRITION_COLUMNS =
@@ -110,6 +111,9 @@ type SummaryRow = Pick<
   | 'source_checked_note'
   | 'cooked_verified_at'
   | 'cooked_verified_note'
+  | 'image_url'
+  | 'image_credit'
+  | 'image_source_url'
 >
 
 function toSummary(row: SummaryRow, ingredients: RecipeIngredientRef[]): RecipeSummary {
@@ -123,6 +127,11 @@ function toSummary(row: SummaryRow, ingredients: RecipeIngredientRef[]): RecipeS
     mealTypes: row.meal_types,
     tags: row.tags,
     ingredients,
+    // Без подписи об авторе и правах фото не показываем (ТЗ §4; в БД это ещё и ограничение).
+    image:
+      row.image_url && row.image_credit
+        ? { url: row.image_url, credit: row.image_credit, sourceUrl: row.image_source_url }
+        : null,
     trust: {
       origin: row.origin as RecipeSummary['trust']['origin'],
       isSample: row.is_sample,
@@ -343,5 +352,53 @@ export function createSupabaseRecipesApi(supabase: Client): RecipesApi {
       const { error } = await supabase.from('recipe_versions').delete().eq('id', id)
       if (error) fail(error.message, 'удалить версию рецепта')
     },
+
+    async isAdmin() {
+      const { data, error } = await supabase.rpc('is_admin')
+      if (error) fail(error.message, 'проверить права')
+      return data === true
+    },
+
+    async setImage(recipeId, file, credit, previous) {
+      const bucket = supabase.storage.from(IMAGE_BUCKET)
+      const path = `${recipeId}/${Date.now()}.${file.type === 'image/png' ? 'png' : 'jpg'}`
+      const upload = await bucket.upload(path, file, { contentType: file.type, upsert: false })
+      if (upload.error) fail(upload.error.message, 'загрузить фото')
+      const url = bucket.getPublicUrl(path).data.publicUrl
+      const { error } = await supabase.rpc('set_recipe_image', {
+        p_recipe_id: recipeId,
+        p_url: url,
+        p_credit: credit,
+        p_source_url: null,
+      })
+      if (error) {
+        // Фото не привязалось к рецепту — файл в хранилище не оставляем.
+        await bucket.remove([path])
+        fail(error.message, 'сохранить фото рецепта')
+      }
+      const old = previous && storedPath(previous.url)
+      if (old) await bucket.remove([old])
+      return { url, credit, sourceUrl: null }
+    },
+
+    async removeImage(recipeId, image) {
+      const { error } = await supabase.rpc('set_recipe_image', {
+        p_recipe_id: recipeId,
+        p_url: null,
+        p_credit: null,
+      })
+      if (error) fail(error.message, 'убрать фото')
+      const path = storedPath(image.url)
+      if (path) await supabase.storage.from(IMAGE_BUCKET).remove([path])
+    },
   }
+}
+
+const IMAGE_BUCKET = 'recipe-images'
+
+/** Путь файла в хранилище, если фото загружено через сайт; копии из источников — не там. */
+function storedPath(url: string): string | null {
+  const marker = `/storage/v1/object/public/${IMAGE_BUCKET}/`
+  const at = url.indexOf(marker)
+  return at >= 0 ? decodeURIComponent(url.slice(at + marker.length)) : null
 }

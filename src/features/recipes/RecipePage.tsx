@@ -39,6 +39,7 @@ import { ServingsScaler } from './ServingsScaler'
 import type { RecipeBackState } from './RecipeCard'
 import { TrustBadges } from './TrustBadges'
 import type { RecipeDetail, RecipesApi, RecipeSource } from './types'
+import { RecipePhoto } from './RecipePhoto'
 import { useRecipesApi } from './useRecipesApi'
 
 export function RecipePage({
@@ -277,6 +278,13 @@ function RecipeView({
           }
   return (
     <>
+      <RecipePhoto
+        api={api}
+        recipeId={r.id}
+        title={r.title}
+        image={r.image}
+        onChange={(image) => setState({ status: 'ready', recipe: { ...r, image } })}
+      />
       <h1>{r.title}</h1>
       <TrustBadges trust={r.trust} detailed />
 

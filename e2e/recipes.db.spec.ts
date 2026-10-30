@@ -18,8 +18,23 @@ test('список рецептов → полный рецепт с источ�
   await expect(list.getByRole('link', { name: /^Шакшука/ })).toContainText(
     'от 122 ккал на порцию — расчёт неполный',
   )
+  // Фото блюда из источника (копия на сайте) действительно загружается.
+  const cover = list.getByRole('link', { name: /^Шакшука/ }).locator('img')
+  await expect(cover).toHaveAttribute('src', '/recipe-images/shakshuka.jpg')
+  // Фото в ленте грузятся при прокрутке к ним (loading="lazy") — как у пользователя.
+  await cover.scrollIntoViewIfNeeded()
+  await expect
+    .poll(() => cover.evaluate((img: HTMLImageElement) => img.naturalWidth))
+    .toBeGreaterThan(0)
   await list.getByRole('link', { name: /^Шакшука/ }).click()
   await expect(page.getByRole('heading', { level: 1, name: 'Шакшука' })).toBeVisible()
+  // На странице рецепта — фото и подпись со ссылкой на автора и лицензию.
+  await expect(page.getByRole('img', { name: 'Фото блюда: Шакшука' })).toBeVisible()
+  await expect(
+    page.getByRole('link', { name: 'Фото: Calliopejen1, CC BY-SA 3.0, Wikimedia Commons' }),
+  ).toHaveAttribute('href', /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/)
+  // Обычному пользователю кнопки фото не показываются.
+  await expect(page.getByRole('button', { name: /фото/i })).toHaveCount(0)
 
   const original = page.getByRole('link', { name: /Открыть оригинал \(Викиучебник\)/ })
   await expect(original).toHaveAttribute('href', 'https://ru.wikibooks.org/wiki/Рецепт:Шакшука')

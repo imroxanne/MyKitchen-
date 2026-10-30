@@ -78,8 +78,13 @@ describe('рецепты', () => {
     renderAt('/')
     const list = await screen.findByRole('list', { name: 'Рецепты' })
     const card = within(list).getByRole('link', { name: /Тестовый суп/ })
-    expect(card).toHaveTextContent('1 ч · 4 порции')
-    expect(card).toHaveTextContent('Не проверен приготовлением')
+    expect(card).toHaveTextContent('1 ч')
+    expect(card).toHaveTextContent('4 порции')
+    // На карточке — один короткий значок, все статусы — на странице рецепта.
+    expect(card).toHaveTextContent('Источник проверен')
+    // Фото с правами — на обложке; декоративное, название уже есть в тексте ссылки.
+    expect(card.querySelector('img')).toHaveAttribute('src', 'https://example.test/soup.jpg')
+    expect(card).toHaveAccessibleName(/^Тестовый суп/)
 
     await user.click(card)
     expect(
@@ -90,6 +95,10 @@ describe('рецепты', () => {
     const original = screen.getByRole('link', { name: /Открыть оригинал \(Викиучебник\)/ })
     expect(original).toHaveAttribute('href', 'https://ru.wikibooks.org/wiki/Тест')
     expect(original).toHaveAttribute('target', '_blank')
+
+    // Фото блюда с подписью об авторе и лицензии.
+    expect(screen.getByRole('img', { name: 'Фото блюда: Тестовый суп' })).toBeInTheDocument()
+    expect(screen.getByText('Фото: тестовая подпись, CC BY-SA 4.0')).toBeInTheDocument()
 
     // Статусы с пояснениями.
     const trust = screen.getByRole('list', { name: 'Статус проверки' })
@@ -131,6 +140,20 @@ describe('рецепты', () => {
     expect(trust).toHaveTextContent('Не проверен приготовлением')
     expect(screen.getByText('время не указано в источнике')).toBeInTheDocument()
     expect(screen.getByText('число порций не указано в источнике')).toBeInTheDocument()
+  })
+
+  it('карточка непроверенного рецепта: честный значок, без фото — цветная обложка', async () => {
+    renderAt('/')
+    const card = await screen.findByRole('link', { name: /Тестовый салат без проверки/ })
+    expect(card).toHaveTextContent('Не проверен')
+    expect(card).not.toHaveTextContent('Источник проверен')
+    expect(card.querySelector('img')).toBeNull()
+  })
+
+  it('без фото на странице рецепта нет пустого места под изображение', async () => {
+    renderAt('/recipes/2')
+    await screen.findByRole('heading', { level: 1, name: 'Тестовый салат без проверки' })
+    expect(screen.queryByRole('img', { name: /Фото блюда/ })).toBeNull()
   })
 
   it('несуществующий рецепт', async () => {

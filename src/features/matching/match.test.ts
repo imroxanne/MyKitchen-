@@ -97,6 +97,7 @@ const recipe = (
   servings: null,
   mealTypes: [],
   tags: [],
+  image: null,
   trust: {
     origin: 'external',
     isSample: false,
