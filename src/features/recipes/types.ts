@@ -17,8 +17,11 @@ export interface RecipeIngredientRef extends NutritionLine {
 
 /** Фото блюда: только с разрешёнными правами и подписью об авторе. */
 export interface RecipeImage {
+  /** Копия на сайте (/recipe-images/…) или https-адрес загруженного фото. */
   url: string
   credit: string
+  /** Страница фото с автором и лицензией (например, Wikimedia Commons). */
+  sourceUrl: string | null
 }
 
 export interface RecipeSummary {
@@ -89,4 +92,15 @@ export interface RecipesApi {
   /** Создаёт (id = null) или целиком заменяет версию; оригинал не меняется. */
   saveVersion(draft: VersionDraft): Promise<RecipeVersion>
   deleteVersion(id: number): Promise<void>
+  /** Владелица сервиса: ей доступна загрузка фото рецептов. */
+  isAdmin(): Promise<boolean>
+  /** Загружает фото блюда (только владелица); прежнее загруженное фото удаляется. */
+  setImage(
+    recipeId: number,
+    file: Blob,
+    credit: string,
+    previous: RecipeImage | null,
+  ): Promise<RecipeImage>
+  /** Убирает фото рецепта; загруженный файл удаляется из хранилища. */
+  removeImage(recipeId: number, image: RecipeImage): Promise<void>
 }

@@ -26,6 +26,8 @@ jobs:
         run: node scripts/catalog/build-migration.ts --check
       - name: Миграции рецептов соответствуют файлам content/recipes
         run: node scripts/recipes/build-migration.ts --check-all
+      - name: Миграции фото рецептов соответствуют content/recipes/images-*.json и файлам в public/
+        run: node scripts/recipes/build-images-migration.ts --check-all
       - name: Миграция КБЖУ соответствует данным content/nutrition
         run: node scripts/nutrition/build-migration.ts --check
       - run: npm test
@@ -53,7 +55,7 @@ jobs:
       # Локальный Supabase: Postgres, API и вход. Все миграции применяются с нуля.
       - run: >-
           npx supabase start
-          -x studio,imgproxy,vector,logflare,supavisor,edge-runtime,mailpit,realtime,storage-api,postgres-meta
+          -x studio,imgproxy,vector,logflare,supavisor,edge-runtime,mailpit,realtime,postgres-meta
       - name: SQL-проверки (модель данных, права доступа, справочник)
         run: scripts/db/run-tests.sh
       - run: npx supabase db lint --local --level warning --fail-on warning

@@ -9,6 +9,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_admins: {
+        Row: { created_at: string; user_id: string }
+        Insert: { created_at?: string; user_id: string }
+        Update: { created_at?: string; user_id?: string }
+        Relationships: []
+      }
       favorite_recipes: {
         Row: { created_at: string; recipe_id: number; user_id: string }
         Insert: { created_at?: string; recipe_id: number; user_id?: string }
@@ -522,6 +528,7 @@ export type Database = {
           equipment: string[]
           id: number
           image_credit: string | null
+          image_source_url: string | null
           image_url: string | null
           is_published: boolean
           is_sample: boolean
@@ -552,6 +559,7 @@ export type Database = {
           equipment?: string[]
           id?: never
           image_credit?: string | null
+          image_source_url?: string | null
           image_url?: string | null
           is_published?: boolean
           is_sample?: boolean
@@ -582,6 +590,7 @@ export type Database = {
           equipment?: string[]
           id?: never
           image_credit?: string | null
+          image_source_url?: string | null
           image_url?: string | null
           is_published?: boolean
           is_sample?: boolean
@@ -751,6 +760,7 @@ export type Database = {
     Functions: {
       app_health: { Args: never; Returns: Json }
       ingredient_visible: { Args: { p_ingredient_id: number }; Returns: boolean }
+      is_admin: { Args: never; Returns: boolean }
       normalize_name: { Args: { value: string }; Returns: string }
       recipe_version_owned: { Args: { p_version_id: number }; Returns: boolean }
       save_recipe_version: {
@@ -766,6 +776,16 @@ export type Database = {
           p_yield_grams: number | null
         }
         Returns: number
+      }
+      set_recipe_image: {
+        // Уточнено вручную: null в p_url убирает фото, p_credit и p_source_url тогда не нужны.
+        Args: {
+          p_credit: string | null
+          p_recipe_id: number
+          p_source_url?: string | null
+          p_url: string | null
+        }
+        Returns: undefined
       }
     }
     Enums: { [_ in never]: never }

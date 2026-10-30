@@ -25,3 +25,19 @@ node scripts/recipes/build-migration.ts --check-all     # проверка в CI
 Рецепты, адаптированные из Викиучебника, распространяются на условиях
 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.ru) с указанием авторов
 оригинальной страницы (ссылка на историю правок в каждом файле).
+
+## Фото блюд
+
+Фото берутся со страницы-источника рецепта, только со свободной лицензией (CC0, общественное
+достояние, CC BY, CC BY-SA) и известным автором:
+
+```bash
+node scripts/recipes/fetch-images.ts images-02 batch-02        # найти фото и скачать копии
+node scripts/recipes/build-images-migration.ts images-02       # записать миграцию
+node scripts/recipes/build-images-migration.ts --check-all     # проверка в CI
+```
+
+Копии лежат в `public/recipe-images/`; автор, лицензия и страница каждого файла — в
+`images-NN.json`, на сайте — подпись под фото со ссылкой на эту страницу. Фото, которое не
+подходит к рецепту, исключается в `SKIP` скрипта с причиной. Свои фото владелица добавляет
+кнопкой на странице рецепта.
