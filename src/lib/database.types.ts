@@ -751,6 +751,8 @@ export type Database = {
       normalize_name: { Args: { value: string }; Returns: string }
       recipe_version_owned: { Args: { p_version_id: number }; Returns: boolean }
       save_recipe_version: {
+        // Уточнено вручную: генератор помечает все аргументы функций как обязательные,
+        // а p_id (новая версия), p_note, p_servings и p_yield_grams бывают null.
         Args: {
           p_id: number | null
           p_lines: Json
