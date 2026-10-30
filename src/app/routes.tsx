@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { RouteObject } from 'react-router'
 import { Layout } from './Layout'
 import { sections } from './sections'
+import { DiaryPage } from '../features/diary/DiaryPage'
 import { FavoritesPage } from '../features/favorites/FavoritesPage'
 import { PantryPage } from '../features/pantry/PantryPage'
 import { RecipePage } from '../features/recipes/RecipePage'
@@ -16,6 +17,7 @@ const implemented: Record<string, ReactNode> = {
   '/': <RecipesPage />,
   '/pantry': <PantryPage />,
   '/favorites': <FavoritesPage />,
+  '/diary': <DiaryPage />,
   '/profile': <ProfilePage />,
 }
 

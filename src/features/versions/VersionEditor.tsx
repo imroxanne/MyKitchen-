@@ -443,7 +443,7 @@ export function VersionEditor({
 }
 
 /** Поиск продукта по названию и синонимам — для замены и добавления. */
-function IngredientPicker({
+export function IngredientPicker({
   catalog,
   label,
   onPick,

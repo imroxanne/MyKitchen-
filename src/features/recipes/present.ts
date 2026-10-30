@@ -89,7 +89,7 @@ export function describeServings(servings: number | null): string {
   return `${n} ${plural(servings, ['порция', 'порции', 'порций'])}`
 }
 
-function plural(n: number, forms: [string, string, string]): string {
+export function plural(n: number, forms: [string, string, string]): string {
   if (!Number.isInteger(n)) return forms[1]
   const mod10 = n % 10
   const mod100 = n % 100

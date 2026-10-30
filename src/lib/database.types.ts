@@ -9,6 +9,124 @@ export type Database = {
   }
   public: {
     Tables: {
+      diary_entries: {
+        Row: {
+          amount: number | null
+          amount_unit: string
+          base_amount: number | null
+          base_carbs: number
+          base_fat: number
+          base_kcal: number
+          base_protein: number
+          base_servings: number | null
+          carbs: number | null
+          composition: Json
+          created_at: string
+          eaten_on: string
+          eaten_time: string | null
+          fat: number | null
+          id: number
+          ingredient_id: number | null
+          kcal: number | null
+          kind: string
+          meal: string
+          note: string | null
+          nutrition_incomplete: boolean
+          protein: number | null
+          recipe_id: number | null
+          serving_unit: string
+          servings: number | null
+          title: string
+          updated_at: string
+          user_id: string
+          version_id: number | null
+        }
+        Insert: {
+          amount?: number | null
+          amount_unit?: string
+          base_amount?: number | null
+          base_carbs: number
+          base_fat: number
+          base_kcal: number
+          base_protein: number
+          base_servings?: number | null
+          carbs?: never
+          composition?: Json
+          created_at?: string
+          eaten_on: string
+          eaten_time?: string | null
+          fat?: never
+          id?: never
+          ingredient_id?: number | null
+          kcal?: never
+          kind: string
+          meal: string
+          note?: string | null
+          nutrition_incomplete?: boolean
+          protein?: never
+          recipe_id?: number | null
+          serving_unit?: string
+          servings?: number | null
+          title: string
+          updated_at?: string
+          user_id?: string
+          version_id?: number | null
+        }
+        Update: {
+          amount?: number | null
+          amount_unit?: string
+          base_amount?: number | null
+          base_carbs?: number
+          base_fat?: number
+          base_kcal?: number
+          base_protein?: number
+          base_servings?: number | null
+          carbs?: never
+          composition?: Json
+          created_at?: string
+          eaten_on?: string
+          eaten_time?: string | null
+          fat?: never
+          id?: never
+          ingredient_id?: number | null
+          kcal?: never
+          kind?: string
+          meal?: string
+          note?: string | null
+          nutrition_incomplete?: boolean
+          protein?: never
+          recipe_id?: number | null
+          serving_unit?: string
+          servings?: number | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          version_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'diary_entries_ingredient_id_fkey'
+            columns: ['ingredient_id']
+            isOneToOne: false
+            referencedRelation: 'ingredients'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'diary_entries_recipe_id_fkey'
+            columns: ['recipe_id']
+            isOneToOne: false
+            referencedRelation: 'recipes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'diary_entries_version_id_fkey'
+            columns: ['version_id']
+            isOneToOne: false
+            referencedRelation: 'recipe_versions'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       favorite_recipes: {
         Row: { created_at: string; recipe_id: number; user_id: string }
         Insert: { created_at?: string; recipe_id: number; user_id?: string }

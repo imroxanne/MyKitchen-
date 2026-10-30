@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router'
 import { RequireAuth } from '../auth/RequireAuth'
+import { EatenForm } from '../diary/EatenForm'
+import { eatenMessage, snapshotFromRecipe } from '../diary/logic'
+import type { DiaryApi, DiarySnapshot } from '../diary/types'
+import { useDiaryApi } from '../diary/useDiaryApi'
 import { FavoriteButton } from '../favorites/FavoriteButton'
 import type { FavoritesApi } from '../favorites/types'
 import { useFavorites, useFavoritesApi, type Favorites } from '../favorites/useFavorites'
@@ -41,12 +45,15 @@ export function RecipePage({
   api,
   pantryApi,
   favoritesApi,
+  diaryApi,
 }: {
   api?: RecipesApi
   pantryApi?: PantryApi
   favoritesApi?: FavoritesApi
+  diaryApi?: DiaryApi
 }) {
   const effectiveApi = useRecipesApi(api)
+  const diary = useDiaryApi(diaryApi)
   const pantry = usePantryApi(pantryApi)
   const favorites = useFavorites(useFavoritesApi(favoritesApi))
   const { id } = useParams()
@@ -55,7 +62,13 @@ export function RecipePage({
       <BackLink />
       <RequireAuth>
         {effectiveApi && (
-          <RecipeView api={effectiveApi} pantryApi={pantry} favorites={favorites} id={Number(id)} />
+          <RecipeView
+            api={effectiveApi}
+            pantryApi={pantry}
+            favorites={favorites}
+            diaryApi={diary}
+            id={Number(id)}
+          />
         )}
       </RequireAuth>
     </article>
@@ -104,11 +117,13 @@ function RecipeView({
   api,
   pantryApi,
   favorites,
+  diaryApi,
   id,
 }: {
   api: RecipesApi
   pantryApi: PantryApi | null
   favorites: Favorites
+  diaryApi: DiaryApi | null
   id: number
 }) {
   const [state, setState] = useState<State>({ status: 'loading' })
@@ -126,12 +141,17 @@ function RecipeView({
   const [justSaved, setJustSaved] = useState<number | null>(null)
   // Пересчёт количеств оригинала на другое число порций — только просмотр.
   const [factor, setFactor] = useState(1)
+  // «Съедено» (B3): форма и сообщение о записи со ссылкой на день в дневнике.
+  const [eatenOpen, setEatenOpen] = useState(false)
+  const [eatenNote, setEatenNote] = useState<{ text: string; date: string } | null>(null)
   const [params, setParams] = useSearchParams()
   const location = useLocation()
   const selected = params.get('version')
   // Переключение версий не добавляет шагов в историю: «назад» по-прежнему ведёт к списку.
-  const select = (version: string | null) =>
+  const select = (version: string | null) => {
+    setEatenOpen(false)
     setParams(version ? { version } : {}, { replace: true, state: location.state })
+  }
 
   useEffect(() => {
     if (!pantryApi) return
@@ -227,6 +247,34 @@ function RecipeView({
             saved: savedVersion,
           }
         : null
+  // Записать как съеденное можно оригинал (как показан) или сохранённую версию.
+  const originalYield = measuredYield?.grams ?? r.yieldGrams
+  const eaten: { snapshot: DiarySnapshot; variantName: string } | null =
+    selected === 'new'
+      ? null
+      : savedVersion
+        ? {
+            variantName: `версия «${savedVersion.name}»`,
+            snapshot: snapshotFromRecipe({
+              recipeId: r.id,
+              versionId: savedVersion.id,
+              title: `${r.title} (${savedVersion.name})`,
+              lines: applyUserNutrition(savedVersion.ingredients, userNutrition),
+              servings: savedVersion.servings,
+              yieldGrams: savedVersion.yieldGrams,
+            }),
+          }
+        : {
+            variantName: 'оригинальный рецепт',
+            snapshot: snapshotFromRecipe({
+              recipeId: r.id,
+              versionId: null,
+              title: r.title,
+              lines: scaled,
+              servings: r.servings === null ? null : r.servings * factor,
+              yieldGrams: originalYield === null ? null : originalYield * factor,
+            }),
+          }
   return (
     <>
       <h1>{r.title}</h1>
@@ -247,7 +295,41 @@ function RecipeView({
             Открыть оригинал ({sourceSiteName(r.source)}) ↗
           </a>
         )}
+        {diaryApi && (
+          <button
+            type="button"
+            aria-expanded={eatenOpen}
+            disabled={!eaten}
+            onClick={() => {
+              setEatenNote(null)
+              setEatenOpen((open) => !open)
+            }}
+          >
+            Съедено
+          </button>
+        )}
       </div>
+      {diaryApi && !eaten && (
+        <p className="muted small">Чтобы записать в дневник новую версию, сначала сохраните её.</p>
+      )}
+      {eatenNote && (
+        <p className="success small" role="status">
+          {eatenNote.text} <Link to={`/diary?date=${eatenNote.date}`}>Открыть дневник</Link>
+        </p>
+      )}
+      {diaryApi && eaten && eatenOpen && (
+        <EatenForm
+          key={selected ?? 'original'}
+          api={diaryApi}
+          snapshot={eaten.snapshot}
+          variantName={eaten.variantName}
+          onCancel={() => setEatenOpen(false)}
+          onSaved={(entry) => {
+            setEatenOpen(false)
+            setEatenNote({ text: eatenMessage(entry), date: entry.eatenOn })
+          }}
+        />
+      )}
       <p className="muted small" role="status">
         {favorites.error ? '' : favoriteNote}
       </p>
