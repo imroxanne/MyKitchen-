@@ -21,6 +21,8 @@ test('список рецептов → полный рецепт с источ�
   // Фото блюда из источника (копия на сайте) действительно загружается.
   const cover = list.getByRole('link', { name: /^Шакшука/ }).locator('img')
   await expect(cover).toHaveAttribute('src', '/recipe-images/shakshuka.jpg')
+  // Фото в ленте грузятся при прокрутке к ним (loading="lazy") — как у пользователя.
+  await cover.scrollIntoViewIfNeeded()
   await expect
     .poll(() => cover.evaluate((img: HTMLImageElement) => img.naturalWidth))
     .toBeGreaterThan(0)
