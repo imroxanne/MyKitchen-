@@ -229,6 +229,12 @@ function RecipeView({
         : null
   return (
     <>
+      {r.image && (
+        <figure className="recipe-photo">
+          <img src={r.image.url} alt={`Фото блюда: ${r.title}`} />
+          <figcaption className="muted small">{r.image.credit}</figcaption>
+        </figure>
+      )}
       <h1>{r.title}</h1>
       <TrustBadges trust={r.trust} detailed />
 

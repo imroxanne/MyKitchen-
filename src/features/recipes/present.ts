@@ -19,6 +19,17 @@ export const formatDate = (iso: string) => dateFormat.format(new Date(iso))
  * Раздельные статусы (ТЗ §4): проверка приготовлением и проверка источника/полноты
  * показываются всегда — и когда есть, и когда нет. Тестовые данные помечаются отдельно.
  */
+/**
+ * Один короткий значок для карточки в списке: самый сильный подтверждённый статус или
+ * честное «не проверен». Все статусы по отдельности — на странице рецепта.
+ */
+export function cardTrustBadge(trust: RecipeTrust): Pick<TrustBadge, 'label' | 'tone'> {
+  if (trust.isSample) return { label: 'Тестовые данные', tone: 'warn' }
+  if (trust.cookedVerifiedAt) return { label: 'Проверен приготовлением', tone: 'ok' }
+  if (trust.sourceCheckedAt) return { label: 'Источник проверен', tone: 'ok' }
+  return { label: 'Не проверен', tone: 'warn' }
+}
+
 export function trustBadges(trust: RecipeTrust): TrustBadge[] {
   const badges: TrustBadge[] = []
   if (trust.isSample)

@@ -29,6 +29,7 @@ const paths: Record<string, ReactNode> = {
       <path d="M4 10h16M9 3v4M15 3v4" />
     </>
   ),
+  check: <path d="M5 12l5 5 9-10" />,
   profile: (
     <>
       <circle cx="12" cy="8" r="4" />

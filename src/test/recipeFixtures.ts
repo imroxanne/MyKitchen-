@@ -30,6 +30,7 @@ export const openLicenseRecipe: RecipeDetail = {
   prepMinutes: 15,
   cookMinutes: 45,
   servings: 4,
+  image: { url: 'https://example.test/soup.jpg', credit: 'Фото: тестовая подпись, CC BY-SA 4.0' },
   mealTypes: ['lunch'],
   trust: {
     origin: 'external',
@@ -130,6 +131,7 @@ export const unverifiedRecipe: RecipeDetail = {
   prepMinutes: null,
   cookMinutes: null,
   servings: null,
+  image: null,
   trust: { ...openLicenseRecipe.trust, sourceCheckedAt: null, sourceCheckedNote: null },
 }
 
@@ -149,6 +151,7 @@ export function createMemoryRecipesApi(recipes: RecipeDetail[]): RecipesApi {
         servings: r.servings,
         mealTypes: r.mealTypes,
         tags: r.tags,
+        image: r.image,
         trust: r.trust,
         ingredients: r.ingredients.map(
           ({ position: _p, unitName: _u, quantityText: _q, note: _n, ...ref }) => ref,
@@ -208,6 +211,7 @@ export const milkRecipe: RecipeDetail = {
   prepMinutes: 5,
   cookMinutes: 10,
   servings: 2,
+  image: null,
   mealTypes: ['breakfast'],
   ingredients: [
     {

@@ -15,6 +15,12 @@ export interface RecipeIngredientRef extends NutritionLine {
   ingredientId: number
 }
 
+/** Фото блюда: только с разрешёнными правами и подписью об авторе. */
+export interface RecipeImage {
+  url: string
+  credit: string
+}
+
 export interface RecipeSummary {
   id: number
   title: string
@@ -24,6 +30,7 @@ export interface RecipeSummary {
   servings: number | null
   mealTypes: string[]
   tags: string[]
+  image: RecipeImage | null
   trust: RecipeTrust
   ingredients: RecipeIngredientRef[]
 }

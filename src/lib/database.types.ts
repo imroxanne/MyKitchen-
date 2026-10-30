@@ -521,6 +521,7 @@ export type Database = {
           difficulty: number | null
           equipment: string[]
           id: number
+          image_credit: string | null
           image_url: string | null
           is_published: boolean
           is_sample: boolean
@@ -550,6 +551,7 @@ export type Database = {
           difficulty?: number | null
           equipment?: string[]
           id?: never
+          image_credit?: string | null
           image_url?: string | null
           is_published?: boolean
           is_sample?: boolean
@@ -579,6 +581,7 @@ export type Database = {
           difficulty?: number | null
           equipment?: string[]
           id?: never
+          image_credit?: string | null
           image_url?: string | null
           is_published?: boolean
           is_sample?: boolean

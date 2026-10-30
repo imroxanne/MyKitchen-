@@ -14,7 +14,7 @@ type Client = SupabaseClient<Database>
 
 const SUMMARY_COLUMNS =
   'id, title, description, prep_minutes, cook_minutes, servings, meal_types, tags, origin, is_sample, ' +
-  'source_checked_at, source_checked_note, cooked_verified_at, cooked_verified_note'
+  'source_checked_at, source_checked_note, cooked_verified_at, cooked_verified_note, image_url, image_credit'
 
 // Пищевая ценность продукта и масса его единиц — для расчёта КБЖУ (A7).
 const NUTRITION_COLUMNS =
@@ -110,6 +110,8 @@ type SummaryRow = Pick<
   | 'source_checked_note'
   | 'cooked_verified_at'
   | 'cooked_verified_note'
+  | 'image_url'
+  | 'image_credit'
 >
 
 function toSummary(row: SummaryRow, ingredients: RecipeIngredientRef[]): RecipeSummary {
@@ -123,6 +125,9 @@ function toSummary(row: SummaryRow, ingredients: RecipeIngredientRef[]): RecipeS
     mealTypes: row.meal_types,
     tags: row.tags,
     ingredients,
+    // Без подписи об авторе и правах фото не показываем (ТЗ §4; в БД это ещё и ограничение).
+    image:
+      row.image_url && row.image_credit ? { url: row.image_url, credit: row.image_credit } : null,
     trust: {
       origin: row.origin as RecipeSummary['trust']['origin'],
       isSample: row.is_sample,
