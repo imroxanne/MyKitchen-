@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database, Tables } from '../../lib/database.types'
 import type { IngredientNutrition } from '../nutrition/types'
+import type { RecipeVersion, VersionLine } from '../versions/types'
 import type {
   RecipeDetail,
   RecipeIngredientLine,
@@ -146,6 +147,42 @@ type DetailRow = Tables<'recipes'> & {
   recipe_steps: Pick<Tables<'recipe_steps'>, 'position' | 'instruction' | 'duration_minutes'>[]
 }
 
+const VERSION_COLUMNS =
+  'id, recipe_id, name, servings, yield_grams, note, updated_at, ' +
+  'recipe_version_ingredients (position, ingredient_id, quantity, unit_code, quantity_text, ' +
+  'importance, note, original_position, units (name, kind, base_factor), ' +
+  `ingredients (name, category_slug, ${NUTRITION_COLUMNS}))`
+
+type VersionRow = Pick<
+  Tables<'recipe_versions'>,
+  'id' | 'recipe_id' | 'name' | 'servings' | 'yield_grams' | 'note' | 'updated_at'
+> & {
+  recipe_version_ingredients: (IngredientRefRow &
+    Pick<Tables<'recipe_version_ingredients'>, 'quantity_text' | 'note' | 'original_position'>)[]
+}
+
+function toVersion(row: VersionRow): RecipeVersion {
+  return {
+    id: row.id,
+    recipeId: row.recipe_id,
+    name: row.name,
+    servings: row.servings,
+    yieldGrams: row.yield_grams,
+    note: row.note,
+    updatedAt: row.updated_at,
+    ingredients: row.recipe_version_ingredients
+      .map((i): VersionLine => ({
+        ...toRef(i),
+        position: i.position,
+        unitName: i.units?.name ?? null,
+        quantityText: i.quantity_text,
+        note: i.note,
+        originalPosition: i.original_position,
+      }))
+      .sort((a, b) => a.position - b.position),
+  }
+}
+
 export function createSupabaseRecipesApi(supabase: Client): RecipesApi {
   return {
     async listRecipes() {
@@ -262,6 +299,49 @@ export function createSupabaseRecipesApi(supabase: Client): RecipesApi {
         .delete()
         .eq('recipe_id', recipeId)
       if (error) fail(error.message, 'удалить массу готового блюда')
+    },
+
+    async listVersions(recipeId) {
+      const { data, error } = await supabase
+        .from('recipe_versions')
+        .select(VERSION_COLUMNS)
+        .eq('recipe_id', recipeId)
+        .order('updated_at', { ascending: false })
+      if (error) fail(error.message, 'загрузить ваши версии рецепта')
+      return (data as unknown as VersionRow[]).map(toVersion)
+    },
+
+    async saveVersion(draft) {
+      const { data: id, error } = await supabase.rpc('save_recipe_version', {
+        p_id: draft.id,
+        p_recipe_id: draft.recipeId,
+        p_name: draft.name.trim(),
+        p_servings: draft.servings,
+        p_yield_grams: draft.yieldGrams,
+        p_note: draft.note,
+        p_lines: draft.ingredients.map((l) => ({
+          ingredientId: l.ingredientId,
+          quantity: l.quantity,
+          unitCode: l.quantity === null ? null : l.unitCode,
+          quantityText: l.quantity === null ? l.quantityText : null,
+          importance: l.importance,
+          note: l.note,
+          originalPosition: l.originalPosition,
+        })),
+      })
+      if (error) fail(error.message, 'сохранить версию рецепта')
+      const { data, error: readError } = await supabase
+        .from('recipe_versions')
+        .select(VERSION_COLUMNS)
+        .eq('id', id)
+        .single()
+      if (readError) fail(readError.message, 'загрузить сохранённую версию')
+      return toVersion(data as unknown as VersionRow)
+    },
+
+    async deleteVersion(id) {
+      const { error } = await supabase.from('recipe_versions').delete().eq('id', id)
+      if (error) fail(error.message, 'удалить версию рецепта')
     },
   }
 }

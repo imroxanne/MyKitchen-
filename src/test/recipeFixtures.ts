@@ -1,5 +1,6 @@
 import type { IngredientNutrition, YieldMeasurement } from '../features/nutrition/types'
 import type { RecipeDetail, RecipesApi } from '../features/recipes/types'
+import type { RecipeVersion } from '../features/versions/types'
 
 // ТЕСТОВЫЕ пищевые данные (не настоящие значения продуктов).
 const testFood = (
@@ -134,6 +135,9 @@ export const unverifiedRecipe: RecipeDetail = {
 
 export function createMemoryRecipesApi(recipes: RecipeDetail[]): RecipesApi {
   const yields = new Map<number, YieldMeasurement>()
+  const versions: RecipeVersion[] = []
+  let nextVersionId = 100
+  let clock = 0
   return {
     async listRecipes() {
       return recipes.map((r) => ({
@@ -164,6 +168,34 @@ export function createMemoryRecipesApi(recipes: RecipeDetail[]): RecipesApi {
     },
     async deleteYield(recipeId) {
       yields.delete(recipeId)
+    },
+    // Версии повторяют правила БД: непустой состав, количество только с единицей.
+    async listVersions(recipeId) {
+      return versions
+        .filter((v) => v.recipeId === recipeId)
+        .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+        .map((v) => structuredClone(v))
+    },
+    async saveVersion(draft) {
+      if (draft.ingredients.length === 0)
+        throw new Error('В версии должен быть хотя бы один ингредиент')
+      if (draft.ingredients.some((l) => l.quantity !== null && (l.quantity <= 0 || !l.unitCode)))
+        throw new Error('Количество — больше нуля и с единицей')
+      const saved: RecipeVersion = {
+        ...structuredClone(draft),
+        id: draft.id ?? nextVersionId++,
+        updatedAt: `2026-11-01T10:00:${String(clock++).padStart(2, '0')}Z`,
+        ingredients: draft.ingredients.map((l, i) => ({ ...structuredClone(l), position: i + 1 })),
+      }
+      const at = versions.findIndex((v) => v.id === saved.id)
+      if (draft.id !== null && at < 0) throw new Error('Версия не найдена')
+      if (at >= 0) versions[at] = saved
+      else versions.push(saved)
+      return structuredClone(saved)
+    },
+    async deleteVersion(id) {
+      const at = versions.findIndex((v) => v.id === id)
+      if (at >= 0) versions.splice(at, 1)
     },
   }
 }

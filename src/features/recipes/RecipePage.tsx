@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router'
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router'
 import { RequireAuth } from '../auth/RequireAuth'
 import { FavoriteButton } from '../favorites/FavoriteButton'
 import type { FavoritesApi } from '../favorites/types'
@@ -27,7 +27,11 @@ import {
 import { NutritionBlock } from '../nutrition/NutritionBlock'
 import type { UserNutrition, YieldMeasurement } from '../nutrition/types'
 import { applyUserNutrition } from '../nutrition/userNutrition'
+import { draftFromRecipe, draftFromVersion, scaleLines } from '../versions/draft'
+import type { RecipeVersion, VersionDraft } from '../versions/types'
+import { SAVED_MESSAGE, VersionEditor } from '../versions/VersionEditor'
 import { CookingSteps } from './CookingSteps'
+import { ServingsScaler } from './ServingsScaler'
 import type { RecipeBackState } from './RecipeCard'
 import { TrustBadges } from './TrustBadges'
 import type { RecipeDetail, RecipesApi, RecipeSource } from './types'
@@ -114,6 +118,20 @@ function RecipeView({
   const [pantry, setPantry] = useState<PantryIndex | null>(null)
   const [userNutrition, setUserNutrition] = useState<UserNutrition[]>([])
   const [measuredYield, setMeasuredYield] = useState<YieldMeasurement | null>(null)
+  // Свои версии рецепта (B2) и несохранённая новая версия.
+  const [versions, setVersions] = useState<RecipeVersion[] | null>(null)
+  const [versionsError, setVersionsError] = useState<string | null>(null)
+  const [newDraft, setNewDraft] = useState<VersionDraft | null>(null)
+  // Новая версия после сохранения открывается заново (у неё появился номер) — с сообщением.
+  const [justSaved, setJustSaved] = useState<number | null>(null)
+  // Пересчёт количеств оригинала на другое число порций — только просмотр.
+  const [factor, setFactor] = useState(1)
+  const [params, setParams] = useSearchParams()
+  const location = useLocation()
+  const selected = params.get('version')
+  // Переключение версий не добавляет шагов в историю: «назад» по-прежнему ведёт к списку.
+  const select = (version: string | null) =>
+    setParams(version ? { version } : {}, { replace: true, state: location.state })
 
   useEffect(() => {
     if (!pantryApi) return
@@ -130,6 +148,18 @@ function RecipeView({
       cancelled = true
     }
   }, [pantryApi])
+
+  useEffect(() => {
+    if (!Number.isInteger(id)) return
+    let cancelled = false
+    api.listVersions(id).then(
+      (v) => !cancelled && setVersions(v),
+      (e: unknown) => !cancelled && setVersionsError(e instanceof Error ? e.message : String(e)),
+    )
+    return () => {
+      cancelled = true
+    }
+  }, [api, id])
 
   useEffect(() => {
     if (!Number.isInteger(id)) return
@@ -185,6 +215,18 @@ function RecipeView({
     ...state.recipe,
     ingredients: applyUserNutrition(state.recipe.ingredients, userNutrition),
   }
+  const scaled = scaleLines(r.ingredients, factor)
+  const savedVersion = versions?.find((v) => String(v.id) === selected) ?? null
+  const editing =
+    selected === 'new' && newDraft
+      ? { key: 'new', initial: newDraft, saved: null }
+      : savedVersion
+        ? {
+            key: String(savedVersion.id),
+            initial: draftFromVersion(savedVersion),
+            saved: savedVersion,
+          }
+        : null
   return (
     <>
       <h1>{r.title}</h1>
@@ -245,45 +287,106 @@ function RecipeView({
 
       {r.description && <p>{r.description}</p>}
 
-      <section className="card" aria-labelledby="ingredients-title">
-        <h2 id="ingredients-title">Ингредиенты</h2>
-        {pantry && !pantry.isEmpty && <PantrySummary recipe={r} pantry={pantry} />}
-        <ul className="ingredients">
-          {r.ingredients.map((line) => {
-            const mark = IMPORTANCE_LABEL[line.importance]
-            const status = pantry && !pantry.isEmpty ? ingredientAvailability(line, pantry) : null
-            // «По вкусу» и «по желанию» на подбор не влияют — «нет» у них не показываем.
-            const availability =
-              status && !(status === 'missing' && !isRequired(line)) ? AVAILABILITY[status] : null
-            return (
-              <li key={line.position}>
-                <span>
-                  {line.name}
-                  {mark && <span className="badge">{mark}</span>}
-                  {line.note && <span className="muted small"> — {line.note}</span>}
-                  {availability && (
-                    <span className={`avail avail-${availability.tone}`}>{availability.label}</span>
-                  )}
-                </span>
-                <span className="amount">{describeAmount(line)}</span>
-              </li>
-            )
-          })}
-        </ul>
-      </section>
-
-      <NutritionBlock
-        lines={r.ingredients}
-        servings={r.servings}
-        yieldGrams={r.yieldGrams}
-        sources={r.nutritionSources}
-        measuredYield={measuredYield}
-        onSaveYield={async (grams) =>
-          setMeasuredYield(
-            grams === null ? (await api.deleteYield(r.id), null) : await api.saveYield(r.id, grams),
-          )
-        }
+      <VersionSwitcher
+        versions={versions}
+        error={versionsError}
+        selected={selected}
+        hasNew={newDraft !== null}
+        onSelect={select}
+        onCreate={() => {
+          // Копия оригинала без своих данных с упаковки — они применяются при показе.
+          setNewDraft(draftFromRecipe(state.recipe, `Моя версия ${(versions?.length ?? 0) + 1}`))
+          select('new')
+        }}
       />
+
+      {editing ? (
+        <VersionEditor
+          key={editing.key}
+          original={state.recipe}
+          initial={editing.initial}
+          saved={editing.saved}
+          pantryApi={pantryApi}
+          userNutrition={userNutrition}
+          sources={r.nutritionSources}
+          initialMessage={editing.saved?.id === justSaved ? SAVED_MESSAGE : null}
+          onSave={async (draft) => {
+            const saved = await api.saveVersion(draft)
+            setVersions((list) => [saved, ...(list ?? []).filter((v) => v.id !== saved.id)])
+            if (draft.id === null) {
+              setNewDraft(null)
+              setJustSaved(saved.id)
+              select(String(saved.id))
+            }
+          }}
+          onDelete={async () => {
+            if (editing.saved) {
+              const deletedId = editing.saved.id
+              await api.deleteVersion(deletedId)
+              setVersions((list) => (list ?? []).filter((v) => v.id !== deletedId))
+            } else setNewDraft(null)
+            select(null)
+          }}
+        />
+      ) : (
+        <>
+          <section className="card" aria-labelledby="ingredients-title">
+            <h2 id="ingredients-title">Ингредиенты</h2>
+            <ServingsScaler servings={r.servings} factor={factor} onChange={setFactor} />
+            {pantry && !pantry.isEmpty && <PantrySummary recipe={r} pantry={pantry} />}
+            <ul className="ingredients">
+              {scaled.map((line) => {
+                const mark = IMPORTANCE_LABEL[line.importance]
+                const status =
+                  pantry && !pantry.isEmpty ? ingredientAvailability(line, pantry) : null
+                // «По вкусу» и «по желанию» на подбор не влияют — «нет» у них не показываем.
+                const availability =
+                  status && !(status === 'missing' && !isRequired(line))
+                    ? AVAILABILITY[status]
+                    : null
+                return (
+                  <li key={line.position}>
+                    <span>
+                      {line.name}
+                      {mark && <span className="badge">{mark}</span>}
+                      {line.note && <span className="muted small"> — {line.note}</span>}
+                      {availability && (
+                        <span className={`avail avail-${availability.tone}`}>
+                          {availability.label}
+                        </span>
+                      )}
+                    </span>
+                    <span className="amount">{describeAmount(line)}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+
+          <NutritionBlock
+            lines={scaled}
+            servings={r.servings === null ? null : r.servings * factor}
+            yieldGrams={r.yieldGrams === null ? null : r.yieldGrams * factor}
+            sources={r.nutritionSources}
+            measuredYield={
+              measuredYield && factor !== 1
+                ? { ...measuredYield, grams: measuredYield.grams * factor }
+                : measuredYield
+            }
+            // Взвешивание относится к рецепту как он есть; при пересчёте порций его не меняем.
+            onSaveYield={
+              factor !== 1
+                ? undefined
+                : async (grams) =>
+                    setMeasuredYield(
+                      grams === null
+                        ? (await api.deleteYield(r.id), null)
+                        : await api.saveYield(r.id, grams),
+                    )
+            }
+          />
+        </>
+      )}
 
       <CookingSteps recipeId={r.id} steps={r.steps} />
 
@@ -382,5 +485,51 @@ function PantrySummary({ recipe, pantry }: { recipe: RecipeDetail; pantry: Pantr
       Не хватает: {match.toBuy.map((m) => m.line.name).join(', ')}.{' '}
       <span className="muted small">«По вкусу» и «по желанию» не учитываются.</span>
     </p>
+  )
+}
+
+/** Оригинал и свои версии рецепта (B2). */
+function VersionSwitcher({
+  versions,
+  error,
+  selected,
+  hasNew,
+  onSelect,
+  onCreate,
+}: {
+  versions: RecipeVersion[] | null
+  error: string | null
+  selected: string | null
+  hasNew: boolean
+  onSelect(version: string | null): void
+  onCreate(): void
+}) {
+  const current = (value: string | null) => (selected ?? null) === value
+  return (
+    <div className="version-switcher" role="group" aria-label="Версии рецепта">
+      <button type="button" aria-pressed={current(null)} onClick={() => onSelect(null)}>
+        Оригинал
+      </button>
+      {versions?.map((v) => (
+        <button
+          type="button"
+          key={v.id}
+          aria-pressed={current(String(v.id))}
+          onClick={() => onSelect(String(v.id))}
+        >
+          {v.name}
+        </button>
+      ))}
+      {hasNew ? (
+        <button type="button" aria-pressed={current('new')} onClick={() => onSelect('new')}>
+          Новая версия (не сохранена)
+        </button>
+      ) : (
+        <button type="button" className="link" disabled={versions === null} onClick={onCreate}>
+          + Своя версия
+        </button>
+      )}
+      {error && <p className="error small">Версии не загрузились: {error}</p>}
+    </div>
   )
 }

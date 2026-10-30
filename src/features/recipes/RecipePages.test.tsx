@@ -442,3 +442,143 @@ describe('уточнённый справочник (B1)', () => {
     expect(within(block).queryByRole('columnheader', { name: 'На 100 г готового' })).toBeNull()
   })
 })
+
+describe('порции и своя версия рецепта (B2)', () => {
+  // ТЕСТОВЫЕ справочные данные свёклы для замены.
+  const beetReference = [
+    {
+      state: 'as_purchased' as const,
+      nutrition: {
+        kcal: 40,
+        protein: 2,
+        fat: 0,
+        carbs: 10,
+        approximate: false,
+        note: null,
+        sourceCode: 'test',
+        sourceFoodId: '6',
+        sourceFoodName: 'TEST beet',
+      },
+      weights: [],
+    },
+  ]
+
+  function renderRecipe(path: string) {
+    const pantry = createMemoryPantryApi(testCatalog)
+    pantry.store.reference.set(6, beetReference)
+    const recipes = createMemoryRecipesApi([openLicenseRecipe, milkRecipe])
+    const router = createMemoryRouter(
+      [{ path: '/recipes/:id', element: <RecipePage api={recipes} pantryApi={pantry.api} /> }],
+      { initialEntries: [path] },
+    )
+    render(
+      <AuthContext.Provider value={{ state: { status: 'signed-in', session }, client: null }}>
+        <RouterProvider router={router} flushSync={(fn) => void flushSync(fn)} />
+      </AuthContext.Provider>,
+    )
+    return { router, recipes }
+  }
+
+  const kcalRow = (block: HTMLElement) => within(block).getByRole('row', { name: /Калории/ })
+
+  it('пересчёт порций при просмотре: количества и КБЖУ блюда меняются, на порцию — нет', async () => {
+    const user = userEvent.setup()
+    renderRecipe('/recipes/1')
+    const ingredients = await screen.findByRole('region', { name: 'Ингредиенты' })
+    expect(within(ingredients).getByText('4 порции')).toBeInTheDocument()
+    await user.click(within(ingredients).getByRole('button', { name: 'Больше порций' }))
+    await user.click(within(ingredients).getByRole('button', { name: 'Больше порций' }))
+    expect(within(ingredients).getByText('6 порций')).toBeInTheDocument()
+    expect(within(ingredients).getByText('450 г')).toBeInTheDocument()
+    expect(within(ingredients).getByText('по вкусу')).toBeInTheDocument()
+    // ТЕСТ: 300 г × 40 = 120 ккал на 4 порции → 180 на 6, на порцию по-прежнему 30.
+    const block = screen.getByRole('region', { name: /КБЖУ/ })
+    expect(kcalRow(block)).toHaveTextContent(/30\s*180/)
+    // Взвешивание относится к рецепту как он есть — при пересчёте его не вводим.
+    expect(within(block).queryByLabelText('Масса готового блюда, г')).toBeNull()
+    await user.click(within(ingredients).getByRole('button', { name: 'как в рецепте' }))
+    expect(within(ingredients).getByText('300 г')).toBeInTheDocument()
+  })
+
+  it('своя версия: изменение, замена, удаление и возврат; КБЖУ сразу; оригинал неизменен', async () => {
+    const user = userEvent.setup()
+    const { router, recipes } = renderRecipe('/recipes/3')
+    await user.click(await screen.findByRole('button', { name: '+ Своя версия' }))
+    const editor = screen.getByRole('region', { name: 'Моя версия' })
+    const block = within(editor).getByRole('region', { name: /КБЖУ/ })
+    // ТЕСТ: молоко 200 мл ≈ 200 г × 60 = 120 + морковь 2 × 50 г × 40 = 40 → 160, 2 порции → 80.
+    expect(kcalRow(block)).toHaveTextContent(/80\s*160/)
+
+    // Количество моркови: 1 шт. → КБЖУ пересчитан сразу, отмечено «было».
+    const carrot = within(editor).getByLabelText('Количество: Морковь')
+    await user.clear(carrot)
+    await user.type(carrot, '1')
+    expect(kcalRow(block)).toHaveTextContent(/70\s*140/)
+    expect(editor).toHaveTextContent('было: 2 шт.')
+
+    // Замена молока на свёклу; единица — граммы: 200 г × 40 = 80 + 20 → 100.
+    const composition = within(editor).getByRole('list', { name: 'Состав версии' })
+    const milkLine = within(composition).getByText('Молоко').closest('li')!
+    await user.click(within(milkLine).getByRole('button', { name: 'Заменить' }))
+    await user.type(within(milkLine).getByRole('searchbox'), 'свёк')
+    await user.click(within(milkLine).getByRole('button', { name: /Свёкла/ }))
+    expect(await within(editor).findByText('заменено, было: Молоко')).toBeInTheDocument()
+    await user.selectOptions(within(editor).getByLabelText('Единица: Свёкла'), 'g')
+    expect(kcalRow(block)).toHaveTextContent(/50\s*100/)
+
+    // Убрали морковь и вернули.
+    await user.click(within(editor).getByRole('button', { name: 'Убрать: Морковь' }))
+    expect(editor).toHaveTextContent('Убрано из оригинала: Морковь (2 шт.)')
+    await user.click(within(editor).getByRole('button', { name: 'вернуть' }))
+    expect(within(editor).getByLabelText('Количество: Морковь')).toHaveValue('2')
+
+    // Сохранение: вкладка версии, в адресе — номер версии.
+    await user.click(within(editor).getByRole('button', { name: 'Сохранить версию' }))
+    expect(
+      await screen.findByText(/Версия сохранена\. Оригинальный рецепт не изменился/),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Моя версия 1' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    expect(router.state.location.search).toMatch(/version=\d+/)
+    const [saved] = await recipes.listVersions(3)
+    expect(saved.ingredients.map((l) => [l.name, l.quantity, l.unitCode])).toEqual([
+      ['Свёкла', 200, 'g'],
+      ['Морковь', 2, 'pcs'],
+    ])
+
+    // Оригинал не изменился.
+    await user.click(screen.getByRole('button', { name: 'Оригинал' }))
+    const ingredients = screen.getByRole('region', { name: 'Ингредиенты' })
+    expect(within(ingredients).getByText('Молоко')).toBeInTheDocument()
+    expect(within(ingredients).getByText('200 мл')).toBeInTheDocument()
+    expect(kcalRow(screen.getByRole('region', { name: /КБЖУ/ }))).toHaveTextContent(/80\s*160/)
+
+    // Удаление версии.
+    await user.click(screen.getByRole('button', { name: 'Моя версия 1' }))
+    await user.click(screen.getByRole('button', { name: 'Удалить версию' }))
+    await user.click(screen.getByRole('button', { name: 'Да' }))
+    expect(await screen.findByRole('region', { name: 'Ингредиенты' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Моя версия 1' })).toBeNull()
+    expect(await recipes.listVersions(3)).toEqual([])
+  })
+
+  it('ошибки ввода в версии не сохраняются', async () => {
+    const user = userEvent.setup()
+    renderRecipe('/recipes/3')
+    await user.click(await screen.findByRole('button', { name: '+ Своя версия' }))
+    const editor = screen.getByRole('region', { name: 'Моя версия' })
+    const milk = within(editor).getByLabelText('Количество: Молоко')
+    await user.clear(milk)
+    await user.type(milk, 'много')
+    expect(within(editor).getByRole('list', { name: 'Что исправить' })).toHaveTextContent(
+      'Молоко: количество — число больше нуля или пусто.',
+    )
+    expect(within(editor).getByRole('button', { name: 'Сохранить версию' })).toBeDisabled()
+    await user.clear(within(editor).getByLabelText('Название версии'))
+    expect(within(editor).getByRole('list', { name: 'Что исправить' })).toHaveTextContent(
+      'Укажите название версии.',
+    )
+  })
+})

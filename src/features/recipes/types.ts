@@ -1,4 +1,5 @@
 import type { NutritionLine, NutritionSource, YieldMeasurement } from '../nutrition/types'
+import type { RecipeVersion, VersionDraft } from '../versions/types'
 
 export interface RecipeTrust {
   origin: 'curated' | 'external' | 'user'
@@ -76,4 +77,9 @@ export interface RecipesApi {
   getYield(recipeId: number): Promise<YieldMeasurement | null>
   saveYield(recipeId: number, grams: number): Promise<YieldMeasurement>
   deleteYield(recipeId: number): Promise<void>
+  /** Свои версии рецепта (B2), сначала изменённые последними. */
+  listVersions(recipeId: number): Promise<RecipeVersion[]>
+  /** Создаёт (id = null) или целиком заменяет версию; оригинал не меняется. */
+  saveVersion(draft: VersionDraft): Promise<RecipeVersion>
+  deleteVersion(id: number): Promise<void>
 }

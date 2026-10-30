@@ -309,6 +309,111 @@ export type Database = {
           },
         ]
       }
+      recipe_version_ingredients: {
+        Row: {
+          id: number
+          importance: string
+          ingredient_id: number
+          note: string | null
+          original_position: number | null
+          position: number
+          quantity: number | null
+          quantity_text: string | null
+          unit_code: string | null
+          version_id: number
+        }
+        Insert: {
+          id?: never
+          importance?: string
+          ingredient_id: number
+          note?: string | null
+          original_position?: number | null
+          position: number
+          quantity?: number | null
+          quantity_text?: string | null
+          unit_code?: string | null
+          version_id: number
+        }
+        Update: {
+          id?: never
+          importance?: string
+          ingredient_id?: number
+          note?: string | null
+          original_position?: number | null
+          position?: number
+          quantity?: number | null
+          quantity_text?: string | null
+          unit_code?: string | null
+          version_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'recipe_version_ingredients_ingredient_id_fkey'
+            columns: ['ingredient_id']
+            isOneToOne: false
+            referencedRelation: 'ingredients'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'recipe_version_ingredients_unit_code_fkey'
+            columns: ['unit_code']
+            isOneToOne: false
+            referencedRelation: 'units'
+            referencedColumns: ['code']
+          },
+          {
+            foreignKeyName: 'recipe_version_ingredients_version_id_fkey'
+            columns: ['version_id']
+            isOneToOne: false
+            referencedRelation: 'recipe_versions'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      recipe_versions: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+          note: string | null
+          recipe_id: number
+          servings: number | null
+          updated_at: string
+          user_id: string
+          yield_grams: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          name: string
+          note?: string | null
+          recipe_id: number
+          servings?: number | null
+          updated_at?: string
+          user_id?: string
+          yield_grams?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          name?: string
+          note?: string | null
+          recipe_id?: number
+          servings?: number | null
+          updated_at?: string
+          user_id?: string
+          yield_grams?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'recipe_versions_recipe_id_fkey'
+            columns: ['recipe_id']
+            isOneToOne: false
+            referencedRelation: 'recipes'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       recipe_yield_measurements: {
         Row: { measured_at: string; recipe_id: number; user_id: string; yield_grams: number }
         Insert: { measured_at?: string; recipe_id: number; user_id?: string; yield_grams: number }
@@ -644,6 +749,19 @@ export type Database = {
       app_health: { Args: never; Returns: Json }
       ingredient_visible: { Args: { p_ingredient_id: number }; Returns: boolean }
       normalize_name: { Args: { value: string }; Returns: string }
+      recipe_version_owned: { Args: { p_version_id: number }; Returns: boolean }
+      save_recipe_version: {
+        Args: {
+          p_id: number | null
+          p_lines: Json
+          p_name: string
+          p_note: string | null
+          p_recipe_id: number
+          p_servings: number | null
+          p_yield_grams: number | null
+        }
+        Returns: number
+      }
     }
     Enums: { [_ in never]: never }
     CompositeTypes: { [_ in never]: never }
