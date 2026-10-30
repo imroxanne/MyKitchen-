@@ -64,7 +64,7 @@ test('своя версия сохраняется отдельно, КБЖУ п
   // Удаление версии.
   await page.getByRole('button', { name: 'Полегче' }).click()
   await page.getByRole('button', { name: 'Удалить версию' }).click()
-  await page.getByRole('button', { name: 'Да' }).click()
+  await page.getByRole('button', { name: 'Да', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Полегче' })).toHaveCount(0)
   await page.reload()
   await expect(page.getByRole('button', { name: 'Полегче' })).toHaveCount(0)

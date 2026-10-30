@@ -558,7 +558,7 @@ describe('порции и своя версия рецепта (B2)', () => {
     // Удаление версии.
     await user.click(screen.getByRole('button', { name: 'Моя версия 1' }))
     await user.click(screen.getByRole('button', { name: 'Удалить версию' }))
-    await user.click(screen.getByRole('button', { name: 'Да' }))
+    await user.click(screen.getByRole('button', { name: 'Да', exact: true }))
     expect(await screen.findByRole('region', { name: 'Ингредиенты' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Моя версия 1' })).toBeNull()
     expect(await recipes.listVersions(3)).toEqual([])
