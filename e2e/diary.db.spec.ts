@@ -54,9 +54,7 @@ test('«Съедено»: доли порций, суммы за день, пр�
   await expect(lunch).toContainText('1,5 порции')
   await expect(dinner).toContainText('98 ккал')
   await dinner.getByText('Состав на момент записи').click()
-  await expect(dinner.getByRole('listitem').filter({ hasText: 'Яйцо куриное' })).toContainText(
-    '2 шт.',
-  )
+  await expect(dinner.getByText('Яйцо куриное — 2 шт.', { exact: true })).toBeVisible()
 
   // 1,5 → 0,5 порции: 60,9 + 97,98 ≈ 159.
   await lunch.getByRole('button', { name: 'Изменить: Шакшука' }).click()
