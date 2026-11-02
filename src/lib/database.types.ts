@@ -210,6 +210,39 @@ export type Database = {
           },
         ]
       }
+      ingredient_restriction_groups: {
+        Row: {
+          group_code: string
+          ingredient_id: number
+          relation: string
+        }
+        Insert: {
+          group_code: string
+          ingredient_id: number
+          relation: string
+        }
+        Update: {
+          group_code?: string
+          ingredient_id?: number
+          relation?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ingredient_restriction_groups_group_code_fkey'
+            columns: ['group_code']
+            isOneToOne: false
+            referencedRelation: 'restriction_groups'
+            referencedColumns: ['code']
+          },
+          {
+            foreignKeyName: 'ingredient_restriction_groups_ingredient_id_fkey'
+            columns: ['ingredient_id']
+            isOneToOne: false
+            referencedRelation: 'ingredients'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       ingredient_synonyms: {
         Row: {
           id: number
@@ -297,6 +330,8 @@ export type Database = {
       ingredients: {
         Row: {
           category_slug: string
+          composition_note: string | null
+          composition_reviewed: boolean
           created_at: string
           default_unit: string | null
           id: number
@@ -306,6 +341,8 @@ export type Database = {
         }
         Insert: {
           category_slug?: string
+          composition_note?: string | null
+          composition_reviewed?: boolean
           created_at?: string
           default_unit?: string | null
           id?: never
@@ -315,6 +352,8 @@ export type Database = {
         }
         Update: {
           category_slug?: string
+          composition_note?: string | null
+          composition_reviewed?: boolean
           created_at?: string
           default_unit?: string | null
           id?: never
@@ -736,6 +775,30 @@ export type Database = {
           },
         ]
       }
+      restriction_groups: {
+        Row: {
+          code: string
+          description: string
+          kind: string
+          name: string
+          sort: number
+        }
+        Insert: {
+          code: string
+          description: string
+          kind: string
+          name: string
+          sort?: number
+        }
+        Update: {
+          code?: string
+          description?: string
+          kind?: string
+          name?: string
+          sort?: number
+        }
+        Relationships: []
+      }
       units: {
         Row: {
           base_factor: number | null
@@ -873,6 +936,81 @@ export type Database = {
           },
         ]
       }
+      user_restriction_exceptions: {
+        Row: {
+          ingredient_id: number
+          restriction_id: number
+        }
+        Insert: {
+          ingredient_id: number
+          restriction_id: number
+        }
+        Update: {
+          ingredient_id?: number
+          restriction_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'user_restriction_exceptions_ingredient_id_fkey'
+            columns: ['ingredient_id']
+            isOneToOne: false
+            referencedRelation: 'ingredients'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_restriction_exceptions_restriction_id_fkey'
+            columns: ['restriction_id']
+            isOneToOne: false
+            referencedRelation: 'user_restrictions'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      user_restrictions: {
+        Row: {
+          created_at: string
+          group_code: string | null
+          id: number
+          ingredient_id: number | null
+          kind: string
+          note: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          group_code?: string | null
+          id?: never
+          ingredient_id?: number | null
+          kind: string
+          note?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          group_code?: string | null
+          id?: never
+          ingredient_id?: number | null
+          kind?: string
+          note?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'user_restrictions_group_code_fkey'
+            columns: ['group_code']
+            isOneToOne: false
+            referencedRelation: 'restriction_groups'
+            referencedColumns: ['code']
+          },
+          {
+            foreignKeyName: 'user_restrictions_ingredient_id_fkey'
+            columns: ['ingredient_id']
+            isOneToOne: false
+            referencedRelation: 'ingredients'
+            referencedColumns: ['id']
+          },
+        ]
+      }
     }
     Views: { [_ in never]: never }
     Functions: {
@@ -880,6 +1018,7 @@ export type Database = {
       ingredient_visible: { Args: { p_ingredient_id: number }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       normalize_name: { Args: { value: string }; Returns: string }
+      restriction_allows_exceptions: { Args: { p_restriction_id: number }; Returns: boolean }
       recipe_version_owned: { Args: { p_version_id: number }; Returns: boolean }
       save_recipe_version: {
         // Уточнено вручную: генератор помечает все аргументы функций как обязательные,
