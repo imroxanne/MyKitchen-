@@ -5,6 +5,10 @@ import { indexPantry, matchRecipe, type Pantry } from '../matching/match'
 import { loadPantry, usePantryApi } from '../matching/usePantry'
 import { applyUserNutrition } from '../nutrition/userNutrition'
 import type { PantryApi } from '../pantry/types'
+import { evaluateLines } from '../restrictions/evaluate'
+import { restrictionMark } from '../restrictions/present'
+import type { RestrictionProfile, RestrictionsApi } from '../restrictions/types'
+import { loadRestrictionProfile, useRestrictionsApi } from '../restrictions/useRestrictions'
 import { RecipeCard } from '../recipes/RecipeCard'
 import type { RecipesApi, RecipeSummary } from '../recipes/types'
 import { useRecipesApi } from '../recipes/useRecipesApi'
@@ -15,20 +19,28 @@ export function FavoritesPage({
   api,
   pantryApi,
   favoritesApi,
+  restrictionsApi,
 }: {
   api?: RecipesApi
   pantryApi?: PantryApi
   favoritesApi?: FavoritesApi
+  restrictionsApi?: RestrictionsApi
 }) {
   const recipes = useRecipesApi(api)
   const pantry = usePantryApi(pantryApi)
   const favorites = useFavoritesApi(favoritesApi)
+  const restrictions = useRestrictionsApi(restrictionsApi)
   return (
     <section aria-labelledby="favorites-title">
       <h1 id="favorites-title">Избранное</h1>
       <RequireAuth>
         {recipes && pantry && favorites && (
-          <FavoritesList recipesApi={recipes} pantryApi={pantry} favoritesApi={favorites} />
+          <FavoritesList
+            recipesApi={recipes}
+            pantryApi={pantry}
+            favoritesApi={favorites}
+            restrictionsApi={restrictions}
+          />
         )}
       </RequireAuth>
     </section>
@@ -38,16 +50,24 @@ export function FavoritesPage({
 type State =
   | { status: 'loading' }
   | { status: 'error'; message: string }
-  | { status: 'ready'; recipes: RecipeSummary[]; pantry: Pantry }
+  | {
+      status: 'ready'
+      recipes: RecipeSummary[]
+      pantry: Pantry
+      // Избранное не скрывается по ограничениям — только помечается.
+      profile: RestrictionProfile | null
+    }
 
 function FavoritesList({
   recipesApi,
   pantryApi,
   favoritesApi,
+  restrictionsApi,
 }: {
   recipesApi: RecipesApi
   pantryApi: PantryApi
   favoritesApi: FavoritesApi
+  restrictionsApi: RestrictionsApi | null
 }) {
   const [state, setState] = useState<State>({ status: 'loading' })
   const favorites = useFavorites(favoritesApi)
@@ -58,12 +78,16 @@ function FavoritesList({
 
   const fetchData = useCallback(
     () =>
-      Promise.all([recipesApi.listRecipes(), loadPantry(pantryApi)]).then(
-        ([recipes, pantry]) => setState({ status: 'ready', recipes, pantry }),
+      Promise.all([
+        recipesApi.listRecipes(),
+        loadPantry(pantryApi),
+        restrictionsApi ? loadRestrictionProfile(restrictionsApi) : null,
+      ]).then(
+        ([recipes, pantry, profile]) => setState({ status: 'ready', recipes, pantry, profile }),
         (e: unknown) =>
           setState({ status: 'error', message: e instanceof Error ? e.message : String(e) }),
       ),
-    [recipesApi, pantryApi],
+    [recipesApi, pantryApi, restrictionsApi],
   )
 
   useEffect(() => {
@@ -138,6 +162,11 @@ function FavoritesList({
             usePantry={usePantry}
             favorites={favorites}
             backTo="favorites"
+            restriction={
+              state.profile
+                ? restrictionMark(evaluateLines(r.ingredients, state.profile), state.profile)
+                : null
+            }
           />
         ))}
       </ul>

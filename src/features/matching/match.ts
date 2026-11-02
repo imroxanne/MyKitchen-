@@ -172,6 +172,8 @@ export interface Filters {
   query: string
   verifiedOnly: boolean
   sort: Sort
+  /** Показать и рецепты, не подходящие по пищевым ограничениям (с пометкой); по умолчанию скрыты. */
+  showRestricted: boolean
 }
 
 export const DEFAULT_FILTERS: Filters = {
@@ -182,6 +184,7 @@ export const DEFAULT_FILTERS: Filters = {
   query: '',
   verifiedOnly: false,
   sort: 'match',
+  showRestricted: false,
 }
 
 function matchesQuery(recipe: RecipeSummary, query: string): boolean {

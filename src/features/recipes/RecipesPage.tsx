@@ -14,6 +14,10 @@ import {
 import { loadPantry, usePantryApi } from '../matching/usePantry'
 import { applyUserNutrition } from '../nutrition/userNutrition'
 import type { PantryApi } from '../pantry/types'
+import { evaluateLines, OK, type RestrictionResult } from '../restrictions/evaluate'
+import { restrictionMark } from '../restrictions/present'
+import type { RestrictionProfile, RestrictionsApi } from '../restrictions/types'
+import { loadRestrictionProfile, useRestrictionsApi } from '../restrictions/useRestrictions'
 import { createLastLoaded } from '../../lib/lastLoaded'
 import { RecipeCard } from './RecipeCard'
 import type { RecipesApi, RecipeSummary } from './types'
@@ -23,27 +27,37 @@ export function RecipesPage({
   api,
   pantryApi,
   favoritesApi,
+  restrictionsApi,
 }: {
   api?: RecipesApi
   pantryApi?: PantryApi
   favoritesApi?: FavoritesApi
+  restrictionsApi?: RestrictionsApi
 }) {
   const recipes = useRecipesApi(api)
   const pantry = usePantryApi(pantryApi)
   const favorites = useFavoritesApi(favoritesApi)
+  const restrictions = useRestrictionsApi(restrictionsApi)
   return (
     <section aria-labelledby="recipes-title">
       <h1 id="recipes-title">Что приготовить</h1>
       <RequireAuth>
         {recipes && pantry && (
-          <RecipeFinder recipesApi={recipes} pantryApi={pantry} favoritesApi={favorites} />
+          <RecipeFinder
+            recipesApi={recipes}
+            pantryApi={pantry}
+            favoritesApi={favorites}
+            restrictionsApi={restrictions}
+          />
         )}
       </RequireAuth>
     </section>
   )
 }
 
-type Loaded = { recipes: RecipeSummary[]; pantry: Pantry }
+// Ограничения грузятся вместе с рецептами: не загрузились — список не показывается, чтобы
+// рецепты с запрещённым не выглядели подходящими (ТЗ §5: сначала жёсткий отбор).
+type Loaded = { recipes: RecipeSummary[]; pantry: Pantry; profile: RestrictionProfile | null }
 type State =
   { status: 'loading' } | { status: 'error'; message: string } | ({ status: 'ready' } & Loaded)
 
@@ -53,10 +67,12 @@ function RecipeFinder({
   recipesApi,
   pantryApi,
   favoritesApi,
+  restrictionsApi,
 }: {
   recipesApi: RecipesApi
   pantryApi: PantryApi
   favoritesApi: FavoritesApi | null
+  restrictionsApi: RestrictionsApi | null
 }) {
   const userId = useUserId()
   const [state, setState] = useState<State>(() => {
@@ -68,10 +84,14 @@ function RecipeFinder({
 
   const fetchData = useCallback(
     () =>
-      Promise.all([recipesApi.listRecipes(), loadPantry(pantryApi)]).then(
-        ([recipes, pantry]) => {
-          lastLoaded.set(recipesApi, userId, { recipes, pantry })
-          setState({ status: 'ready', recipes, pantry })
+      Promise.all([
+        recipesApi.listRecipes(),
+        loadPantry(pantryApi),
+        restrictionsApi ? loadRestrictionProfile(restrictionsApi) : null,
+      ]).then(
+        ([recipes, pantry, profile]) => {
+          lastLoaded.set(recipesApi, userId, { recipes, pantry, profile })
+          setState({ status: 'ready', recipes, pantry, profile })
         },
         // Если список уже показан (из прошлой загрузки), ошибка обновления его не скрывает.
         (e: unknown) =>
@@ -81,7 +101,7 @@ function RecipeFinder({
               : { status: 'error', message: e instanceof Error ? e.message : String(e) },
           ),
       ),
-    [recipesApi, pantryApi, userId],
+    [recipesApi, pantryApi, restrictionsApi, userId],
   )
 
   useEffect(() => {
@@ -131,8 +151,16 @@ function RecipeFinder({
       // Смена фильтра не прокручивает страницу наверх.
       preventScrollReset: true,
     })
-  const { matches, hiddenUnknownTime } = selectRecipes(recipes, index, filters)
+  const { matches: selected, hiddenUnknownTime } = selectRecipes(recipes, index, filters)
   const usePantry = filters.mode !== 'ignore'
+  const profile = state.profile
+  const verdicts = new Map<number, RestrictionResult>(
+    selected.map((m) => [m.recipe.id, profile ? evaluateLines(m.recipe.ingredients, profile) : OK]),
+  )
+  const forbidden = selected.filter((m) => verdicts.get(m.recipe.id)?.verdict === 'forbidden')
+  const matches = filters.showRestricted
+    ? selected
+    : selected.filter((m) => verdicts.get(m.recipe.id)?.verdict !== 'forbidden')
 
   return (
     <>
@@ -155,7 +183,27 @@ function RecipeFinder({
         Найдено: {matches.length}
         {hiddenUnknownTime > 0 &&
           ` · скрыто ${hiddenUnknownTime} без указанного в источнике времени`}
+        {!filters.showRestricted &&
+          forbidden.length > 0 &&
+          ` · скрыто по вашим ограничениям: ${forbidden.length}`}
       </p>
+      {forbidden.length > 0 && (
+        <p className="small">
+          <button
+            type="button"
+            className="link"
+            aria-pressed={filters.showRestricted}
+            onClick={() => update({ showRestricted: !filters.showRestricted })}
+          >
+            {filters.showRestricted
+              ? 'Скрыть не подходящие по ограничениям'
+              : 'Показать не подходящие по ограничениям'}
+          </button>{' '}
+          <Link to="/profile" className="muted">
+            Мои ограничения
+          </Link>
+        </p>
+      )}
 
       {matches.length === 0 ? (
         <div className="notice">
@@ -174,6 +222,7 @@ function RecipeFinder({
               usePantry={usePantry}
               favorites={favorites}
               backTo="list"
+              restriction={restrictionMark(verdicts.get(m.recipe.id), profile)}
             />
           ))}
         </ul>

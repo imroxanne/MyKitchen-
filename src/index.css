@@ -1557,3 +1557,120 @@ button.link {
   flex-wrap: wrap;
   font-weight: 500;
 }
+
+/* Пищевые ограничения (B4): «нельзя» — красный, «проверьте» — жёлтый. */
+.badge.restriction-forbidden,
+.recipe-card-restriction.restriction-forbidden {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.badge.restriction-check,
+.recipe-card-restriction.restriction-check {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.recipe-card-restriction {
+  align-self: flex-start;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.4375rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.restriction-card.restriction-forbidden {
+  background: var(--danger-bg);
+  border-color: var(--danger-bg);
+  color: var(--danger);
+}
+
+.restriction-card.restriction-check {
+  background: var(--warning-bg);
+  border-color: var(--warning-bg);
+  color: var(--warning);
+}
+
+.restriction-card h2 {
+  font-size: 1.0625rem;
+}
+
+.restriction-card ul {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+}
+
+.restriction-card .muted {
+  color: inherit;
+  opacity: 0.85;
+}
+
+.restriction-ok {
+  margin: 0.5rem 0 1rem;
+}
+
+.restrictions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.restriction-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.restriction-item {
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.add-restriction {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.add-restriction h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.exceptions summary {
+  cursor: pointer;
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.exceptions fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.exceptions-list {
+  list-style: none;
+  margin: 0.5rem 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 0.25rem 0.75rem;
+}
+
+.exceptions-list label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+}

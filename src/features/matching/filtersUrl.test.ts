@@ -19,12 +19,16 @@ describe('фильтры в адресе', () => {
       query: 'яйцо',
       verifiedOnly: true,
       sort: 'time' as const,
+      showRestricted: true,
     }
     expect(parseFilters(serializeFilters(f), false)).toEqual(f)
   })
 
   it('игнорирует мусор в адресе', () => {
-    const f = parseFilters(new URLSearchParams('mode=x&n=abc&t=-5&meal=supper&sort=?'), false)
+    const f = parseFilters(
+      new URLSearchParams('mode=x&n=abc&t=-5&meal=supper&sort=?&restricted=yes'),
+      false,
+    )
     expect(f).toEqual(DEFAULT_FILTERS)
   })
 })

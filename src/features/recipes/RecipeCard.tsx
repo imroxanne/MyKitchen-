@@ -17,11 +17,14 @@ export function RecipeCard({
   usePantry,
   favorites,
   backTo,
+  restriction = null,
 }: {
   match: RecipeMatch
   usePantry: boolean
   favorites: Favorites
   backTo: RecipeBackState['backTo']
+  /** Пометка по пищевым ограничениям (B4): «не подходит» или «проверьте». */
+  restriction?: { verdict: 'check' | 'forbidden'; text: string } | null
 }) {
   const r = match.recipe
   const kcal = kcalSummary(calculateNutrition(r.ingredients, r.servings))
@@ -54,6 +57,11 @@ export function RecipeCard({
             <span className="pill">{describeServings(r.servings)}</span>
             {kcal && <span className="pill recipe-card-kcal">{kcal}</span>}
           </span>
+          {restriction && (
+            <span className={`recipe-card-restriction restriction-${restriction.verdict}`}>
+              {restriction.text}
+            </span>
+          )}
           {reasons.length > 0 && (
             <span className="recipe-card-notes muted small">
               {reasons.map((note) => (

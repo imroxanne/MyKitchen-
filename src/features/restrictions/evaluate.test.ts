@@ -30,6 +30,7 @@ const FLOUR = 5
 const CARROT = 6
 const OWN_SAUCE = 7 // личный продукт: состав не проверен
 const CILANTRO = 8
+const OWN_PASTE = 9 // личный продукт, как его отдаёт БД: есть в списке, состав не проверен
 const composition = new Map<number, IngredientComposition>([
   [MILK, comp(['milk', 'contains'], ['lactose', 'contains'])],
   [LACTOSE_FREE_MILK, comp(['milk', 'contains'])],
@@ -38,6 +39,7 @@ const composition = new Map<number, IngredientComposition>([
   [FLOUR, comp(['gluten', 'contains'])],
   [CARROT, comp()],
   [CILANTRO, comp()],
+  [OWN_PASTE, { reviewed: false, note: null, groups: [] }],
 ])
 
 const line = (
@@ -121,6 +123,8 @@ describe('строгий отбор по ограничениям', () => {
       'Мой соус: состав не проверен — убедитесь, что продукт вам подходит.',
     )
     expect(summarize(r, groups)).toBe('Проверьте: состав «Мой соус»')
+    // Продукт в списке, но не проверен: пустой список групп не значит «безопасно».
+    expect(evaluateLines([line(OWN_PASTE, 'Моя паста')], p).issues[0]?.reason).toBe('unknown')
     // Ограничение только на конкретный продукт — состав других не важен.
     const onlyProduct = profile(restriction({ kind: 'preference', ingredientId: CILANTRO }))
     expect(evaluateLines([line(OWN_SAUCE, 'Мой соус')], onlyProduct).verdict).toBe('ok')

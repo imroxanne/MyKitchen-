@@ -1,6 +1,6 @@
 // Как объяснять результат отбора по ограничениям: что именно и почему.
 import type { RestrictionIssue, RestrictionResult } from './evaluate'
-import type { RestrictionGroup, RestrictionKind } from './types'
+import type { RestrictionGroup, RestrictionKind, RestrictionProfile } from './types'
 
 const KIND_SHORT: Record<RestrictionKind, string> = {
   allergy: 'аллергия',
@@ -47,4 +47,13 @@ export function summarize(result: RestrictionResult, groups: RestrictionGroup[])
     ),
   ]
   return `${result.verdict === 'forbidden' ? 'Не подходит' : 'Проверьте'}: ${parts.join(', ')}`
+}
+
+/** Пометка карточки по ограничениям; null — подходит. */
+export function restrictionMark(
+  result: RestrictionResult | undefined,
+  profile: RestrictionProfile | null,
+): { verdict: 'check' | 'forbidden'; text: string } | null {
+  if (!result || result.verdict === 'ok' || !profile) return null
+  return { verdict: result.verdict, text: summarize(result, profile.reference.groups)! }
 }

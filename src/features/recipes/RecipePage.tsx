@@ -5,6 +5,10 @@ import { EatenForm } from '../diary/EatenForm'
 import { eatenMessage, snapshotFromRecipe } from '../diary/logic'
 import type { DiaryApi, DiarySnapshot } from '../diary/types'
 import { useDiaryApi } from '../diary/useDiaryApi'
+import { evaluateLines, OK, type Verdict } from '../restrictions/evaluate'
+import { RestrictionNotice } from '../restrictions/RestrictionNotice'
+import type { RestrictionProfile, RestrictionsApi } from '../restrictions/types'
+import { loadRestrictionProfile, useRestrictionsApi } from '../restrictions/useRestrictions'
 import { FavoriteButton } from '../favorites/FavoriteButton'
 import type { FavoritesApi } from '../favorites/types'
 import { useFavorites, useFavoritesApi, type Favorites } from '../favorites/useFavorites'
@@ -47,14 +51,17 @@ export function RecipePage({
   pantryApi,
   favoritesApi,
   diaryApi,
+  restrictionsApi,
 }: {
   api?: RecipesApi
   pantryApi?: PantryApi
   favoritesApi?: FavoritesApi
   diaryApi?: DiaryApi
+  restrictionsApi?: RestrictionsApi
 }) {
   const effectiveApi = useRecipesApi(api)
   const diary = useDiaryApi(diaryApi)
+  const restrictions = useRestrictionsApi(restrictionsApi)
   const pantry = usePantryApi(pantryApi)
   const favorites = useFavorites(useFavoritesApi(favoritesApi))
   const { id } = useParams()
@@ -68,6 +75,7 @@ export function RecipePage({
             pantryApi={pantry}
             favorites={favorites}
             diaryApi={diary}
+            restrictionsApi={restrictions}
             id={Number(id)}
           />
         )}
@@ -119,12 +127,14 @@ function RecipeView({
   pantryApi,
   favorites,
   diaryApi,
+  restrictionsApi,
   id,
 }: {
   api: RecipesApi
   pantryApi: PantryApi | null
   favorites: Favorites
   diaryApi: DiaryApi | null
+  restrictionsApi: RestrictionsApi | null
   id: number
 }) {
   const [state, setState] = useState<State>({ status: 'loading' })
@@ -145,6 +155,8 @@ function RecipeView({
   // «Съедено» (B3): форма и сообщение о записи со ссылкой на день в дневнике.
   const [eatenOpen, setEatenOpen] = useState(false)
   const [eatenNote, setEatenNote] = useState<{ text: string; date: string } | null>(null)
+  // Пищевые ограничения (B4): undefined — загружаются, null — не загрузились.
+  const [profile, setProfile] = useState<RestrictionProfile | null | undefined>(undefined)
   const [params, setParams] = useSearchParams()
   const location = useLocation()
   const selected = params.get('version')
@@ -153,6 +165,18 @@ function RecipeView({
     setEatenOpen(false)
     setParams(version ? { version } : {}, { replace: true, state: location.state })
   }
+
+  useEffect(() => {
+    if (!restrictionsApi) return
+    let cancelled = false
+    loadRestrictionProfile(restrictionsApi).then(
+      (p) => !cancelled && setProfile(p),
+      () => !cancelled && setProfile(null),
+    )
+    return () => {
+      cancelled = true
+    }
+  }, [restrictionsApi])
 
   useEffect(() => {
     if (!pantryApi) return
@@ -276,6 +300,14 @@ function RecipeView({
               yieldGrams: originalYield === null ? null : originalYield * factor,
             }),
           }
+  // Проверяется то, что показано: сохранённая версия или оригинал.
+  const restriction = profile
+    ? evaluateLines(savedVersion?.ingredients ?? r.ingredients, profile)
+    : OK
+  const lineVerdict = new Map<number, Verdict>()
+  for (const issue of restriction.issues)
+    if (lineVerdict.get(issue.ingredientId) !== 'forbidden')
+      lineVerdict.set(issue.ingredientId, issue.verdict)
   return (
     <>
       <RecipePhoto
@@ -377,6 +409,8 @@ function RecipeView({
 
       {r.description && <p>{r.description}</p>}
 
+      <RestrictionNotice result={restriction} profile={restrictionsApi ? profile : undefined} />
+
       <VersionSwitcher
         versions={versions}
         error={versionsError}
@@ -439,6 +473,13 @@ function RecipeView({
                     <span>
                       {line.name}
                       {mark && <span className="badge">{mark}</span>}
+                      {lineVerdict.has(line.ingredientId) && (
+                        <span className={`badge restriction-${lineVerdict.get(line.ingredientId)}`}>
+                          {lineVerdict.get(line.ingredientId) === 'forbidden'
+                            ? 'нельзя'
+                            : 'проверьте'}
+                        </span>
+                      )}
                       {line.note && <span className="muted small"> — {line.note}</span>}
                       {availability && (
                         <span className={`avail avail-${availability.tone}`}>
