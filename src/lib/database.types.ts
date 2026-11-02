@@ -1018,8 +1018,8 @@ export type Database = {
       ingredient_visible: { Args: { p_ingredient_id: number }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       normalize_name: { Args: { value: string }; Returns: string }
-      restriction_allows_exceptions: { Args: { p_restriction_id: number }; Returns: boolean }
       recipe_version_owned: { Args: { p_version_id: number }; Returns: boolean }
+      restriction_allows_exceptions: { Args: { p_restriction_id: number }; Returns: boolean }
       save_recipe_version: {
         // Уточнено вручную: генератор помечает все аргументы функций как обязательные,
         // а p_id (новая версия), p_note, p_servings и p_yield_grams бывают null.
