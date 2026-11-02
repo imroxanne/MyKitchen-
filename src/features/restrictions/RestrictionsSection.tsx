@@ -422,7 +422,11 @@ function AddRestriction({
       <h3>Добавить ограничение</h3>
       <label className="inline-field">
         Вид
-        <select value={kind} onChange={(e) => setKind(e.target.value as RestrictionKind)}>
+        <select
+          aria-label="Вид"
+          value={kind}
+          onChange={(e) => setKind(e.target.value as RestrictionKind)}
+        >
           {RESTRICTION_KINDS.map((k) => (
             <option key={k} value={k}>
               {KIND_LABEL[k]}
