@@ -2,6 +2,7 @@ import type {
   IngredientComposition,
   RestrictionGroup,
   RestrictionsApi,
+  Substitution,
   UserRestriction,
 } from '../features/restrictions/types'
 import { KINDS_WITH_EXCEPTIONS } from '../features/restrictions/types'
@@ -29,7 +30,40 @@ export const testComposition = new Map<number, IngredientComposition>([
   [5, reviewed()],
   [6, reviewed()],
   [7, reviewed(['milk', 'contains'], ['lactose', 'contains'])],
+  [20, reviewed(['milk', 'contains'])],
+  [21, reviewed()],
+  [22, reviewed(['milk', 'contains'], ['lactose', 'contains'])],
 ])
+
+// ТЕСТОВЫЕ замены: молоко (id 4) → безлактозное (id 20) и вода (id 21) только для выпечки;
+// сметана (id 7) → йогурт (id 22). Состав замен — в testComposition.
+const testSub = (
+  id: number,
+  from: number,
+  to: number,
+  toName: string,
+  contexts: Substitution['contexts'],
+): Substitution => ({
+  id,
+  fromIngredientId: from,
+  toIngredientId: to,
+  toName,
+  toCategorySlug: 'dairy',
+  ratio: 1,
+  toUnit: null,
+  amountNote: '1:1',
+  contexts,
+  scope: `ТЕСТ: где применима замена «${toName}»`,
+  effect: `ТЕСТ: влияние замены «${toName}»`,
+  warning: `ТЕСТ: предупреждение о замене «${toName}»`,
+  confidence: 'practice',
+})
+
+export const testSubstitutions: Substitution[] = [
+  testSub(1, 4, 20, 'Молоко безлактозное', []),
+  testSub(2, 4, 21, 'Вода', ['baking']),
+  testSub(3, 7, 22, 'Йогурт натуральный', []),
+]
 
 /** Ограничения в памяти с правилами БД: одна запись на группу/продукт, исключения — не при аллергии. */
 export function createMemoryRestrictionsApi() {
@@ -54,7 +88,11 @@ export function createMemoryRestrictionsApi() {
   const api: RestrictionsApi = {
     async loadReference() {
       await maybeFail()
-      return { groups: testGroups, composition: new Map(testComposition) }
+      return {
+        groups: testGroups,
+        composition: new Map(testComposition),
+        substitutions: structuredClone(testSubstitutions),
+      }
     },
     async list() {
       await maybeFail()

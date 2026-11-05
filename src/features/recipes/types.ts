@@ -32,6 +32,8 @@ export interface RecipeSummary {
   cookMinutes: number | null
   servings: number | null
   mealTypes: string[]
+  /** «жарка», «варка»… — для применимости замен (B5). */
+  cookingMethods: string[]
   tags: string[]
   image: RecipeImage | null
   trust: RecipeTrust

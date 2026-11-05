@@ -243,6 +243,70 @@ export type Database = {
           },
         ]
       }
+      ingredient_substitutions: {
+        Row: {
+          amount_note: string
+          confidence: string
+          contexts: string[]
+          effect: string
+          from_ingredient_id: number
+          id: number
+          ratio: number
+          scope_note: string
+          to_ingredient_id: number
+          to_unit: string | null
+          warning: string
+        }
+        Insert: {
+          amount_note: string
+          confidence: string
+          contexts?: string[]
+          effect: string
+          from_ingredient_id: number
+          id?: never
+          ratio: number
+          scope_note: string
+          to_ingredient_id: number
+          to_unit?: string | null
+          warning: string
+        }
+        Update: {
+          amount_note?: string
+          confidence?: string
+          contexts?: string[]
+          effect?: string
+          from_ingredient_id?: number
+          id?: never
+          ratio?: number
+          scope_note?: string
+          to_ingredient_id?: number
+          to_unit?: string | null
+          warning?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ingredient_substitutions_from_ingredient_id_fkey'
+            columns: ['from_ingredient_id']
+            isOneToOne: false
+            referencedRelation: 'ingredients'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ingredient_substitutions_to_ingredient_id_fkey'
+            columns: ['to_ingredient_id']
+            isOneToOne: false
+            referencedRelation: 'ingredients'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ingredient_substitutions_to_unit_fkey'
+            columns: ['to_unit']
+            isOneToOne: false
+            referencedRelation: 'units'
+            referencedColumns: ['code']
+          },
+        ]
+      }
       ingredient_synonyms: {
         Row: {
           id: number

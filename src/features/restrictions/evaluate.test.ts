@@ -60,7 +60,7 @@ const restriction = (r: Partial<UserRestriction>): UserRestriction => ({
 })
 const profile = (...restrictions: UserRestriction[]): RestrictionProfile => ({
   restrictions,
-  reference: { groups, composition },
+  reference: { groups, composition, substitutions: [] },
 })
 
 describe('строгий отбор по ограничениям', () => {

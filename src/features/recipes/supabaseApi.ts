@@ -13,7 +13,8 @@ import type {
 type Client = SupabaseClient<Database>
 
 const SUMMARY_COLUMNS =
-  'id, title, description, prep_minutes, cook_minutes, servings, meal_types, tags, origin, is_sample, ' +
+  'id, title, description, prep_minutes, cook_minutes, servings, meal_types, cooking_methods, tags, ' +
+  'origin, is_sample, ' +
   'source_checked_at, source_checked_note, cooked_verified_at, cooked_verified_note, image_url, image_credit, ' +
   'image_source_url'
 
@@ -102,6 +103,7 @@ type SummaryRow = Pick<
   | 'description'
   | 'prep_minutes'
   | 'cook_minutes'
+  | 'cooking_methods'
   | 'servings'
   | 'meal_types'
   | 'tags'
@@ -125,6 +127,7 @@ function toSummary(row: SummaryRow, ingredients: RecipeIngredientRef[]): RecipeS
     cookMinutes: row.cook_minutes,
     servings: row.servings,
     mealTypes: row.meal_types,
+    cookingMethods: row.cooking_methods,
     tags: row.tags,
     ingredients,
     // Без подписи об авторе и правах фото не показываем (ТЗ §4; в БД это ещё и ограничение).

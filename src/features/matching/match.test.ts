@@ -96,6 +96,7 @@ const recipe = (
   cookMinutes: null,
   servings: null,
   mealTypes: [],
+  cookingMethods: [],
   tags: [],
   image: null,
   trust: {

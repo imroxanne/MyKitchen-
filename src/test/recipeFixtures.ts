@@ -157,6 +157,7 @@ export function createMemoryRecipesApi(
         cookMinutes: r.cookMinutes,
         servings: r.servings,
         mealTypes: r.mealTypes,
+        cookingMethods: r.cookingMethods,
         tags: r.tags,
         image: r.image,
         trust: r.trust,

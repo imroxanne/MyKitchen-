@@ -1,11 +1,13 @@
 import type { PostgrestError, SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '../../lib/database.types'
 import type {
+  DishContext,
   IngredientComposition,
   Relation,
   RestrictionGroup,
   RestrictionKind,
   RestrictionsApi,
+  Substitution,
   UserRestriction,
 } from './types'
 
@@ -31,6 +33,37 @@ interface Row {
   user_restriction_exceptions: { ingredient_id: number }[]
 }
 
+interface SubstitutionRow {
+  id: number
+  from_ingredient_id: number
+  to_ingredient_id: number
+  ratio: number
+  to_unit: string | null
+  amount_note: string
+  contexts: string[]
+  scope_note: string
+  effect: string
+  warning: string
+  confidence: string
+  to_ingredient: { name: string; category_slug: string }
+}
+
+const toSubstitution = (row: SubstitutionRow): Substitution => ({
+  id: row.id,
+  fromIngredientId: row.from_ingredient_id,
+  toIngredientId: row.to_ingredient_id,
+  toName: row.to_ingredient.name,
+  toCategorySlug: row.to_ingredient.category_slug,
+  ratio: row.ratio,
+  toUnit: row.to_unit,
+  amountNote: row.amount_note,
+  contexts: row.contexts as DishContext[],
+  scope: row.scope_note,
+  effect: row.effect,
+  warning: row.warning,
+  confidence: row.confidence as Substitution['confidence'],
+})
+
 const toRestriction = (row: Row): UserRestriction => ({
   id: row.id,
   kind: row.kind as RestrictionKind,
@@ -53,14 +86,23 @@ export function createSupabaseRestrictionsApi(supabase: Client): RestrictionsApi
 
   return {
     async loadReference() {
-      const [groups, ingredients, relations] = await Promise.all([
+      const [groups, ingredients, relations, substitutions] = await Promise.all([
         supabase.from('restriction_groups').select('code, kind, name, description').order('sort'),
         supabase.from('ingredients').select('id, composition_reviewed, composition_note'),
         supabase
           .from('ingredient_restriction_groups')
           .select('ingredient_id, group_code, relation'),
+        // Порядок — как в справочнике: первой идёт более удачная замена.
+        supabase
+          .from('ingredient_substitutions')
+          .select(
+            'id, from_ingredient_id, to_ingredient_id, ratio, to_unit, amount_note, contexts, ' +
+              'scope_note, effect, warning, confidence, ' +
+              'to_ingredient:ingredients!ingredient_substitutions_to_ingredient_id_fkey (name, category_slug)',
+          )
+          .order('id'),
       ])
-      for (const result of [groups, ingredients, relations])
+      for (const result of [groups, ingredients, relations, substitutions])
         if (result.error) fail(result.error, 'загрузить справочник ограничений')
       const composition = new Map<number, IngredientComposition>()
       for (const i of ingredients.data ?? [])
@@ -73,7 +115,13 @@ export function createSupabaseRestrictionsApi(supabase: Client): RestrictionsApi
         composition
           .get(r.ingredient_id)
           ?.groups.push({ code: r.group_code, relation: r.relation as Relation })
-      return { groups: (groups.data ?? []) as RestrictionGroup[], composition }
+      return {
+        groups: (groups.data ?? []) as RestrictionGroup[],
+        composition,
+        substitutions: ((substitutions.data ?? []) as unknown as SubstitutionRow[]).map(
+          toSubstitution,
+        ),
+      }
     },
 
     async list() {
