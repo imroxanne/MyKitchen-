@@ -32,6 +32,8 @@ jobs:
         run: node scripts/nutrition/build-migration.ts --check
       - name: Разметка продуктов по группам ограничений полная и соответствует content/restrictions
         run: node scripts/restrictions/build-migration.ts --check
+      - name: Справочник замен полный и соответствует content/substitutions
+        run: node scripts/substitutions/build-migration.ts --check
       - run: npm test
       - run: npm run build
       - run: npx playwright install --with-deps chromium
