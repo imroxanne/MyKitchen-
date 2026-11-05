@@ -33,6 +33,7 @@ export function parseFilters(params: URLSearchParams, pantryEmpty: boolean): Fil
     verifiedOnly: params.get('verified') === '1',
     sort: sort && SORTS.includes(sort) ? sort : DEFAULT_FILTERS.sort,
     showRestricted: params.get('restricted') === 'show',
+    withSubstitutions: params.get('subs') === '1',
   }
 }
 
@@ -48,5 +49,6 @@ export function serializeFilters(filters: Filters): URLSearchParams {
   if (filters.verifiedOnly) p.set('verified', '1')
   if (filters.sort !== DEFAULT_FILTERS.sort) p.set('sort', filters.sort)
   if (filters.showRestricted) p.set('restricted', 'show')
+  if (filters.withSubstitutions) p.set('subs', '1')
   return p
 }

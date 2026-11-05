@@ -20,6 +20,7 @@ describe('фильтры в адресе', () => {
       verifiedOnly: true,
       sort: 'time' as const,
       showRestricted: true,
+      withSubstitutions: true,
     }
     expect(parseFilters(serializeFilters(f), false)).toEqual(f)
   })

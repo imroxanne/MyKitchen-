@@ -16,6 +16,12 @@ import { applyUserNutrition } from '../nutrition/userNutrition'
 import type { PantryApi } from '../pantry/types'
 import { evaluateLines, OK, type RestrictionResult } from '../restrictions/evaluate'
 import { restrictionMark } from '../restrictions/present'
+import {
+  describePlan,
+  dishContexts,
+  planSubstitutions,
+  type SubstitutionPlan,
+} from '../restrictions/substitutions'
 import type { RestrictionProfile, RestrictionsApi } from '../restrictions/types'
 import { loadRestrictionProfile, useRestrictionsApi } from '../restrictions/useRestrictions'
 import { createLastLoaded } from '../../lib/lastLoaded'
@@ -158,9 +164,30 @@ function RecipeFinder({
     selected.map((m) => [m.recipe.id, profile ? evaluateLines(m.recipe.ingredients, profile) : OK]),
   )
   const forbidden = selected.filter((m) => verdicts.get(m.recipe.id)?.verdict === 'forbidden')
-  const matches = filters.showRestricted
-    ? selected
-    : selected.filter((m) => verdicts.get(m.recipe.id)?.verdict !== 'forbidden')
+  // Режим «с заменами» (B5): запрещённый рецепт, у которого для каждого запрещённого продукта
+  // есть подходящая замена, показывается с пометкой, какие замены нужны.
+  const plans = new Map<number, SubstitutionPlan>()
+  if (profile)
+    for (const m of forbidden) {
+      const plan = planSubstitutions(
+        verdicts.get(m.recipe.id)!,
+        dishContexts(m.recipe.cookingMethods),
+        profile,
+      )
+      if (plan) plans.set(m.recipe.id, plan)
+    }
+  const shown = (id: number) =>
+    verdicts.get(id)?.verdict !== 'forbidden' ||
+    filters.showRestricted ||
+    (filters.withSubstitutions && plans.has(id))
+  const matches = selected.filter((m) => shown(m.recipe.id))
+  const hidden = forbidden.filter((m) => !shown(m.recipe.id)).length
+  const mark = (id: number) => {
+    const plan = plans.get(id)
+    return plan && filters.withSubstitutions
+      ? { verdict: 'check' as const, text: `С заменой: ${describePlan(plan)}` }
+      : restrictionMark(verdicts.get(id), profile)
+  }
 
   return (
     <>
@@ -183,12 +210,22 @@ function RecipeFinder({
         Найдено: {matches.length}
         {hiddenUnknownTime > 0 &&
           ` · скрыто ${hiddenUnknownTime} без указанного в источнике времени`}
-        {!filters.showRestricted &&
-          forbidden.length > 0 &&
-          ` · скрыто по вашим ограничениям: ${forbidden.length}`}
+        {hidden > 0 && ` · скрыто по вашим ограничениям: ${hidden}`}
       </p>
       {forbidden.length > 0 && (
-        <p className="small">
+        <p className="small restriction-toggles">
+          {plans.size > 0 && (
+            <button
+              type="button"
+              className="link"
+              aria-pressed={filters.withSubstitutions}
+              onClick={() => update({ withSubstitutions: !filters.withSubstitutions })}
+            >
+              {filters.withSubstitutions
+                ? 'Без вариантов с заменами'
+                : `Варианты с заменами: ${plans.size}`}
+            </button>
+          )}{' '}
           <button
             type="button"
             className="link"
@@ -222,7 +259,7 @@ function RecipeFinder({
               usePantry={usePantry}
               favorites={favorites}
               backTo="list"
-              restriction={restrictionMark(verdicts.get(m.recipe.id), profile)}
+              restriction={mark(m.recipe.id)}
             />
           ))}
         </ul>

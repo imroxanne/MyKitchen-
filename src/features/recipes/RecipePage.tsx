@@ -6,7 +6,9 @@ import { eatenMessage, snapshotFromRecipe } from '../diary/logic'
 import type { DiaryApi, DiarySnapshot } from '../diary/types'
 import { useDiaryApi } from '../diary/useDiaryApi'
 import { evaluateLines, OK, type Verdict } from '../restrictions/evaluate'
+import { draftWithSubstitution } from '../restrictions/applySubstitution'
 import { RestrictionNotice } from '../restrictions/RestrictionNotice'
+import { dishContexts } from '../restrictions/substitutions'
 import type { RestrictionProfile, RestrictionsApi } from '../restrictions/types'
 import { loadRestrictionProfile, useRestrictionsApi } from '../restrictions/useRestrictions'
 import { FavoriteButton } from '../favorites/FavoriteButton'
@@ -409,7 +411,26 @@ function RecipeView({
 
       {r.description && <p>{r.description}</p>}
 
-      <RestrictionNotice result={restriction} profile={restrictionsApi ? profile : undefined} />
+      <RestrictionNotice
+        result={restriction}
+        profile={restrictionsApi ? profile : undefined}
+        contexts={dishContexts(r.cookingMethods)}
+        // Замена превращается в черновик своей версии (B2): оригинал не меняется.
+        onApply={
+          pantryApi
+            ? async (_ingredientId, option) => {
+                if (newDraft)
+                  throw new Error(
+                    'Сначала сохраните или отмените новую версию — она будет заменена.',
+                  )
+                setNewDraft(
+                  await draftWithSubstitution(state.recipe, option.substitution, pantryApi),
+                )
+                select('new')
+              }
+            : undefined
+        }
+      />
 
       <VersionSwitcher
         versions={versions}

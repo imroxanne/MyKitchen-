@@ -174,6 +174,8 @@ export interface Filters {
   sort: Sort
   /** Показать и рецепты, не подходящие по пищевым ограничениям (с пометкой); по умолчанию скрыты. */
   showRestricted: boolean
+  /** Режим «с заменами» (B5): показать запрещённые рецепты, которые можно приготовить с заменами. */
+  withSubstitutions: boolean
 }
 
 export const DEFAULT_FILTERS: Filters = {
@@ -185,6 +187,7 @@ export const DEFAULT_FILTERS: Filters = {
   verifiedOnly: false,
   sort: 'match',
   showRestricted: false,
+  withSubstitutions: false,
 }
 
 function matchesQuery(recipe: RecipeSummary, query: string): boolean {
